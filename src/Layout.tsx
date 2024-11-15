@@ -16,10 +16,11 @@ import { cn } from "@/lib/utils";
 import { IconBrandDiscordFilled, IconBrandX } from "@tabler/icons-react";
 import { Link, Outlet, useRouter } from "@tanstack/react-router";
 import {
-  ChartColumnIncreasing,
+  ChartCandlestick,
   ChartLine,
-  ChevronRight,
-  FileChartColumn
+  ChartNoAxesColumnIncreasing,
+  ChartNoAxesCombined,
+  ChevronRight
 } from "lucide-react";
 import React from "react";
 import {
@@ -39,19 +40,10 @@ import {
 } from "./components/ui/sidebar";
 
 const sidebarItems = [
-  { icon: ChartLine, label: "Technical", href: "/crypto" },
-  {
-    icon: IconBrandX,
-    label: "X",
-    href: "/crypto/twitter",
-  },
-  {
-    icon: ChartColumnIncreasing,
-    label: "Sentiment",
-    href: "/crypto/sentiment",
-  },
-  { icon: FileChartColumn, label: "Stats", href: "/crypto/stats" },
-  // { icon: PieChart, label: "Sector", href: "/crypto/sector" },
+  { icon: ChartLine, label: "Net Sentiment", href: "/gold" },
+  { icon: ChartNoAxesColumnIncreasing, label: "Gamma OI", href: "/gold/gamma-oi" },
+  { icon: ChartCandlestick, label: "Investic Weight OI", href: "/gold/investic-weight-oi" },
+  { icon: ChartNoAxesCombined, label: "Trend and Momentum", href: "/gold/trend-and-momentum" },
 ];
 
 // const userData = {
@@ -96,7 +88,7 @@ const SidebarHeaderComponent = () => (
               />
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold text-white">
-                Gold Studio
+                  Gold Studio
                 </span>
                 <span className="truncate text-xs text-gray-400">
                   Investic Analytics Studio
@@ -194,7 +186,7 @@ const Breadcrumb = () => {
     const matchingItem = sidebarItems.find(
       (item) =>
         item.href === currentPath ||
-        (currentPath.startsWith(item.href) && item.href !== "/crypto")
+        (currentPath.startsWith(item.href) && item.href !== "/gold")
     );
     setCurrentItem(matchingItem);
   }, [currentPath]);
@@ -207,7 +199,7 @@ const Breadcrumb = () => {
         (item) =>
           item.href === router.state.location.pathname ||
           (router.state.location.pathname.startsWith(item.href) &&
-            item.href !== "/crypto")
+            item.href !== "/gold")
       );
       setCurrentItem(matchingItem);
     });
@@ -223,7 +215,7 @@ const Breadcrumb = () => {
       <ol className="inline-flex items-center space-x-1">
         <li className="flex items-center">
           <span className="text-[12px] font-normal text-[#A1A1AA]/70 pointer-events-none cursor-default">
-            Crypto
+            Gold
           </span>
         </li>
 
@@ -268,12 +260,12 @@ export default function Layout() {
             <SidebarContent>
               <SidebarGroup>
                 <SidebarGroupLabel className="text-[#FAFAFA] mb-2">
-                  Crypto
+                  Gold
                 </SidebarGroupLabel>
                 <SidebarMenu>
                   {sidebarItems.map((item) => {
                     const isActive = activePath === item.href || 
-                                   (activePath.startsWith(item.href) && item.href !== "/crypto");
+                                   (activePath.startsWith(item.href) && item.href !== "/gold");
                     
                     return (
                       <Collapsible

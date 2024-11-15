@@ -87,7 +87,7 @@ const HomePage: React.FC = () => {
                 : "text-[30px] mt-[60px] mb-[60px] leading-relaxed tracking-normal"
             } text-[#A1A1AA]`}
           >
-            Your one-stop solution for crypto analytics
+            Your one-stop solution for gold analytics
           </p>
           <motion.div>
             <div
@@ -105,7 +105,7 @@ const HomePage: React.FC = () => {
                   asChild
                   size="lg"
                 >
-                  <Link to="/crypto">Launch App →</Link>
+                  <Link to="/gold">Launch App →</Link>
                 </Button>
               </div>
 
@@ -142,7 +142,7 @@ const HomePage: React.FC = () => {
             >
               <img
                 src="/assets/images/crypto-studio-dashboard.png"
-                alt="Gold Studio Dashboard"
+                alt="Crypto Studio Dashboard"
                 className="w-full h-auto rounded-lg shadow-2xl pointer-events-none whitespace-pre-wrap bg-gradient-to-b from-black to-gray-300/80 bg-clip-text"
                 onError={(e) => {
                   console.error("Error loading image:", e);
