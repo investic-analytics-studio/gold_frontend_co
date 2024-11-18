@@ -45,7 +45,7 @@ const GoldSentimentChart: React.FC = () => {
           data={data}
           margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
         >
-          <CartesianGrid stroke="#444" />
+          <CartesianGrid stroke="#444" horizontal={true} vertical={false} />
           <XAxis
             dataKey="date"
             tickFormatter={(date: string | number, index: number): string => {
@@ -72,6 +72,7 @@ const GoldSentimentChart: React.FC = () => {
               position: 'insideLeft',
               fill: 'white',
             }}
+            domain={['dataMin', 'dataMax']}
           />
           <Tooltip
             contentStyle={{
