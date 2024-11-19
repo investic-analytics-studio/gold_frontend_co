@@ -13,27 +13,42 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
-interface DataPoint {
+// API Response Type
+interface GoldSentimentAggregateHourly {
+  datetime: string; // ISO string from time.Time
+  negative: number;
+  neutral: number;
+  positive: number;
+  net: number;
+  gold_price: number | null;
+  created_at: string; // ISO string from time.Time
+  updated_at: string; // ISO string from time.Time
+  deleted_at: string | null; // ISO string from time.Time
+  rolling_net_hourly: number;
+}
+
+// Chart Data Type
+interface GoldSentimentAggregateDataPoint {
   date: string;
   netSentiment: number;
   goldPrice: number | null;
 }
 
 const NetSentimentAndGoldPriceChart: React.FC = () => {
-  const [data, setData] = useState<DataPoint[]>([]);
+  const [data, setData] = useState<GoldSentimentAggregateDataPoint[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get<DataPoint[]>(
+        const response = await axios.get<GoldSentimentAggregateHourly[]>(
           'http://localhost:8080/gold-sentiment-aggregate-hourly'
         );
 
         const formattedData = response.data
-          .filter((item: any) => item.gold_price !== null) // กรอง gold_price ที่ไม่ใช่ null
-          .map((item: any) => ({
-            date: new Date(item.datetime).toISOString().substring(0, 10), // YYYY-MM-DD
-            netSentiment: item.rolling_net_hourly, //use rolling_net_hourly as Net Sentiment
+          .filter((item) => item.gold_price !== null)
+          .map((item) => ({
+            date: new Date(item.datetime).toISOString().substring(0, 10),
+            netSentiment: item.rolling_net_hourly,
             goldPrice: item.gold_price,
           }));
 
@@ -120,11 +135,11 @@ const NetSentimentAndGoldPriceChart: React.FC = () => {
               };
               return new Date(label).toLocaleDateString('en-US', options);
             }}
-            formatter={(value: any, name: string) => {
-              if (name === 'goldPrice') {
-                return [parseFloat(value).toFixed(2), 'Gold Price'];
+            formatter={(value: number, name: string) => {
+              if (name === 'GOLD Price') {
+                return [`$${value.toFixed(2)}`, 'Gold Price'];
               }
-              return [value, 'Net Sentiment'];
+              return [value.toFixed(2), 'Net Sentiment'];
             }}
             labelStyle={{ color: 'white' }}
             itemStyle={{ color: 'white' }}
@@ -153,7 +168,7 @@ const NetSentimentAndGoldPriceChart: React.FC = () => {
             dataKey="goldPrice"
             stroke="white"
             strokeWidth={2}
-            name="GOLD Price 1H"
+            name="GOLD Price"
             dot={false}
           />
         </ComposedChart>
