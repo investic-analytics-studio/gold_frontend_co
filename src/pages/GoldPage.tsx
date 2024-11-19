@@ -8,7 +8,8 @@ import {
 } from '../components/ui/card';
 import { ChartArea } from 'lucide-react';
 import GoldSentimentChart from '@/components/goldChart/GoldSentimentChart';
-import NetSentimentChart from '@/components/goldChart/NetSentimentAndGoldPriceChart';
+import NetSentimentAndGoldPriceChart from '@/components/goldChart/NetSentimentAndGoldPriceChart';
+import NetSentimentAndGoldPriceOneHour from '@/components/goldChart/NetSentimentAndGoldPriceOneHour';
 
 const GoldPage: React.FC = () => {
   return (
@@ -26,7 +27,8 @@ const GoldPage: React.FC = () => {
         <CardTitle className="text-[#FAFAFA] text-[16px] font-medium"></CardTitle>
         <CardDescription className="text-[#A1A1AA] text-[14px]">
           <GoldSentimentChart />
-          <NetSentimentChart />
+          <NetSentimentAndGoldPriceChart />
+          <NetSentimentAndGoldPriceOneHour />
         </CardDescription>
       </CardHeader>
 
