@@ -28,7 +28,7 @@ const GoldSentimentChart: React.FC = () => {
           'http://localhost:8080/gold-sentiment-aggregate-daily'
         );
 
-        setData(response.data.data);
+        setData(response.data);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -45,7 +45,7 @@ const GoldSentimentChart: React.FC = () => {
           data={data}
           margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
         >
-          <CartesianGrid stroke="#444" />
+          <CartesianGrid stroke="#444" horizontal={true} vertical={false} />
           <XAxis
             dataKey="date"
             tickFormatter={(date: string | number, index: number): string => {
@@ -72,23 +72,50 @@ const GoldSentimentChart: React.FC = () => {
               position: 'insideLeft',
               fill: 'white',
             }}
+            domain={['dataMin', 'dataMax']}
           />
           <Tooltip
-            contentStyle={{
-              backgroundColor: '#060a16',
-              borderColor: '#444',
-              borderRadius: '5px',
+            content={({ active, payload, label }) => {
+              if (active && payload && payload.length) {
+                return (
+                  <div
+                    style={{
+                      backgroundColor: '#060a16',
+                      border: '1px solid #444',
+                      borderRadius: '5px',
+                      padding: '10px',
+                    }}
+                  >
+                    <p style={{ color: 'white', margin: '0 0 8px 0' }}>
+                      {new Date(label).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                      })}
+                    </p>
+                    {payload.map((entry) => (
+                      <p
+                        key={entry.dataKey}
+                        style={{
+                          color:
+                            entry.dataKey === 'negative'
+                              ? 'red'
+                              : entry.dataKey === 'neutral'
+                              ? 'yellow'
+                              : entry.dataKey === 'positive'
+                              ? 'green'
+                              : 'white',
+                          margin: '4px 0',
+                        }}
+                      >
+                        {entry.name}: {entry.value}
+                      </p>
+                    ))}
+                  </div>
+                );
+              }
+              return null;
             }}
-            labelFormatter={(label: string | number) => {
-              const options: Intl.DateTimeFormatOptions = {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              };
-              return new Date(label).toLocaleDateString('en-US', options);
-            }}
-            labelStyle={{ color: 'white' }}
-            itemStyle={{ color: 'white' }}
           />
           <Legend wrapperStyle={{ color: 'white' }} />
           <Bar dataKey="negative" stackId="a" fill="red" name="Negative" />
