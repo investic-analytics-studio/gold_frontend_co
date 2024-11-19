@@ -1,12 +1,15 @@
-import React from "react";
+import React from 'react';
 import {
   Card,
   CardContent,
   CardTitle,
   CardDescription,
   CardHeader,
-} from "../components/ui/card";
-import { ChartArea } from "lucide-react";
+} from '../components/ui/card';
+import { ChartArea } from 'lucide-react';
+import GoldSentimentChart from '@/components/goldChart/GoldSentimentChart';
+import NetSentimentAndGoldPriceChart from '@/components/goldChart/NetSentimentAndGoldPriceChart';
+import NetSentimentAndGoldPriceOneHour from '@/components/goldChart/NetSentimentAndGoldPriceOneHour';
 
 const GoldPage: React.FC = () => {
   return (
@@ -21,11 +24,11 @@ const GoldPage: React.FC = () => {
         <div></div>
       </div>
       <CardHeader className="mb-4">
-        <CardTitle className="text-[#FAFAFA] text-[16px] font-medium">
-          Lorem Ipsum
-        </CardTitle>
+        <CardTitle className="text-[#FAFAFA] text-[16px] font-medium"></CardTitle>
         <CardDescription className="text-[#A1A1AA] text-[14px]">
-          Lorem Ipsum
+          <GoldSentimentChart />
+          <NetSentimentAndGoldPriceChart />
+          <NetSentimentAndGoldPriceOneHour />
         </CardDescription>
       </CardHeader>
 
