@@ -88,7 +88,7 @@ const SidebarHeaderComponent = () => (
               />
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold text-white">
-                  Gold Studio
+                Gold Studio
                 </span>
                 <span className="truncate text-xs text-gray-400">
                   Investic Analytics Studio
