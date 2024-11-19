@@ -19,7 +19,7 @@ interface DataPoint {
   goldPrice: number | null;
 }
 
-const NetSentimentChart: React.FC = () => {
+const NetSentimentAndGoldPriceChart: React.FC = () => {
   const [data, setData] = useState<DataPoint[]>([]);
 
   useEffect(() => {
@@ -29,10 +29,10 @@ const NetSentimentChart: React.FC = () => {
           'http://localhost:8080/gold-sentiment-aggregate-hourly'
         );
 
-        const formattedData = response.data.data
+        const formattedData = response.data
           .filter((item: any) => item.gold_price !== null) // กรอง gold_price ที่ไม่ใช่ null
           .map((item: any) => ({
-            date: new Date(item.date).toISOString().substring(0, 10), // YYYY-MM-DD
+            date: new Date(item.datetime).toISOString().substring(0, 10), // YYYY-MM-DD
             netSentiment: item.rolling_net_hourly, //use rolling_net_hourly as Net Sentiment
             goldPrice: item.gold_price,
           }));
@@ -65,15 +65,16 @@ const NetSentimentChart: React.FC = () => {
               }
               return '';
             }}
+            interval={0}
             tick={{ fill: 'white' }}
             label={{
               value: 'Date',
-              position: 'insideBottomRight',
+              position: 'insideBottom',
               offset: -5,
               fill: 'white',
             }}
           />
-          {/* แกน Y สำหรับ Bar Chart */}
+          {/* Left Y Axis Bar Chart */}
           <YAxis
             yAxisId="left"
             orientation="left"
@@ -87,14 +88,14 @@ const NetSentimentChart: React.FC = () => {
               fill: 'white',
             }}
           />
-          {/* แกน Y สำหรับ Bar Chart */}
+          {/* Right Y Axis Bar Chart */}
           <YAxis
             yAxisId="right"
             orientation="right"
             stroke="white"
             domain={[
-              (dataMin: number) => Math.floor(dataMin / 10) * 10, // ปัดลง
-              (dataMax: number) => Math.ceil(dataMax / 10) * 10, // ปัดขึ้น
+              (dataMin: number) => Math.floor(dataMin / 10) * 10,
+              (dataMax: number) => Math.ceil(dataMax / 10) * 10,
             ]}
             tick={{ fill: 'white' }}
             label={{
@@ -123,7 +124,7 @@ const NetSentimentChart: React.FC = () => {
               if (name === 'goldPrice') {
                 return [parseFloat(value).toFixed(2), 'Gold Price'];
               }
-              return value;
+              return [value, 'Net Sentiment'];
             }}
             labelStyle={{ color: 'white' }}
             itemStyle={{ color: 'white' }}
@@ -131,7 +132,12 @@ const NetSentimentChart: React.FC = () => {
           <Legend layout="horizontal" verticalAlign="top" align="center" />
 
           {/* Net Sentiment (Bar Chart) */}
-          <Bar yAxisId="left" dataKey="netSentiment" barSize={20}>
+          <Bar
+            yAxisId="left"
+            dataKey="netSentiment"
+            barSize={20}
+            name="Net Sentiment"
+          >
             {data.map((entry, index) => (
               <Cell
                 key={`cell-${index}`}
@@ -147,6 +153,7 @@ const NetSentimentChart: React.FC = () => {
             dataKey="goldPrice"
             stroke="white"
             strokeWidth={2}
+            name="GOLD Price 1H"
             dot={false}
           />
         </ComposedChart>
@@ -155,4 +162,4 @@ const NetSentimentChart: React.FC = () => {
   );
 };
 
-export default NetSentimentChart;
+export default NetSentimentAndGoldPriceChart;
