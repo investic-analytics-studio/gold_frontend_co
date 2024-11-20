@@ -36,12 +36,12 @@ interface GoldSentimentAggregateDataPoint {
 
 const NetSentimentAndGoldPriceChart: React.FC = () => {
   const [data, setData] = useState<GoldSentimentAggregateDataPoint[]>([]);
-
+  const backendApiUrl = import.meta.env.VITE_BACKEND_API;
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get<GoldSentimentAggregateHourly[]>(
-          'http://localhost:8080/gold-sentiment-aggregate-hourly'
+          backendApiUrl + '/gold-sentiment-aggregate-hourly'
         );
 
         const formattedData = response.data

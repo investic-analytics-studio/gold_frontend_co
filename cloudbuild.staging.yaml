@@ -28,7 +28,7 @@ steps:
       - |
         gcloud secrets versions access latest \
           --secret="gold-studio-frontend" \
-          --format='get(payload.data)' | tr '_-' '/+' | base64 -d > .env.production
+          --format='get(payload.data)' | tr '_-' '/+' | base64 -d > .env
   # Step 4: Build Image
   - id: 'build image'
     name: "gcr.io/cloud-builders/docker"

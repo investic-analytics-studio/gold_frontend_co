@@ -20,12 +20,12 @@ interface GoldSentimentAggregateDaily {
 
 const GoldSentimentChart: React.FC = () => {
   const [data, setData] = useState<GoldSentimentAggregateDaily[]>([]);
-
+  const backendApiUrl = import.meta.env.VITE_BACKEND_API;
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get<GoldSentimentAggregateDaily[]>(
-          'http://localhost:8080/gold-sentiment-aggregate-daily'
+          backendApiUrl + '/gold-sentiment-aggregate-daily'
         );
 
         setData(response.data);
