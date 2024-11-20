@@ -38,9 +38,10 @@ const GoldSentimentChart: React.FC = () => {
   }, []);
 
   return (
-    <div style={{ width: '100%', height: 400 }}>
-      <h2 style={{ color: 'white' }}>Sentiment Analysis (Gold)</h2>
-      <ResponsiveContainer width="100%" height="100%">
+    <div className='pb-0 pt-6 px-6' style={{ width: '100%', height: 400 }}>
+      <h2 className='text-[#FAFAFA] text-[16px] font-medium'>Sentiment Analysis (Gold)</h2>
+      <div className="text-[#A1A1AA] text-[14px]">Lorem Ipsum</div>
+      <ResponsiveContainer width="100%" height="100%" className="mt-8">
         <BarChart
           data={data}
           margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
@@ -118,9 +119,9 @@ const GoldSentimentChart: React.FC = () => {
             }}
           />
           <Legend wrapperStyle={{ color: 'white' }} />
-          <Bar dataKey="negative" stackId="a" fill="red" name="Negative" />
-          <Bar dataKey="neutral" stackId="a" fill="yellow" name="Neutral" />
-          <Bar dataKey="positive" stackId="a" fill="green" name="Positive" />
+          <Bar dataKey="negative" stackId="a" fill="#F23645" name="Negative" />
+          <Bar dataKey="neutral" stackId="a" fill="#E8C930" name="Neutral" />
+          <Bar dataKey="positive" stackId="a" fill="#2662D9" name="Positive" />
         </BarChart>
       </ResponsiveContainer>
     </div>
