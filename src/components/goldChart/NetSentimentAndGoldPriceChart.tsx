@@ -61,8 +61,9 @@ const NetSentimentAndGoldPriceChart: React.FC = () => {
     fetchData();
   }, []);
   return (
-    <div style={{ width: '100%', height: 400 }}>
-      <h2 style={{ color: 'white' }}>Net Sentiment Analysis and Gold Price</h2>
+    <div className='pb-0 pt-10 px-6' style={{ width: '100%', height: 400 }}>
+      <h2 className='text-[#FAFAFA] text-[16px] font-medium'>Net Sentiment Analysis and Gold Price</h2>
+      <div className="text-[#A1A1AA] text-[14px]">24H Rolling (24)</div>
       <ResponsiveContainer width="100%" height="100%">
         <ComposedChart
           data={data}
