@@ -10,6 +10,7 @@ import { ChartArea } from 'lucide-react';
 import GoldSentimentChart from '@/components/goldChart/GoldSentimentChart';
 import NetSentimentAndGoldPriceChart from '@/components/goldChart/NetSentimentAndGoldPriceChart';
 import NetSentimentAndGoldPriceOneHour from '@/components/goldChart/NetSentimentAndGoldPriceOneHour';
+import GoldSentimentRatioChart from '@/components/goldChart/GoldSentimentRatioChart';
 
 const GoldPage: React.FC = () => {
   return (
@@ -29,6 +30,7 @@ const GoldPage: React.FC = () => {
           <GoldSentimentChart />
           <NetSentimentAndGoldPriceChart />
           <NetSentimentAndGoldPriceOneHour />
+          <GoldSentimentRatioChart />
         </CardDescription>
       </CardHeader>
 
