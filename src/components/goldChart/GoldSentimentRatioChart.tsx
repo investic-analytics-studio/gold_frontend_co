@@ -8,6 +8,7 @@ import {
   Tooltip,
   Legend,
   ResponsiveContainer,
+  Brush,
 } from 'recharts';
 import axios from 'axios';
 
@@ -206,6 +207,22 @@ const GoldSentimentRatioChart: React.FC = () => {
             dot={false}
             name="Upper Band"
             strokeWidth={1.5}
+          />
+          <Brush
+            dataKey="date"
+            height={30}
+            stroke="#666"
+            startIndex={Math.floor(data.length / 2)}
+            endIndex={data.length - 1}
+            travellerWidth={10}
+            fill="#1a1a1a"
+            tickFormatter={(date: string) => {
+              return new Date(date).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              });
+            }}
           />
         </LineChart>
       </ResponsiveContainer>
