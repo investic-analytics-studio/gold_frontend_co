@@ -22,7 +22,7 @@ const GammaOiPage: React.FC = () => {
       </div>
       <CardHeader className="mb-4">
         <CardTitle className="text-[#FAFAFA] text-[16px] font-medium">
-          Lorem Ipsum
+          Lorem 
         </CardTitle>
         <CardDescription className="text-[#A1A1AA] text-[14px]">
           Lorem Ipsum
