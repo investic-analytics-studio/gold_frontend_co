@@ -20,7 +20,6 @@ interface SentimentRatioData {
 
 const GoldSentimentRatioChart: React.FC = () => {
   const [data, setData] = useState<SentimentRatioData[]>([]);
-  console.log(data);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -82,16 +81,15 @@ const GoldSentimentRatioChart: React.FC = () => {
             tickFormatter={(date: string, index: number): string => {
               const currentDate = new Date(date);
               const options: Intl.DateTimeFormatOptions = {
-                month: 'short', // เดือนแบบย่อ เช่น Feb
-                year: 'numeric', // ปีแบบเต็ม เช่น 2024
+                month: 'short',
+                year: 'numeric',
               };
 
-              // ใช้ isFirstTick ที่คำนวณไว้ใน useEffect
               const isFirstTick = data[index]?.isFirstTick;
               if (isFirstTick) {
-                return currentDate.toLocaleDateString('en-US', options); // ตัวอย่าง: Feb 2024
+                return currentDate.toLocaleDateString('en-US', options);
               }
-              return ''; // ซ่อน tick อื่น
+              return '';
             }}
             interval={0}
             stroke="#ffffff"
