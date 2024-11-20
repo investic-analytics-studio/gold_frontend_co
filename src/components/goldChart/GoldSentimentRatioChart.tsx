@@ -15,7 +15,7 @@ interface SentimentRatioData {
   date: string;
   sentiment_ratio: number;
   upper_band: number;
-  isFirstTick?: boolean;
+  isFirstTickMonthlyLabel?: boolean;
 }
 
 const GoldSentimentRatioChart: React.FC = () => {
@@ -39,7 +39,7 @@ const GoldSentimentRatioChart: React.FC = () => {
           const currentMonth = currentDate.getMonth();
           const currentYear = currentDate.getFullYear();
 
-          const isFirstTick =
+          const isFirstTickMonthlyLabel =
             currentDate.getDate() === 1 &&
             array.findIndex(
               (entry) =>
@@ -48,7 +48,7 @@ const GoldSentimentRatioChart: React.FC = () => {
                 new Date(entry.date).getDate() === 1
             ) === index;
 
-          return { ...item, isFirstTick };
+          return { ...item, isFirstTickMonthlyLabel };
         });
 
         setData(formattedData);
@@ -85,8 +85,9 @@ const GoldSentimentRatioChart: React.FC = () => {
                 year: 'numeric',
               };
 
-              const isFirstTick = data[index]?.isFirstTick;
-              if (isFirstTick) {
+              const isFirstTickMonthlyLabel =
+                data[index]?.isFirstTickMonthlyLabel;
+              if (isFirstTickMonthlyLabel) {
                 return currentDate.toLocaleDateString('en-US', options);
               }
               return '';
