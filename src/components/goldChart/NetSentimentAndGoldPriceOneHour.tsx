@@ -48,7 +48,7 @@ const NetSentimentAndGoldPriceOneHour: React.FC = () => {
           data={data}
           margin={{ top: 50, right: 30, bottom: 30, left: 30 }}
         >
-          <CartesianGrid stroke="#444" vertical={false} />
+          <CartesianGrid stroke="#121623" vertical={false} />
           <XAxis
             dataKey="date"
             tickFormatter={(date: string | number, index: number): string => {
@@ -61,37 +61,40 @@ const NetSentimentAndGoldPriceOneHour: React.FC = () => {
               return '';
             }}
             interval={0}
-            tick={{ fill: 'white' }}
+            stroke="#20293A"
+            tick={{ fill: '#A1A1AA' }}
             label={{
               value: 'Date',
               position: 'insideBottom',
               offset: -10,
-              fill: 'white',
+              fill: '#A1A1AA',
             }}
           />
           <YAxis
             yAxisId="left"
+            stroke="#121623"
             label={{
               value: 'Net Sentiment',
               angle: -90,
               position: 'insideLeft',
-              fill: 'white',
+              fill: '#A1A1AA',
               dx: -10,
             }}
-            tick={{ fill: 'white' }}
+            tick={{ fill: '#A1A1AA' }}
             domain={['dataMin', 'dataMax']}
           />
           <YAxis
             yAxisId="right"
+            stroke="#121623"
             orientation="right"
             label={{
               value: 'GOLD Price',
               angle: -90,
               position: 'insideRight',
-              fill: 'white',
+              fill: '#A1A1AA',
               dx: 10,
             }}
-            tick={{ fill: 'white' }}
+            tick={{ fill: '#A1A1AA' }}
             domain={[
               (dataMin: number) => Math.floor(dataMin / 10) * 10,
               (dataMax: number) => Math.ceil(dataMax / 10) * 10,

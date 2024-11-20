@@ -69,7 +69,7 @@ const NetSentimentAndGoldPriceChart: React.FC = () => {
           data={data}
           margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
         >
-          <CartesianGrid stroke="#444" horizontal={true} vertical={false} />
+          <CartesianGrid stroke="#121623" horizontal={true} vertical={false} />
           <XAxis
             dataKey="date"
             tickFormatter={(date: string | number, index: number): string => {
@@ -82,43 +82,44 @@ const NetSentimentAndGoldPriceChart: React.FC = () => {
               return '';
             }}
             interval={0}
-            tick={{ fill: 'white' }}
+            tick={{ fill: '#A1A1AA' }}
+            stroke="#20293A"
             label={{
               value: 'Date',
               position: 'insideBottom',
-              offset: -5,
-              fill: 'white',
+              offset: -10,
+              fill: '#A1A1AA',
             }}
           />
           {/* Left Y Axis Bar Chart */}
           <YAxis
             yAxisId="left"
             orientation="left"
-            stroke="white"
+            stroke="#121623"
             domain={['dataMin', 'dataMax']}
-            tick={{ fill: 'white' }}
+            tick={{ fill: '#A1A1AA' }}
             label={{
               value: 'Net Sentiment',
               angle: -90,
               position: 'insideLeft',
-              fill: 'white',
+              fill: '#A1A1AA',
             }}
           />
           {/* Right Y Axis Bar Chart */}
           <YAxis
             yAxisId="right"
             orientation="right"
-            stroke="white"
+            stroke="#121623"
             domain={[
               (dataMin: number) => Math.floor(dataMin / 10) * 10,
               (dataMax: number) => Math.ceil(dataMax / 10) * 10,
             ]}
-            tick={{ fill: 'white' }}
+            tick={{ fill: '#A1A1AA' }}
             label={{
               value: 'GOLD Price',
               angle: -90,
               position: 'insideLeft',
-              fill: 'white',
+              fill: '#A1A1AA',
               dx: 70,
             }}
           />

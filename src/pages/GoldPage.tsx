@@ -1,6 +1,7 @@
 import GoldSentimentChart from "@/components/goldChart/GoldSentimentChart";
 import NetSentimentAndGoldPriceChart from "@/components/goldChart/NetSentimentAndGoldPriceChart";
 import NetSentimentAndGoldPriceOneHour from "@/components/goldChart/NetSentimentAndGoldPriceOneHour";
+import GoldSentimentRatioChart from "@/components/goldChart/GoldSentimentRatioChart";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -55,8 +56,11 @@ const GoldPage: React.FC = () => {
             <div className="mt-20 border-t border-[#20293A]">
               <NetSentimentAndGoldPriceChart />
             </div>
-            <div className="mt-20 pb-14 border-t border-[#20293A] h-auto">
+            <div className="mt-20 border-t border-[#20293A]">
               <NetSentimentAndGoldPriceOneHour />
+            </div>
+            <div className="mt-20 pb-20 border-t border-[#20293A]">
+              <GoldSentimentRatioChart />
             </div>
           </div>
         </CardContent>

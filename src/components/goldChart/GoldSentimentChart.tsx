@@ -46,7 +46,7 @@ const GoldSentimentChart: React.FC = () => {
           data={data}
           margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
         >
-          <CartesianGrid stroke="#444" horizontal={true} vertical={false} />
+          <CartesianGrid stroke="#121623" horizontal={true} vertical={false} />
           <XAxis
             dataKey="date"
             tickFormatter={(date: string | number, index: number): string => {
@@ -57,21 +57,22 @@ const GoldSentimentChart: React.FC = () => {
               }
               return ''; // hide other tick
             }}
-            tick={{ fill: 'white' }}
+            tick={{ fill: '#A1A1AA' }}
             label={{
               value: 'Date',
               position: 'insideBottomRight',
               offset: -5,
-              fill: 'white',
+              fill: '#A1A1AA',
             }}
           />
           <YAxis
-            tick={{ fill: 'white' }}
+            tick={{ fill: '#A1A1AA' }}
+            stroke="#121623"
             label={{
               value: 'Number of News',
               angle: -90,
               position: 'insideLeft',
-              fill: 'white',
+              fill: '#A1A1AA',
             }}
             domain={['dataMin', 'dataMax']}
           />
