@@ -114,9 +114,9 @@ const NetSentimentAndGoldPriceOneHour: React.FC = () => {
             }}
             formatter={(value, name) => {
               if (name === 'goldPrice') {
-                return [parseFloat(value).toFixed(2), 'GOLD Price'];
+                return [parseFloat(value as string).toFixed(2), 'GOLD Price'];
               }
-              return [value, 'Net Sentiment'];
+              return [String(value), 'Net Sentiment'];
             }}
           />
           <Legend
