@@ -1,0 +1,76 @@
+steps:
+  # Step 1: Clone secret key
+  - id: "clone service_key.json into terraform"
+    name: "gcr.io/cloud-builders/gcloud"
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+        gcloud secrets versions access latest \
+          --secret="terraform-service-key" \
+          --format='get(payload.data)' | tr '_-' '/+' | base64 -d >  ./terraform/gcloud.json
+  # Step 2: Clone terraform var
+  - id: "clone terraform variable into terraform"
+    name: "gcr.io/cloud-builders/gcloud"
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+        gcloud secrets versions access latest \
+          --secret="gold-studio-frontend-tfvars" \
+          --format='get(payload.data)' | tr '_-' '/+' | base64 -d >  ./terraform/terraform.tfvars
+  # Step 3: Import secret env to config
+  - id: "clone secret env to env"
+    name: "gcr.io/cloud-builders/gcloud"
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+        gcloud secrets versions access latest \
+          --secret="gold-studio-frontend" \
+          --format='get(payload.data)' | tr '_-' '/+' | base64 -d > .env.production
+  # Step 4: Build Image
+  - id: 'build image'
+    name: "gcr.io/cloud-builders/docker"
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+        docker build \
+        -t gcr.io/$PROJECT_ID/$REPO_NAME:latest \
+        -t gcr.io/$PROJECT_ID/$REPO_NAME:$SHORT_SHA .
+  # Step 5: Push Image      
+  - id: "push image"
+    name: "gcr.io/cloud-builders/docker"
+    args: ["push", "gcr.io/$PROJECT_ID/$REPO_NAME:latest"]
+
+  - id: "push image SHA"
+    name: "gcr.io/cloud-builders/docker"
+    args: ["push", "gcr.io/$PROJECT_ID/$REPO_NAME:$SHORT_SHA"]
+  # Step 6: terraform operation
+  - id: "terraform init"
+    name: "hashicorp/terraform"
+    script: terraform init
+    dir: "terraform"
+  - id: "terraform plan"
+    name: "hashicorp/terraform"
+    entrypoint: "sh"
+    args:
+      - "-c"
+      - |
+        terraform plan -lock=false \
+        -var 'image_name=gcr.io/$PROJECT_ID/$REPO_NAME:$SHORT_SHA'
+    dir: "terraform"
+
+  - id: "terraform apply"
+    name: "hashicorp/terraform"
+    entrypoint: "sh"
+    args:
+      - "-c"
+      - |
+        terraform apply -lock=false \
+        -var 'image_name=gcr.io/$PROJECT_ID/$REPO_NAME:$SHORT_SHA' \
+        --auto-approve
+    dir: "terraform"
+images:
+  - "gcr.io/$PROJECT_ID/$REPO_NAME:latest"
