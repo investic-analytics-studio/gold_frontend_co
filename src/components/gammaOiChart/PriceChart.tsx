@@ -1,4 +1,4 @@
-import TradingViewChart from '@/components/TradingViewChart';
+import TradingViewChart from "@/components/TradingViewChart";
 import { useGammaOi } from "@/hooks/useGammaOi";
 import React from "react";
 import {
@@ -35,11 +35,13 @@ const PriceChart: React.FC = () => {
   return (
     <Card className="w-full h-auto bg-[#030816] border-none lg:rounded-[12px]">
       <CardHeader className="mb-4">
-      <div className="text-[#FAFAFA] font-medium">
-          XAUUSD: ${currentPrice.toFixed(2)}
-        </div>
         <CardTitle className="text-[#FAFAFA] text-[16px] font-medium">
-          XAUUSD Price Chart
+          <div className="flex items-center justify-between">
+            <div className="text-[#FAFAFA] text-[16px] font-medium">XAUUSD Price Chart</div>
+            <div className="text-[#209CFF] text-[14px] font-normal border-none bg-[#209CFF]/10 rounded-[6px] px-2 py-1">
+              XAUUSD: ${currentPrice.toFixed(2)}
+            </div>
+          </div>
         </CardTitle>
         <CardDescription className="text-[#A1A1AA] text-[14px]">
           Real-time price chart with technical analysis tools
@@ -49,10 +51,7 @@ const PriceChart: React.FC = () => {
       <CardContent>
         {/* TradingView Chart */}
         <div className="w-full bg-transparent p-0 rounded-xl mb-4">
-          <TradingViewChart 
-            symbol="XAUUSD"
-            interval="60"
-          />
+          <TradingViewChart symbol="XAUUSD" interval="60" />
         </div>
       </CardContent>
     </Card>
