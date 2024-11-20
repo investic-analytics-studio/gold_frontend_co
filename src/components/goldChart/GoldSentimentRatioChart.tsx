@@ -29,9 +29,9 @@ const GoldSentimentRatioChart: React.FC = () => {
         );
 
         const sortedData = response.data.sort((a, b) => {
-          const dateA = new Date(a.date).getTime();
-          const dateB = new Date(b.date).getTime();
-          return dateA - dateB;
+          const previousDate = new Date(a.date).getTime();
+          const nextDate = new Date(b.date).getTime();
+          return previousDate - nextDate;
         });
 
         const formattedData = sortedData.map((item, index, array) => {
@@ -101,8 +101,9 @@ const GoldSentimentRatioChart: React.FC = () => {
             stroke="#ffffff"
           />
           <Tooltip
-            content={({ payload, label }) => {
-              if (!payload || !payload.length) return null;
+            content={({ payload: contentSentimentRatio, label }) => {
+              if (!contentSentimentRatio || !contentSentimentRatio.length)
+                return null;
               const formattedLabel = new Date(label).toLocaleDateString(
                 'en-US',
                 {
@@ -132,23 +133,29 @@ const GoldSentimentRatioChart: React.FC = () => {
                     {formattedLabel}
                   </div>
 
-                  {payload.map((entry) => (
-                    <div key={entry.name} style={{ marginBottom: '5px' }}>
-                      <div key={entry.name} style={{ marginBottom: '5px' }}>
+                  {contentSentimentRatio.map((contentSentimentData) => (
+                    <div
+                      key={contentSentimentData.name}
+                      style={{ marginBottom: '5px' }}
+                    >
+                      <div
+                        key={contentSentimentData.name}
+                        style={{ marginBottom: '5px' }}
+                      >
                         <span
                           style={{
                             color:
-                              entry.name === 'Sentiment Ratio'
+                              contentSentimentData.name === 'Sentiment Ratio'
                                 ? '#ff7f7f'
                                 : 'white',
                           }}
                         >
-                          {entry.name}
+                          {contentSentimentData.name}
                         </span>{' '}
                         <span
                           style={{
                             color:
-                              entry.name === 'Sentiment Ratio'
+                              contentSentimentData.name === 'Sentiment Ratio'
                                 ? '#ff7f7f'
                                 : 'white',
                           }}
@@ -158,14 +165,14 @@ const GoldSentimentRatioChart: React.FC = () => {
                         <span
                           style={{
                             color:
-                              entry.name === 'Sentiment Ratio'
+                              contentSentimentData.name === 'Sentiment Ratio'
                                 ? '#ff7f7f'
                                 : 'white',
                           }}
                         >
-                          {entry.name === 'Upper Band'
-                            ? entry.value.toFixed(2)
-                            : entry.value}
+                          {contentSentimentData.name === 'Upper Band'
+                            ? Number(contentSentimentData?.value).toFixed(2)
+                            : contentSentimentData?.value}
                         </span>
                       </div>
                     </div>
