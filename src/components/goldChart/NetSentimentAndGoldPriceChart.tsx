@@ -157,7 +157,7 @@ const NetSentimentAndGoldPriceChart: React.FC = () => {
             {data.map((entry, index) => (
               <Cell
                 key={`cell-${index}`}
-                fill={entry.netSentiment > 0 ? '#233727' : '#3f1a1a'}
+                fill={entry.netSentiment > 0 ? '#2662D9' : '#F23645'}
               />
             ))}
           </Bar>
@@ -167,8 +167,8 @@ const NetSentimentAndGoldPriceChart: React.FC = () => {
             yAxisId="right"
             type="monotone"
             dataKey="goldPrice"
-            stroke="white"
-            strokeWidth={2}
+            stroke="#FAFAFA"
+            strokeWidth={1}
             name="GOLD Price"
             dot={false}
           />

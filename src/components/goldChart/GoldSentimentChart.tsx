@@ -119,9 +119,9 @@ const GoldSentimentChart: React.FC = () => {
             }}
           />
           <Legend wrapperStyle={{ color: 'white' }} />
-          <Bar dataKey="negative" stackId="a" fill="red" name="Negative" />
-          <Bar dataKey="neutral" stackId="a" fill="yellow" name="Neutral" />
-          <Bar dataKey="positive" stackId="a" fill="green" name="Positive" />
+          <Bar dataKey="negative" stackId="a" fill="#F23645" name="Negative" />
+          <Bar dataKey="neutral" stackId="a" fill="#E8C930" name="Neutral" />
+          <Bar dataKey="positive" stackId="a" fill="#2662D9" name="Positive" />
         </BarChart>
       </ResponsiveContainer>
     </div>

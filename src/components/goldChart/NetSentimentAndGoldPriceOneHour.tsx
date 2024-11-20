@@ -132,7 +132,7 @@ const NetSentimentAndGoldPriceOneHour: React.FC = () => {
             yAxisId="left"
             type="monotone"
             dataKey="netSentiment"
-            stroke="#636ef3"
+            stroke="#2662D9"
             strokeWidth={2}
             name="Net Sentiment 1H Rolling (24)"
             dot={false}
@@ -143,8 +143,8 @@ const NetSentimentAndGoldPriceOneHour: React.FC = () => {
             yAxisId="right"
             type="monotone"
             dataKey="goldPrice"
-            stroke="rgba(255, 255, 255, 0.6)"
-            strokeWidth={2}
+            stroke="#FFFFFF"
+            strokeWidth={1}
             name="GOLD Price 1H"
             dot={false}
           />
