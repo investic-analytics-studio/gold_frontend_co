@@ -23,6 +23,7 @@ const GoldSentimentRatioChart: React.FC = () => {
   const [data, setData] = useState<SentimentRatioData[]>([]);
   const [timeframe, setTimeframe] = useState<'3M' | '6M'>('3M');
   const backendApiUrl = import.meta.env.VITE_BACKEND_API;
+  console.log(data);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,18 +38,15 @@ const GoldSentimentRatioChart: React.FC = () => {
           return previousDate - nextDate;
         });
 
+        const getDateOnly = (dateString: string) => dateString.split('T')[0];
+
         const formattedData = sortedData.map((item, index, array) => {
-          const currentDate = new Date(item.date);
-          const currentMonth = currentDate.getMonth();
-          const currentYear = currentDate.getFullYear();
+          const currentDate = getDateOnly(item.date);
 
           const isFirstTickMonthlyLabel =
-            currentDate.getDate() === 1 &&
+            currentDate.endsWith('-01') &&
             array.findIndex(
-              (entry) =>
-                new Date(entry.date).getMonth() === currentMonth &&
-                new Date(entry.date).getFullYear() === currentYear &&
-                new Date(entry.date).getDate() === 1
+              (dateItem) => getDateOnly(dateItem.date) === currentDate
             ) === index;
 
           return { ...item, isFirstTickMonthlyLabel };
