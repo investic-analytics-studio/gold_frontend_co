@@ -21,12 +21,14 @@ interface SentimentRatioData {
 
 const GoldSentimentRatioChart: React.FC = () => {
   const [data, setData] = useState<SentimentRatioData[]>([]);
+  const [timeframe, setTimeframe] = useState<'3M' | '6M'>('3M');
+  const backendApiUrl = import.meta.env.VITE_BACKEND_API;
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get<SentimentRatioData[]>(
-          'http://localhost:8080/gold-sentiment-ratio-graph-plot'
+          backendApiUrl + `/gold-sentiment-ratio-graph-plot/${timeframe}`
         );
 
         const sortedData = response.data.sort((a, b) => {
@@ -59,10 +61,31 @@ const GoldSentimentRatioChart: React.FC = () => {
     };
 
     fetchData();
-  }, []);
+  }, [timeframe]);
 
   return (
     <div style={{ width: '100%', height: '400px' }}>
+      <div className="flex flex-col items-end gap-2">
+        <h2>Timeframe</h2>
+        <div className="border border-[#172036] rounded-md p-1 hover:cursor-pointer">
+          <button
+            onClick={() => setTimeframe('3M')}
+            className={`${
+              timeframe === '3M' ? 'bg-[#172036] text-white' : ''
+            } px-5 py-2 rounded-md hover:text-white`}
+          >
+            3M
+          </button>
+          <button
+            onClick={() => setTimeframe('6M')}
+            className={`${
+              timeframe === '6M' ? 'bg-[#172036] text-white' : ''
+            } px-5 py-2 rounded-md  hover:text-white`}
+          >
+            6M
+          </button>
+        </div>
+      </div>
       <h2 style={{ color: 'white', padding: '20px', margin: 0 }}>
         Sentiment Ratio
       </h2>
@@ -212,8 +235,6 @@ const GoldSentimentRatioChart: React.FC = () => {
             dataKey="date"
             height={30}
             stroke="#666"
-            startIndex={Math.floor(data.length / 2)}
-            endIndex={data.length - 1}
             travellerWidth={10}
             fill="#1a1a1a"
             tickFormatter={(date: string) => {
