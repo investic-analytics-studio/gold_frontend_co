@@ -1,4 +1,3 @@
-import PriceChart from "@/components/gammaOiChart/PriceChart";
 import OiDistributionChart from "@/components/gammaOiChart/OiDistributionChart";
 import {
   Breadcrumb,
@@ -48,9 +47,7 @@ const GammaOiPage: React.FC = () => {
         </div>
         <CardContent className="p-0">
           <div className="w-full h-auto bg-[#030816] border-no p-0 rounded-xl">
-            <div className="pb-0">
-              <PriceChart />
-            </div>
+      
             <div className="border-t border-[#20293A]">
               <OiDistributionChart />
             </div>
