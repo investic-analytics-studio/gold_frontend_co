@@ -41,7 +41,7 @@ interface HistoricalDataTradingview {
 
 const fetchHistoricalData = async (timeframe: string) => {
   const response = await axios.get<HistoricalDataTradingview>(
-    getApiUrl(`tradingview/historical?symbol=XAUUSD&exchange=OANDA&interval=${timeframe}&bars=300`)
+    getApiUrl(`tradingview/historical?symbol=XAUUSD&exchange=OANDA&interval=${timeframe}&bars=200`)
   );
   return response.data;
 };
