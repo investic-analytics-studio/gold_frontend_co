@@ -97,4 +97,33 @@ export const useGammaOi = (selectedMonth: string, timeframe: string = "60"): Use
   };
 };
 
-export type { OIData, PriceData }; 
+export type { OIData, PriceData };
+
+export function getCurrentGoldContractOption() {
+  const now = new Date();
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
+  
+  // Gold futures months are: Feb(G), Apr(J), Jun(M), Aug(Q), Oct(V), Dec(Z)
+  const futuresMonths = [
+    { month: 1, code: 'G' },  // February
+    { month: 3, code: 'J' },  // April
+    { month: 5, code: 'M' },  // June
+    { month: 7, code: 'Q' },  // August
+    { month: 9, code: 'V' },  // October
+    { month: 11, code: 'Z' }, // December
+  ];
+
+  // Find the next valid futures month
+  let selectedMonth = futuresMonths.find(m => m.month > currentMonth);
+  if (!selectedMonth) {
+    selectedMonth = futuresMonths[0]; // If we're past December, use February of next year
+  }
+
+  // Format the year to two digits
+  const yearCode = (selectedMonth.month > currentMonth ? currentYear : currentYear + 1)
+    .toString()
+    .slice(-2);
+
+  return `GC${selectedMonth.code}${yearCode}`;
+} 

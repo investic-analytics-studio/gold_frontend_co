@@ -18,6 +18,7 @@ import {
   ReferenceLine,
 } from "recharts";
 import { Badge } from "@/components/ui/badge";
+import { getCurrentGoldContractOption } from "@/hooks/useGammaOi";
 
 interface GammaAnalysis {
     price: number;
@@ -197,6 +198,8 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
     return [minPrice - padding, maxPrice + padding];
   };
 
+  const currentContract = useMemo(() => getCurrentGoldContractOption(), []);
+
   return (
     <div className="space-y-4">
       {/* Latest Analysis Summary */}
@@ -205,7 +208,7 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
           <CardTitle className="text-[#FAFAFA] flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-              Current Analysis
+              Current Analysis - {currentContract}
             </div>
             <div className="flex items-center gap-4">
               {/* Time Selection Dropdown */}
