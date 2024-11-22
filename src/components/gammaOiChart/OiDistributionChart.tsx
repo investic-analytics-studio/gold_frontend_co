@@ -1,4 +1,3 @@
-import { useGammaOi } from "@/hooks/useGammaOi";
 import React, {  useMemo } from "react";
 import {
   Bar,
@@ -15,7 +14,7 @@ import {
 } from "recharts";
 import { Card, CardContent, CardDescription, CardTitle } from "../ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-
+import { PriceData } from "@/hooks/fetchMultiHistoricalData";
 // Add these type definitions
 interface GoldOptionContract {
   'Contract Month': string;
@@ -23,7 +22,46 @@ interface GoldOptionContract {
   'Settlement': string;
 }
 
-const OiDistributionChart: React.FC = () => {
+// Add these interfaces at the top of the file
+interface OIDataItem {
+  type: string;
+  strike: number;
+  atclose_weighted: number;
+}
+
+interface ProcessedDataItem {
+  strike: number;
+  calls: number;
+  puts: number;
+  index: number;
+}
+
+interface CustomTooltipProps {
+  active?: boolean;
+  payload?: Array<{
+    name: string;
+    value: number;
+    color: string;
+  }>;
+  label?: string;
+}
+
+// Update the props interface
+interface OiDistributionChartProps {
+  oiData: OIDataItem[]; // Replace any with OIDataItem
+  currentPrice: number;
+  availableMonths: string[];
+  selectedMonth: string;
+  onMonthChange: (month: string) => void;
+}
+
+const OiDistributionChart: React.FC<OiDistributionChartProps> = ({
+  oiData: data,
+  currentPrice,
+  availableMonths,
+  selectedMonth,
+  onMonthChange
+}) => {
   // Add the gold options calendar constant
   const goldOptCalendarConstant: GoldOptionContract[] = [
   {
@@ -226,52 +264,37 @@ const OiDistributionChart: React.FC = () => {
     });
   };
 
-  const [selectedMonth, setSelectedMonth] = React.useState("");
-  
-  // First get availableMonths
-  const { availableMonths } = useGammaOi(getCurrentGoldContractOption());
-
   // Sort the months before rendering
   const sortedMonths = useMemo(() => sortMonths(availableMonths), [availableMonths]);
 
-  const {
-    oiData: data,
-    currentPrice,
-    loading,
-    error
-  } = useGammaOi(selectedMonth || availableMonths[0] || getCurrentGoldContractOption());
-
-  // Set initial month when availableMonths loads
-  React.useEffect(() => {
-    if (availableMonths.length > 0 && !selectedMonth) {
-      setSelectedMonth(availableMonths[0]);
-    }
-  }, [availableMonths, selectedMonth]);
-
   // Process data for side-by-side bars
-  const processedData = useMemo(() => {
+  const processedData = useMemo<ProcessedDataItem[]>(() => {
     const combinedData = data
-      .reduce((acc, item) => {
-        const existingItem = acc.find((i) => i.strike === item.strike);
+      .reduce<ProcessedDataItem[]>((acc, item: OIDataItem) => {
+        const existingItem = acc.find((i: ProcessedDataItem) => i.strike === item.strike);
         if (existingItem) {
-          existingItem[item.type.toLowerCase()] = item.atclose_weighted;
+          existingItem[item.type.toLowerCase() as 'calls' | 'puts'] = item.atclose_weighted;
         } else {
           acc.push({
             strike: item.strike,
             calls: item.type === "Calls" ? item.atclose_weighted : 0,
             puts: item.type === "Puts" ? item.atclose_weighted : 0,
+            index: 0, // This will be updated in the map
           });
         }
         return acc;
-      }, [] as any[])
-      .sort((a, b) => a.strike - b.strike);
+      }, [])
+      .sort((a: ProcessedDataItem, b: ProcessedDataItem) => a.strike - b.strike);
 
-    return combinedData.map((item, index) => ({ ...item, index }));
+    return combinedData.map((item: ProcessedDataItem, index: number) => ({ 
+      ...item, 
+      index 
+    }));
   }, [data]);
 
   const brushDomain = useMemo(() => {
     const currentPriceIndex = processedData.findIndex(
-      (d) => d.strike >= currentPrice
+      (d: ProcessedDataItem) => d.strike >= currentPrice
     );
     const lowerBound = Math.max(0, currentPriceIndex - 20);
     const upperBound = Math.min(
@@ -281,15 +304,14 @@ const OiDistributionChart: React.FC = () => {
     return [lowerBound, upperBound];
   }, [processedData, currentPrice]);
 
-  const CustomTooltip = ({ active, payload, label }: any) => {
-    if (active && payload && payload.length) {
-      const strikePrice = processedData[label].strike;
+  // Update CustomTooltip with proper types
+  const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload, label }) => {
+    if (active && payload && payload.length && label !== undefined) {
+      const strikePrice = processedData[parseInt(label)].strike;
       return (
         <div className="custom-tooltip bg-gray-800 p-4 border border-gray-600 rounded shadow-lg text-gray-200">
-          <p className="label font-bold">{`Strike: $${strikePrice.toFixed(
-            2
-          )}`}</p>
-          {payload.map((entry: any, index: number) => (
+          <p className="label font-bold">{`Strike: $${strikePrice.toFixed(2)}`}</p>
+          {payload.map((entry, index) => (
             <p key={`item-${index}`} style={{ color: entry.color }}>
               {`${entry.name}: ${entry.value.toFixed(2)}`}
             </p>
@@ -300,33 +322,13 @@ const OiDistributionChart: React.FC = () => {
     return null;
   };
 
-  if (loading) {
-    return (
-      <Card className="w-full h-auto bg-[#030816] border-none lg:rounded-[12px]">
-        <CardContent className="flex items-center justify-center h-[400px]">
-          Loading...
-        </CardContent>
-      </Card>
-    );
-  }
-
-  if (error) {
-    return (
-      <Card className="w-full h-auto bg-[#030816] border-none lg:rounded-[12px]">
-        <CardContent className="flex items-center justify-center h-[400px] text-red-500">
-          Error: {error.message}
-        </CardContent>
-      </Card>
-    );
-  }
-
   return (
     <div className="pt-10">
       <Card className="w-full h-auto bg-[#030816] border-none lg:rounded-[12px]">
         <CardContent>
-          {/* Add month selector */}
+          {/* Update month selector to use onMonthChange */}
           <div className="mb-4">
-            <Select value={selectedMonth} onValueChange={setSelectedMonth}>
+            <Select value={selectedMonth} onValueChange={onMonthChange}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Select month" />
               </SelectTrigger>

@@ -28,7 +28,7 @@ interface UseGammaOiResult {
   availableMonths: string[];
 }
 
-interface HistoricalDataResponse {
+interface HistoricalDataTradingview {
   data: PriceData[];
   meta: {
     bars: number;
@@ -40,8 +40,8 @@ interface HistoricalDataResponse {
 }
 
 const fetchHistoricalData = async (timeframe: string) => {
-  const response = await axios.get<HistoricalDataResponse>(
-    getApiUrl(`tradingview/historical?symbol=XAUUSD&exchange=OANDA&interval=${timeframe}&bars=10`)
+  const response = await axios.get<HistoricalDataTradingview>(
+    getApiUrl(`tradingview/historical?symbol=XAUUSD&exchange=OANDA&interval=${timeframe}&bars=300`)
   );
   return response.data;
 };
