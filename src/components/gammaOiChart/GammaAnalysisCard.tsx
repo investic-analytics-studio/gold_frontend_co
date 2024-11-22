@@ -78,6 +78,38 @@ function filterDataFromTimestamp(data: any[], timestamp: string) {
   return data.slice(startIndex);
 }
 
+// Add this custom dot component at the top of the file
+const CustomDot = ({ cx, cy, payload, selectedDataPoint }: any) => {
+  const isSelected = payload.timestamp === new Date(selectedDataPoint).getTime();
+  
+  if (!isSelected) {
+    return (
+      <svg x={cx - 2} y={cy - 2} width={4} height={4} viewBox="0 0 4 4">
+        <circle
+          cx="2"
+          cy="2"
+          r="2"
+          fill="#2563EB"
+          opacity={0.5}
+        />
+      </svg>
+    );
+  }
+
+  return (
+    <svg x={cx - 6} y={cy - 6} width={12} height={12} viewBox="0 0 12 12">
+      <circle
+        cx="6"
+        cy="6"
+        r="5"
+        fill="#FFFFFF"
+        stroke="#FFFFFF"
+        strokeWidth="3"
+      />
+    </svg>
+  );
+};
+
 const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({ 
   gammaAnalysis: data,
   priceData ,
@@ -85,7 +117,7 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
 }) => {
   const [tradingRange, setTradingRange] = useState(10);
   const [selectedDataPoint, setSelectedDataPoint] = useState<string>("");
-  const [showPositions, setShowPositions] = useState<PositionVisibility>({
+  const [showPositionsSelected, setShowPositionsSelected] = useState<PositionVisibility>({
     bullish: false,
     bearish: false
   });
@@ -116,14 +148,14 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
 
   // Add these helper functions
   const toggleBullishPosition = () => {
-    setShowPositions(prev => ({
+    setShowPositionsSelected(prev => ({
       ...prev,
       bullish: !prev.bullish
     }));
   };
 
   const toggleBearishPosition = () => {
-    setShowPositions(prev => ({
+    setShowPositionsSelected(prev => ({
       ...prev,
       bearish: !prev.bearish
     }));
@@ -293,11 +325,11 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
                 <span className="text-green-500"><StockUpIcon /></span> Bullish Scenario
               </p>
               <Button
-                variant={showPositions.bullish ? "default" : "outline"}
+                variant={showPositionsSelected.bullish ? "default" : "outline"}
                 size="sm"
                 onClick={toggleBullishPosition}
                 className={`px-3 py-1 ${
-                  showPositions.bullish 
+                  showPositionsSelected.bullish 
                     ? 'bg-green-500 text-white' 
                     : 'bg-transparent text-[#A1A1AA] border-[#20293A]'
                 }`}
@@ -328,11 +360,11 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
                 <span className="text-red-500"><StockDownIcon /></span> Bearish Scenario
               </p>
               <Button
-                variant={showPositions.bearish ? "default" : "outline"}
+                variant={showPositionsSelected.bearish ? "default" : "outline"}
                 size="sm"
                 onClick={toggleBearishPosition}
                 className={`px-3 py-1 ${
-                  showPositions.bearish 
+                  showPositionsSelected.bearish 
                     ? 'bg-red-500 text-white' 
                     : 'bg-transparent text-[#A1A1AA] border-[#20293A]'
                 }`}
@@ -419,7 +451,7 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
                 <Legend />
                 
                 {/* Bullish Position Lines */}
-                {showPositions.bullish && displayedAnalysis && (
+                {showPositionsSelected.bullish && displayedAnalysis && (
                   <>
                     <ReferenceLine 
                       y={displayedAnalysis.bullish_entry} 
@@ -461,7 +493,7 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
                 )}
 
                 {/* Bearish Position Lines */}
-                {showPositions.bearish && displayedAnalysis && (
+                {showPositionsSelected.bearish && displayedAnalysis && (
                   <>
                     <ReferenceLine 
                       y={displayedAnalysis.bearish_entry} 
@@ -502,16 +534,36 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
                   </>
                 )}
 
+                {selectedDataPoint && (
+                  <ReferenceLine
+                    x={new Date(selectedDataPoint).getTime()}
+                    stroke="#FFFFFF"
+                    strokeDasharray="3 3"
+                    label={{ 
+                      value: format(new Date(selectedDataPoint), 'HH:mm:ss'), 
+                      position: 'top',
+                      fill: "#FFFFFF",
+                      fontSize: 12,
+                      offset: 5
+                    }}
+                  />
+                )}
+
                 <Line 
                   type="linear" 
                   dataKey="price"
                   stroke="#2563EB" 
                   strokeWidth={2}
-                  dot={false}
                   name="Price"
                   animationDuration={300}
                   connectNulls={true}
                   isAnimationActive={false}
+                  dot={(props) => (
+                    <CustomDot 
+                      {...props} 
+                      selectedDataPoint={selectedDataPoint}
+                    />
+                  )}
                 />
               </LineChart>
             </ResponsiveContainer>
