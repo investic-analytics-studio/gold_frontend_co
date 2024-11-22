@@ -18,7 +18,7 @@ import { Link, Outlet, useRouter } from "@tanstack/react-router";
 import {
   ChartCandlestick,
   ChartLine,
-  ChartNoAxesColumnIncreasing,
+
   ChartNoAxesCombined,
   ChevronRight
 } from "lucide-react";
@@ -41,7 +41,7 @@ import {
 
 const sidebarItems = [
   { icon: ChartLine, label: "Net Sentiment", href: "/gold" },
-  { icon: ChartNoAxesColumnIncreasing, label: "Gamma OI", href: "/gold/gamma-oi" },
+  // { icon: ChartNoAxesColumnIncreasing, label: "Gamma OI", href: "/gold/gamma-oi" },
   { icon: ChartCandlestick, label: "Investic Weight OI", href: "/gold/investic-weight-oi" },
   { icon: ChartNoAxesCombined, label: "Trend and Momentum", href: "/gold/trend-and-momentum" },
 ];

@@ -4,7 +4,7 @@ import AuthenticatedLayout from './Layout'
 import HomePage from './pages/landingpage/HomePage'
 // import { ampli } from './ampli'
 import GoldPage from './pages/GoldPage'
-import GammaOiPage from './pages/GammaOi'
+  // import GammaOiPage from './pages/GammaOi'
 import InvesticWeightOiPage from './pages/InvesticWeightOi'
 import TrendAndMomentumPage from './pages/TrendAndMomentum'
 
@@ -34,11 +34,11 @@ const goldRoute = new Route({
   component: GoldPage,
 })
 
-const gammaOiRoute = new Route({
-  getParentRoute: () => authenticatedLayoutRoute,
-  path: '/gold/gamma-oi',
-  component: GammaOiPage,
-})
+// const gammaOiRoute = new Route({
+//   getParentRoute: () => authenticatedLayoutRoute,
+//   path: '/gold/gamma-oi',
+//   component: GammaOiPage,
+// })
 
 const investicWeightOiRoute = new Route({
   getParentRoute: () => authenticatedLayoutRoute,
@@ -54,7 +54,7 @@ const trendAndMomentumRoute = new Route({
 
 const routeTree = rootRoute.addChildren([
   landingLayoutRoute.addChildren([indexRoute]),
-  authenticatedLayoutRoute.addChildren([goldRoute, gammaOiRoute, investicWeightOiRoute, trendAndMomentumRoute]),
+  authenticatedLayoutRoute.addChildren([goldRoute, investicWeightOiRoute, trendAndMomentumRoute]),
 ])
 
 export const router = createRouter({ routeTree })
