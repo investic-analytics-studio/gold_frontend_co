@@ -61,7 +61,8 @@ export const useGammaOi = (selectedMonth: string, timeframe: string = "60"): Use
   } = useQuery({
     queryKey: ['historical', timeframe],
     queryFn: () => fetchHistoricalData(timeframe),
-    staleTime: Infinity,
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     refetchOnReconnect: false,

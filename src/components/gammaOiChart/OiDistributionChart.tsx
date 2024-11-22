@@ -1,5 +1,5 @@
 import { useGammaOi } from "@/hooks/useGammaOi";
-import React, { useMemo } from "react";
+import React, {  useMemo } from "react";
 import {
   Bar,
   BarChart,
@@ -195,21 +195,34 @@ const OiDistributionChart: React.FC = () => {
     return `${year}-${month}`;
   };
 
-  // Add this sorting function
+  // Add this helper function to parse month codes
+  const parseMonthCode = (monthCode: string) => {
+    // Extract month and year from codes like "DEC2024"
+    const match = monthCode.match(/([A-Z]+)(\d{4})/);
+    if (!match) return { month: 0, year: 0 };
+    
+    const monthMap: { [key: string]: number } = {
+      'JAN': 1, 'FEB': 2, 'MAR': 3, 'APR': 4, 'MAY': 5, 'JUN': 6,
+      'JUL': 7, 'AUG': 8, 'SEP': 9, 'OCT': 10, 'NOV': 11, 'DEC': 12
+    };
+    
+    return {
+      month: monthMap[match[1]] || 0,
+      year: parseInt(match[2])
+    };
+  };
+
+  // Update the sort function
   const sortMonths = (months: string[]): string[] => {
-    return months.sort((a, b) => {
-      // Split each date string into year and month components
-      const [YearPrevious, MonthPrevious] = a.split('-').map(Number);
-      const [YearNext, MonthNext] = b.split('-').map(Number);
-
-      // First compare by year
-      const yearDiff = YearPrevious - YearNext;
-      if (yearDiff !== 0) {
-        return yearDiff;
+    return months.sort((currentMonth, nextMonth) => {
+      const parseCurrentMonth = parseMonthCode(currentMonth);
+      const parseNextMonth = parseMonthCode(nextMonth);
+      
+      if (parseCurrentMonth.year !== parseNextMonth.year) {
+        return parseCurrentMonth.year - parseNextMonth.year;
       }
-
-      // If years are equal, compare by month
-      return MonthPrevious - MonthNext;
+      
+      return parseCurrentMonth.month - parseNextMonth.month;
     });
   };
 
@@ -221,7 +234,6 @@ const OiDistributionChart: React.FC = () => {
   // Sort the months before rendering
   const sortedMonths = useMemo(() => sortMonths(availableMonths), [availableMonths]);
 
-  // Then use it in the main hook call
   const {
     oiData: data,
     currentPrice,
