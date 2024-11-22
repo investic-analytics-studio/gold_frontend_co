@@ -23,7 +23,6 @@ const GoldSentimentRatioChart: React.FC = () => {
   const [data, setData] = useState<SentimentRatioData[]>([]);
   const [timeframe, setTimeframe] = useState<'3M' | '6M'>('3M');
   const backendApiUrl = import.meta.env.VITE_BACKEND_API;
-  console.log(data);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -32,7 +31,48 @@ const GoldSentimentRatioChart: React.FC = () => {
           backendApiUrl + `/gold-sentiment-ratio-graph-plot/${timeframe}`
         );
 
-        const sortedData = response.data.sort((a, b) => {
+        // Convert to Asia/Bangkok timezone
+        const dateTimeFormatter = new Intl.DateTimeFormat('en-US', {
+          timeZone: 'Asia/Bangkok',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+        });
+
+        // Converted Bangkok time zone
+        const convertedDateTime = response.data.map((item) => {
+          const utcDate = new Date(item.date);
+          const bangkokTime = dateTimeFormatter.format(utcDate);
+
+          // Convert to ISO format for the chart
+          const [datePart, timePart] = bangkokTime.split(', ');
+          const [month, day, year] = datePart.split('/');
+
+          // Remove the AM/PM part and convert to 24-hour format
+          const [time, timePeriod] = timePart.split(' ');
+          let [hours, minutes, seconds] = time.split(':');
+          if (timePeriod === 'PM' && hours !== '12') {
+            hours = String(Number(hours) + 12);
+          } else if (timePeriod === 'AM' && hours === '12') {
+            hours = '00';
+          }
+
+          // Create the date string in ISO format with Bangkok timezone
+          const formattedDate = `${year}-${month.padStart(
+            2,
+            '0'
+          )}-${day.padStart(2, '0')}T${hours}:${minutes}:${seconds}+07:00`;
+
+          return {
+            ...item,
+            date: formattedDate,
+          };
+        });
+
+        const sortedData = convertedDateTime.sort((a, b) => {
           const previousDate = new Date(a.date).getTime();
           const nextDate = new Date(b.date).getTime();
           return previousDate - nextDate;
