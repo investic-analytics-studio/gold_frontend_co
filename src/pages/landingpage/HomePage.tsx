@@ -141,7 +141,7 @@ const HomePage: React.FC = () => {
               color={["#209CFF"]}
             >
               <img
-                src="/assets/images/crypto-studio-dashboard.png"
+                src="/assets/images/gold-studio-dashboard.png"
                 alt="Crypto Studio Dashboard"
                 className="w-full h-auto rounded-lg shadow-2xl pointer-events-none whitespace-pre-wrap bg-gradient-to-b from-black to-gray-300/80 bg-clip-text"
                 onError={(e) => {
