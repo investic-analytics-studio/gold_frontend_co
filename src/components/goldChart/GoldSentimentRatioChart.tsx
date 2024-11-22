@@ -135,6 +135,7 @@ const GoldSentimentRatioChart: React.FC = () => {
       <h2 style={{ color: 'white', padding: '20px', margin: 0 }}>
         Sentiment Ratio
       </h2>
+
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
           data={data}
@@ -145,7 +146,7 @@ const GoldSentimentRatioChart: React.FC = () => {
             bottom: 5,
           }}
         >
-          <CartesianGrid vertical={false} stroke="#444" />
+          <CartesianGrid vertical={false} stroke="#121623" />
           <XAxis
             dataKey="date"
             tickFormatter={(date: string, index: number): string => {
@@ -163,13 +164,14 @@ const GoldSentimentRatioChart: React.FC = () => {
               return '';
             }}
             interval={0}
-            stroke="#ffffff"
-            tick={{ fill: 'white' }}
+            stroke="#20293A"
+            tick={{ fill: '#A1A1AA' }}
           />
           <YAxis
             domain={['dataMin', 'dataMax']}
             ticks={[20, 30, 40, 50, 60]}
-            stroke="#ffffff"
+            stroke="#121623"
+            tick={{ fill: '#A1A1AA' }}
           />
           <Tooltip
             content={({ payload: contentSentimentRatio, label }) => {
@@ -265,10 +267,10 @@ const GoldSentimentRatioChart: React.FC = () => {
           <Line
             type="monotone"
             dataKey="sentiment_ratio"
-            stroke="#ff7f7f"
+            stroke="#2662D9"
             dot={false}
             name="Sentiment Ratio"
-            strokeWidth={1.5}
+            strokeWidth={1}
           />
           <Line
             type="monotone"
@@ -276,7 +278,7 @@ const GoldSentimentRatioChart: React.FC = () => {
             stroke="#ffffff"
             dot={false}
             name="Upper Band"
-            strokeWidth={1.5}
+            strokeWidth={1}
           />
           <Brush
             dataKey="date"

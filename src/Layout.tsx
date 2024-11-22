@@ -147,7 +147,7 @@ const SidebarFooterComponent = () => (
     </SidebarMenu>
   </SidebarFooter> */}
   <SidebarFooter className="pb-6 lg:pb-1">
-  <SidebarGroupLabel className="text-[#FAFAFA] mb-1 lg:mb-0 w-full flex items-center justify-between px-2 py-8 lg:py-6 border-t border-[#20293A] ">                    
+  <SidebarGroupLabel className="text-[#FAFAFA] mb-1 lg:mb-0 w-full flex items-center justify-between px-2 py-8 lg:py-6 rounded-none border-t border-[#20293A] ">                    
   
     <div className="text-[#FAFAFA]/70 text-[12px] font-light">Follow us</div>
     <div className="flex gap-3 lg:gap-0">

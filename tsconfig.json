@@ -22,15 +22,22 @@
     "baseUrl": ".",
     "paths": {
       "@/*": [
-        "src/*"
+        "./src/*"
       ]
     },
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/types"
+    ],
     "types": [
-      "node"
+      "node",
+      "react",
+      "react-dom"
     ]
   },
   "include": [
-    "src"
+    "src/**/*",
+    "src/types/**/*"
   ],
   "references": [
     {

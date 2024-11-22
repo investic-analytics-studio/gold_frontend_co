@@ -38,8 +38,9 @@ const NetSentimentAndGoldPriceOneHour: React.FC = () => {
   }, []);
 
   return (
-    <div style={{ width: '100%', height: 400 }}>
-      <h2 style={{ color: 'white' }}>Net Sentiment Analysis and GOLD Price</h2>
+    <div className='pb-0 pt-10 px-6' style={{ width: '100%', height: 400 }}>
+      <h2 className='text-[#FAFAFA] text-[16px] font-medium'>Net Sentiment Analysis and GOLD Price</h2>
+      <div className="text-[#A1A1AA] text-[14px]">1H Rolling (24)</div>
       <ResponsiveContainer width="100%" height="100%">
         <ComposedChart
           width={800}
@@ -47,7 +48,7 @@ const NetSentimentAndGoldPriceOneHour: React.FC = () => {
           data={data}
           margin={{ top: 50, right: 30, bottom: 30, left: 30 }}
         >
-          <CartesianGrid stroke="#444" vertical={false} />
+          <CartesianGrid stroke="#121623" vertical={false} />
           <XAxis
             dataKey="date"
             tickFormatter={(date: string | number, index: number): string => {
@@ -60,37 +61,40 @@ const NetSentimentAndGoldPriceOneHour: React.FC = () => {
               return '';
             }}
             interval={0}
-            tick={{ fill: 'white' }}
+            stroke="#20293A"
+            tick={{ fill: '#A1A1AA' }}
             label={{
               value: 'Date',
               position: 'insideBottom',
               offset: -10,
-              fill: 'white',
+              fill: '#A1A1AA',
             }}
           />
           <YAxis
             yAxisId="left"
+            stroke="#121623"
             label={{
               value: 'Net Sentiment',
               angle: -90,
               position: 'insideLeft',
-              fill: 'white',
+              fill: '#A1A1AA',
               dx: -10,
             }}
-            tick={{ fill: 'white' }}
+            tick={{ fill: '#A1A1AA' }}
             domain={['dataMin', 'dataMax']}
           />
           <YAxis
             yAxisId="right"
+            stroke="#121623"
             orientation="right"
             label={{
               value: 'GOLD Price',
               angle: -90,
               position: 'insideRight',
-              fill: 'white',
+              fill: '#A1A1AA',
               dx: 10,
             }}
-            tick={{ fill: 'white' }}
+            tick={{ fill: '#A1A1AA' }}
             domain={[
               (dataMin: number) => Math.floor(dataMin / 10) * 10,
               (dataMax: number) => Math.ceil(dataMax / 10) * 10,
@@ -114,7 +118,7 @@ const NetSentimentAndGoldPriceOneHour: React.FC = () => {
             }}
             formatter={(value, name) => {
               if (name === 'goldPrice') {
-                return [parseFloat(value as string).toFixed(2), 'GOLD Price'];
+                return [parseFloat(value.toString()).toFixed(2), 'GOLD Price'];
               }
               return [String(value), 'Net Sentiment'];
             }}
@@ -131,7 +135,7 @@ const NetSentimentAndGoldPriceOneHour: React.FC = () => {
             yAxisId="left"
             type="monotone"
             dataKey="netSentiment"
-            stroke="#636ef3"
+            stroke="#2662D9"
             strokeWidth={2}
             name="Net Sentiment 1H Rolling (24)"
             dot={false}
@@ -142,8 +146,8 @@ const NetSentimentAndGoldPriceOneHour: React.FC = () => {
             yAxisId="right"
             type="monotone"
             dataKey="goldPrice"
-            stroke="rgba(255, 255, 255, 0.6)"
-            strokeWidth={2}
+            stroke="#FFFFFF"
+            strokeWidth={1}
             name="GOLD Price 1H"
             dot={false}
           />
