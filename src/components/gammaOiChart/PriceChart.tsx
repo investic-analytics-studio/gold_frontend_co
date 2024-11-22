@@ -10,7 +10,7 @@ import {
 } from "../ui/card";
 
 const PriceChart: React.FC = () => {
-  const { currentPrice, loading, error } = useGammaOi();
+  const { currentPrice, loading, error } = useGammaOi("2024-12");
 
   if (loading) {
     return (

@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
-import { fetchBatchHistoricalData } from './fetchHistoricalData';
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
+import { getApiUrl } from '../utils/api';
 
 interface OIData {
   type: string;
@@ -24,87 +25,74 @@ interface UseGammaOiResult {
   currentPrice: number;
   loading: boolean;
   error: Error | null;
+  availableMonths: string[];
 }
 
-export const useGammaOi = (): UseGammaOiResult => {
-  const [oiData, setOiData] = useState<OIData[]>([]);
-  const [priceData, setPriceData] = useState<PriceData[]>([]);
-  const [currentPrice, setCurrentPrice] = useState<number>(0);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+interface HistoricalDataResponse {
+  data: PriceData[];
+  meta: {
+    bars: number;
+    count: number;
+    exchange: string;
+    interval: string;
+    symbol: string;
+  };
+}
 
-  useEffect(() => {
-    const fetchAllData = async () => {
-      try {
-        // Fetch OI data
-        const oiResponse = await fetch('http://localhost:8080/investic-weighted-oi-graph');
-        const oiData = await oiResponse.json();
-        setOiData(oiData);
+const fetchHistoricalData = async (timeframe: string) => {
+  const response = await axios.get<HistoricalDataResponse>(
+    getApiUrl(`tradingview/historical?symbol=XAUUSD&exchange=OANDA&interval=${timeframe}&bars=10`)
+  );
+  return response.data;
+};
 
-        // Fetch XAUUSD price data using fetchBatchHistoricalData
-        const priceResponse = await fetchBatchHistoricalData({
-          symbols: [{
-            symbol: 'XAUUSD',
-            exchange: 'OANDA'
-          }],
-          interval: '60',
-          bars: '50',
-          batchSize: 1,  // Since we're only fetching one symbol
-          delayMs: 0     // No delay needed for single symbol
-        });
+const fetchOiData = async () => {
+  const response = await axios.get<OIData[]>(
+    getApiUrl('investic-weighted-oi-graph')
+  );
+  return response.data;
+};
 
-        const xauusdData = priceResponse.data['XAUUSD'] || [];
-        setPriceData(xauusdData);
+export const useGammaOi = (selectedMonth: string, timeframe: string = "60"): UseGammaOiResult => {
+  const {
+    data: historicalData,
+    isLoading: isHistoricalLoading,
+    error: historicalError
+  } = useQuery({
+    queryKey: ['historical', timeframe],
+    queryFn: () => fetchHistoricalData(timeframe),
+    staleTime: Infinity,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+  });
 
-        // Set current price from the latest XAUUSD data
-        if (xauusdData.length > 0) {
-          const latestPrice = xauusdData[xauusdData.length - 1].close;
-          setCurrentPrice(latestPrice);
-        }
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        setError(error instanceof Error ? error : new Error('Unknown error occurred'));
-      } finally {
-        setLoading(false);
-      }
-    };
+  const {
+    data: oiData,
+    isLoading: isOiLoading,
+    error: oiError
+  } = useQuery({
+    queryKey: ['oi-data', selectedMonth],
+    queryFn: fetchOiData,
+    staleTime: Infinity,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+  });
 
-    fetchAllData();
+  const currentPrice = historicalData?.data?.[historicalData.data.length - 1]?.close ?? 2000;
 
-    // Set up an interval to refresh the price data every minute
-    const intervalId = setInterval(async () => {
-      try {
-        const priceResponse = await fetchBatchHistoricalData({
-          symbols: [{
-            symbol: 'XAUUSD',
-            exchange: 'OANDA'
-          }],
-          interval: '60',
-          bars: '1',  // Only get the latest bar for updates
-          batchSize: 1,
-          delayMs: 0
-        });
+  const filteredOiData = oiData?.filter(item => item.month_year === selectedMonth) ?? [];
 
-        const xauusdData = priceResponse.data['XAUUSD'] || [];
-        if (xauusdData.length > 0) {
-          const latestPrice = xauusdData[xauusdData.length - 1].close;
-          setCurrentPrice(latestPrice);
-        }
-      } catch (error) {
-        console.error('Error updating price:', error);
-      }
-    }, 60000); // Update every minute
-
-    // Cleanup interval on unmount
-    return () => clearInterval(intervalId);
-  }, []);
+  const availableMonths = [...new Set(oiData?.map(item => item.month_year) ?? [])];
 
   return {
-    oiData,
-    priceData,
+    oiData: filteredOiData,
+    priceData: historicalData?.data ?? [],
     currentPrice,
-    loading,
-    error
+    loading: isHistoricalLoading || isOiLoading,
+    error: (historicalError || oiError) as Error | null,
+    availableMonths,
   };
 };
 

@@ -14,14 +14,227 @@ import {
   YAxis,
 } from "recharts";
 import { Card, CardContent, CardDescription, CardTitle } from "../ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+
+// Add these type definitions
+interface GoldOptionContract {
+  'Contract Month': string;
+  'Product Code': string;
+  'Settlement': string;
+}
 
 const OiDistributionChart: React.FC = () => {
+  // Add the gold options calendar constant
+  const goldOptCalendarConstant: GoldOptionContract[] = [
+  {
+      "Contract Month": "May 2024 Gold Option",
+      "Product Code": "OGK24",
+      "Settlement": "2024-04-25",
+  },
+  {
+      "Contract Month": "June 2024 Gold Option",
+      "Product Code": "OGM24",
+      "Settlement": "2024-05-28",
+  },
+  {
+      "Contract Month": "July 2024 Gold Option",
+      "Product Code": "OGN24",
+      "Settlement": "2024-06-25",
+  },
+  {
+      "Contract Month": "August 2024 Gold Option",
+      "Product Code": "OGQ24",
+      "Settlement": "2024-07-25",
+  },
+  {
+      "Contract Month": "September 2024 Gold Option",
+      "Product Code": "OGU24",
+      "Settlement": "2024-08-27",
+  },
+  {
+      "Contract Month": "October 2024 Gold Option",
+      "Product Code": "OGV24",
+      "Settlement": "2024-09-25",
+  },
+  {
+      "Contract Month": "November 2024 Gold Option",
+      "Product Code": "OGX24",
+      "Settlement": "2024-10-28",
+  },
+  {
+      "Contract Month": "December 2024 Gold Option",
+      "Product Code": "OGZ24",
+      "Settlement": "2024-11-25",
+  },
+  {
+      "Contract Month": "January 2025 Gold Option",
+      "Product Code": "OGF25",
+      "Settlement": "2024-12-26",
+  },
+  {
+      "Contract Month": "February 2025 Gold Option",
+      "Product Code": "OGG25",
+      "Settlement": "2025-01-28",
+  },
+  {
+      "Contract Month": "March 2025 Gold Option",
+      "Product Code": "OGH25",
+      "Settlement": "2025-02-25",
+  },
+  {
+      "Contract Month": "April 2025 Gold Option",
+      "Product Code": "OGJ25",
+      "Settlement": "2025-03-26",
+  },
+  {
+      "Contract Month": "May 2025 Gold Option",
+      "Product Code": "OGK25",
+      "Settlement": "2025-04-24",
+  },
+  {
+      "Contract Month": "June 2025 Gold Option",
+      "Product Code": "OGM25",
+      "Settlement": "2025-05-27",
+  },
+  {
+      "Contract Month": "July 2025 Gold Option",
+      "Product Code": "OGN25",
+      "Settlement": "2025-06-25",
+  },
+  {
+      "Contract Month": "August 2025 Gold Option",
+      "Product Code": "OGQ25",
+      "Settlement": "2025-07-28",
+  },
+  {
+      "Contract Month": "September 2025 Gold Option",
+      "Product Code": "OGU25",
+      "Settlement": "2025-08-26",
+  },
+  {
+      "Contract Month": "October 2025 Gold Option",
+      "Product Code": "OGV25",
+      "Settlement": "2025-09-25",
+  },
+  {
+      "Contract Month": "December 2025 Gold Option",
+      "Product Code": "OGZ25",
+      "Settlement": "2025-11-24",
+  },
+  {
+      "Contract Month": "June 2026 Gold Option",
+      "Product Code": "OGM26",
+      "Settlement": "2026-05-26",
+  },
+  {
+      "Contract Month": "December 2026 Gold Option",
+      "Product Code": "OGZ26",
+      "Settlement": "2026-11-24",
+  },
+  {
+      "Contract Month": "June 2027 Gold Option",
+      "Product Code": "OGM27",
+      "Settlement": "2027-05-25",
+  },
+  {
+      "Contract Month": "December 2027 Gold Option",
+      "Product Code": "OGZ27",
+      "Settlement": "2027-11-23",
+  },
+  {
+      "Contract Month": "June 2028 Gold Option",
+      "Product Code": "OGM28",
+      "Settlement": "2028-05-25",
+  },
+  {
+      "Contract Month": "December 2028 Gold Option",
+      "Product Code": "OGZ28",
+      "Settlement": "2028-11-27",
+  },
+  {
+      "Contract Month": "June 2029 Gold Option",
+      "Product Code": "OGM29",
+      "Settlement": "2029-05-24",
+  },
+  {
+      "Contract Month": "December 2029 Gold Option",
+      "Product Code": "OGZ29",
+      "Settlement": "2029-11-27",
+  },  
+];
+
+  // Function to get current gold contract option
+  const getCurrentGoldContractOption = (): string => {
+    const currentDate = new Date();
+    
+    // Find the first contract that hasn't settled yet
+    const currentContract = goldOptCalendarConstant.find(contract => {
+      const settlementDate = new Date(contract.Settlement);
+      return settlementDate > currentDate;
+    });
+
+    if (!currentContract) {
+      return getCurrentYearMonth(); // Fallback to current month if no contract found
+    }
+
+    // Extract month and year from contract month string
+    const match = currentContract["Contract Month"].match(/(\w+)\s+(\d{4})/);
+    if (!match) {
+      return getCurrentYearMonth(); // Fallback to current month if parsing fails
+    }
+
+    const [_, month, year] = match;
+    return `${year}-${month.padStart(2, '0')}`;
+  };
+
+  // Modify your existing getCurrentYearMonth function to be a fallback
+  const getCurrentYearMonth = () => {
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    return `${year}-${month}`;
+  };
+
+  // Add this sorting function
+  const sortMonths = (months: string[]): string[] => {
+    return months.sort((a, b) => {
+      // Split each date string into year and month components
+      const [YearPrevious, MonthPrevious] = a.split('-').map(Number);
+      const [YearNext, MonthNext] = b.split('-').map(Number);
+
+      // First compare by year
+      const yearDiff = YearPrevious - YearNext;
+      if (yearDiff !== 0) {
+        return yearDiff;
+      }
+
+      // If years are equal, compare by month
+      return MonthPrevious - MonthNext;
+    });
+  };
+
+  const [selectedMonth, setSelectedMonth] = React.useState("");
+  
+  // First get availableMonths
+  const { availableMonths } = useGammaOi(getCurrentGoldContractOption());
+
+  // Sort the months before rendering
+  const sortedMonths = useMemo(() => sortMonths(availableMonths), [availableMonths]);
+
+  // Then use it in the main hook call
   const {
     oiData: data,
     currentPrice,
     loading,
-    error,
-  } = useGammaOi();
+    error
+  } = useGammaOi(selectedMonth || availableMonths[0] || getCurrentGoldContractOption());
+
+  // Set initial month when availableMonths loads
+  React.useEffect(() => {
+    if (availableMonths.length > 0 && !selectedMonth) {
+      setSelectedMonth(availableMonths[0]);
+    }
+  }, [availableMonths, selectedMonth]);
 
   // Process data for side-by-side bars
   const processedData = useMemo(() => {
@@ -99,6 +312,22 @@ const OiDistributionChart: React.FC = () => {
     <div className="pt-10">
       <Card className="w-full h-auto bg-[#030816] border-none lg:rounded-[12px]">
         <CardContent>
+          {/* Add month selector */}
+          <div className="mb-4">
+            <Select value={selectedMonth} onValueChange={setSelectedMonth}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Select month" />
+              </SelectTrigger>
+              <SelectContent>
+                {sortedMonths.map((month) => (
+                  <SelectItem key={month} value={month}>
+                    {month}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
           {/* OI Distribution Chart */}
           <div className="w-full h-[600px] bg-[#030816] p-4 rounded-xl">
             <CardTitle className="text-[#FAFAFA] text-[16px] font-medium mb-4">
@@ -139,7 +368,7 @@ const OiDistributionChart: React.FC = () => {
                     value={`Current Price: $${currentPrice.toFixed(2)}`}
                     position="top"
                     fill="#F23645"
-                    fontSize={12}
+                    fontSize={16}
                     offset={20}
                   />
                 </ReferenceLine>
