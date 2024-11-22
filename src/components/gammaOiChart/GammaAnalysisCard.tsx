@@ -3,12 +3,12 @@ import { TrendingUp as StockUpIcon, TrendingDown as StockDownIcon } from "lucide
 import { Button } from "@/components/ui/button";
 import { useState, useMemo, useEffect } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-
+import { Switch } from "@/components/ui/switch";
 
 import { format } from "date-fns";
 import {
   LineChart,
-  Line,
+  Line, 
   XAxis,
   YAxis,
   CartesianGrid,
@@ -122,6 +122,7 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
     bullish: false,
     bearish: false
   });
+  const [showSpotPrice, setShowSpotPrice] = useState(false);
 
   // Filter data based on trading range
   const filteredData = useMemo(() => {
@@ -200,15 +201,55 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
 
   const currentContract = useMemo(() => getCurrentGoldContractOption(), []);
 
+  const adjustPriceWithDelta = (price: number, delta: number, isSpot: boolean) => {
+    return isSpot ? price - delta : price;
+  };
+
+  const adjustedChartData = useMemo(() => {
+    return filteredChartData.map(point => ({
+      ...point,
+      price: adjustPriceWithDelta(
+        point.price,
+        displayedAnalysis?.delta ?? 0,
+        showSpotPrice
+      )
+    }));
+  }, [filteredChartData, displayedAnalysis?.delta, showSpotPrice]);
+
   return (
     <div className="space-y-4">
       {/* Latest Analysis Summary */}
       <Card className="bg-[#030816] border-[#20293A] hover:bg-[#0A1122] transition-colors">
         <CardHeader>
           <CardTitle className="text-[#FAFAFA] flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-              Current Analysis - {currentContract}
+            <div className="flex items-center justify-between w-full">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                  <span className="font-medium">Current Analysis</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <span className="text-[#A1A1AA]">{currentContract}</span>
+                  <div className="h-4 w-[1px] bg-[#20293A]" />
+                  <div className="flex items-center gap-1">
+                    <span className="text-[#A1A1AA]">Futures:</span>
+                    <span className="font-medium">${displayedAnalysis?.price.toFixed(2)}</span>
+                  </div>
+                  <div className="h-4 w-[1px] bg-[#20293A]" />
+                  <div className="flex items-center gap-1">
+                    <span className="text-[#A1A1AA]">Spot:</span>
+                    <span className="font-medium">${displayedAnalysis?.spot_price.toFixed(2)}</span>
+                  </div>
+                  <div className="h-4 w-[1px] bg-[#20293A]" />
+                  <div className="flex items-center gap-1">
+                    <span className="text-[#A1A1AA]">Delta:</span>
+                    <span className="font-medium">${displayedAnalysis?.delta.toFixed(2)}</span>
+                    <span className="text-xs text-[#A1A1AA]">
+                      ({((displayedAnalysis.delta / displayedAnalysis.price) * 100).toFixed(2)}%)
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
             <div className="flex items-center gap-4">
               {/* Time Selection Dropdown */}
@@ -282,11 +323,28 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
         <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Price Section */}
           <div className="space-y-3 p-4 rounded-lg bg-[#0A1122] border border-[#20293A]">
-            <p className="text-[#A1A1AA] font-medium">Price Analysis</p>
+            <div className="flex justify-between items-center">
+              <p className="text-[#A1A1AA] font-medium">
+                {showSpotPrice ? "Spot Price Analysis" : "Futures Price Analysis"}
+              </p>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-[#A1A1AA]">Show Spot</span>
+                <Switch
+                  checked={showSpotPrice}
+                  onCheckedChange={setShowSpotPrice}
+                  className="data-[state=checked]:bg-green-500"
+                />
+              </div>
+            </div>
             <div className="flex items-baseline gap-2">
               <p className="text-3xl font-bold text-[#FAFAFA]">
-                ${displayedAnalysis?.price.toFixed(2)}
+                ${adjustPriceWithDelta(
+                  displayedAnalysis?.price ?? 0,
+                  displayedAnalysis?.delta ?? 0,
+                  showSpotPrice
+                ).toFixed(2)}
               </p>
+           
             </div>
             <Badge className="text-md text-[#FAFAFA]">
               trading range: {tradingRange}
@@ -304,19 +362,43 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
             <div className="space-y-2 pt-2 border-t border-[#20293A]">
               <div className="flex justify-between">
                 <span className="text-sm text-[#A1A1AA]">Major Support</span>
-                <span className="text-sm font-medium">${displayedAnalysis?.major_support_level.toFixed(2)}</span>
+                <span className="text-sm font-medium">
+                  ${adjustPriceWithDelta(
+                    displayedAnalysis?.major_support_level ?? 0,
+                    displayedAnalysis?.delta ?? 0,
+                    showSpotPrice
+                  ).toFixed(2)}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-[#A1A1AA]">Major Resistance</span>
-                <span className="text-sm font-medium">${displayedAnalysis?.major_resistance_level.toFixed(2)}</span>
+                <span className="text-sm font-medium">
+                  ${adjustPriceWithDelta(
+                    displayedAnalysis?.major_resistance_level ?? 0,
+                    displayedAnalysis?.delta ?? 0,
+                    showSpotPrice
+                  ).toFixed(2)}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-[#A1A1AA]">Minor Support</span>
-                <span className="text-sm font-medium">${displayedAnalysis?.minor_support_level.toFixed(2)}</span>
+                <span className="text-sm font-medium">
+                  ${adjustPriceWithDelta(
+                    displayedAnalysis?.minor_support_level ?? 0,
+                    displayedAnalysis?.delta ?? 0,
+                    showSpotPrice
+                  ).toFixed(2)}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-[#A1A1AA]">Minor Resistance</span>
-                <span className="text-sm font-medium">${displayedAnalysis?.minor_resistance_level.toFixed(2)}</span>
+                <span className="text-sm font-medium">
+                  ${adjustPriceWithDelta(
+                    displayedAnalysis?.minor_resistance_level ?? 0,
+                    displayedAnalysis?.delta ?? 0,
+                    showSpotPrice
+                  ).toFixed(2)}
+                </span>
               </div>
             </div>
           </div>
@@ -343,15 +425,33 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
             <div className="space-y-2">
               <div className="flex justify-between">
                 <span className="text-sm text-[#A1A1AA]">Entry</span>
-                <span className="text-sm font-medium">${displayedAnalysis?.bullish_entry.toFixed(2)}</span>
+                <span className="text-sm font-medium">
+                  ${adjustPriceWithDelta(
+                    displayedAnalysis?.bullish_entry ?? 0,
+                    displayedAnalysis?.delta ?? 0,
+                    showSpotPrice
+                  ).toFixed(2)}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-[#A1A1AA]">Target</span>
-                <span className="text-sm font-medium text-green-500">${displayedAnalysis?.bullish_tp.toFixed(2)}</span>
+                <span className="text-sm font-medium text-green-500">
+                  ${adjustPriceWithDelta(
+                    displayedAnalysis?.bullish_tp ?? 0,
+                    displayedAnalysis?.delta ?? 0,
+                    showSpotPrice
+                  ).toFixed(2)}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-[#A1A1AA]">Stop Loss</span>
-                <span className="text-sm font-medium text-red-500">${displayedAnalysis?.bullish_sl.toFixed(2)}</span>
+                <span className="text-sm font-medium text-red-500">
+                  ${adjustPriceWithDelta(
+                    displayedAnalysis?.bullish_sl ?? 0,
+                    displayedAnalysis?.delta ?? 0,
+                    showSpotPrice
+                  ).toFixed(2)}
+                </span>
               </div>
             </div>
           </div>
@@ -378,15 +478,33 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
             <div className="space-y-2">
               <div className="flex justify-between">
                 <span className="text-sm text-[#A1A1AA]">Entry</span>
-                <span className="text-sm font-medium">${displayedAnalysis?.bearish_entry.toFixed(2)}</span>
+                <span className="text-sm font-medium">
+                  ${adjustPriceWithDelta(
+                    displayedAnalysis?.bearish_entry ?? 0,
+                    displayedAnalysis?.delta ?? 0,
+                    showSpotPrice
+                  ).toFixed(2)}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-[#A1A1AA]">Target</span>
-                <span className="text-sm font-medium text-green-500">${displayedAnalysis?.bearish_tp.toFixed(2)}</span>
+                <span className="text-sm font-medium text-green-500">
+                  ${adjustPriceWithDelta(
+                    displayedAnalysis?.bearish_tp ?? 0,
+                    displayedAnalysis?.delta ?? 0,
+                    showSpotPrice
+                  ).toFixed(2)}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-sm text-[#A1A1AA]">Stop Loss</span>
-                <span className="text-sm font-medium text-red-500">${displayedAnalysis?.bearish_sl.toFixed(2)}</span>
+                <span className="text-sm font-medium text-red-500">
+                  ${adjustPriceWithDelta(
+                    displayedAnalysis?.bearish_sl ?? 0,
+                    displayedAnalysis?.delta ?? 0,
+                    showSpotPrice
+                  ).toFixed(2)}
+                </span>
               </div>
             </div>
           </div>
@@ -421,7 +539,7 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
           <div className="h-[400px]">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart
-                data={filteredChartData}
+                data={adjustedChartData}
                 margin={{ top: 5, right: 120, left: 20, bottom: 5 }}
               >
                 <CartesianGrid strokeDasharray="3 3" stroke="#20293A" />
@@ -435,7 +553,7 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
                 />
                 <YAxis 
                   stroke="#A1A1AA"
-                  domain={calculateYAxisDomain(filteredChartData, displayedAnalysis)}
+                  domain={calculateYAxisDomain(adjustedChartData, displayedAnalysis)}
                   tickFormatter={(value) => value.toFixed(0)}
                 />
                 <Tooltip 
@@ -457,11 +575,19 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
                 {showPositionsSelected.bullish && displayedAnalysis && (
                   <>
                     <ReferenceLine 
-                      y={displayedAnalysis.bullish_entry} 
+                      y={adjustPriceWithDelta(
+                        displayedAnalysis.bullish_entry,
+                        displayedAnalysis.delta,
+                        showSpotPrice
+                      )} 
                       stroke="#10B981" 
                       strokeDasharray="3 3"
                       label={{ 
-                        value: `Long Entry ($${displayedAnalysis.bullish_entry.toFixed(2)})`, 
+                        value: `Long Entry ($${adjustPriceWithDelta(
+                          displayedAnalysis.bullish_entry,
+                          displayedAnalysis.delta,
+                          showSpotPrice
+                        ).toFixed(2)})`, 
                         position: 'right', 
                         fill: '#10B981',
                         fontSize: 12,
@@ -469,11 +595,19 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
                       }}
                     />
                     <ReferenceLine 
-                      y={displayedAnalysis.bullish_tp} 
+                      y={adjustPriceWithDelta(
+                        displayedAnalysis.bullish_tp,
+                        displayedAnalysis.delta,
+                        showSpotPrice
+                      )} 
                       stroke="#10B981"
                       strokeDasharray="3 3"
                       label={{ 
-                        value: `Take Profit ($${displayedAnalysis.bullish_tp.toFixed(2)})`, 
+                        value: `Take Profit ($${adjustPriceWithDelta(
+                          displayedAnalysis.bullish_tp,
+                          displayedAnalysis.delta,
+                          showSpotPrice
+                        ).toFixed(2)})`, 
                         position: 'right', 
                         fill: '#10B981',
                         fontSize: 12,
@@ -481,11 +615,19 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
                       }}
                     />
                     <ReferenceLine 
-                      y={displayedAnalysis.bullish_sl} 
+                      y={adjustPriceWithDelta(
+                        displayedAnalysis.bullish_sl,
+                        displayedAnalysis.delta,
+                        showSpotPrice
+                      )} 
                       stroke="#EF4444"
                       strokeDasharray="3 3"
                       label={{ 
-                        value: `Stop Loss ($${displayedAnalysis.bullish_sl.toFixed(2)})`, 
+                        value: `Stop Loss ($${adjustPriceWithDelta(
+                          displayedAnalysis.bullish_sl,
+                          displayedAnalysis.delta,
+                          showSpotPrice
+                        ).toFixed(2)})`, 
                         position: 'right', 
                         fill: '#EF4444',
                         fontSize: 12,
@@ -499,11 +641,19 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
                 {showPositionsSelected.bearish && displayedAnalysis && (
                   <>
                     <ReferenceLine 
-                      y={displayedAnalysis.bearish_entry} 
+                      y={adjustPriceWithDelta(
+                        displayedAnalysis.bearish_entry,
+                        displayedAnalysis.delta,
+                        showSpotPrice
+                      )} 
                       stroke="#EF4444" 
                       strokeDasharray="3 3"
                       label={{ 
-                        value: `Short Entry ($${displayedAnalysis.bearish_entry.toFixed(2)})`, 
+                        value: `Short Entry ($${adjustPriceWithDelta(
+                          displayedAnalysis.bearish_entry,
+                          displayedAnalysis.delta,
+                          showSpotPrice
+                        ).toFixed(2)})`, 
                         position: 'right', 
                         fill: '#EF4444',
                         fontSize: 12,
@@ -511,11 +661,19 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
                       }}
                     />
                     <ReferenceLine 
-                      y={displayedAnalysis.bearish_tp} 
+                      y={adjustPriceWithDelta(
+                        displayedAnalysis.bearish_tp,
+                        displayedAnalysis.delta,
+                        showSpotPrice
+                      )} 
                       stroke="#10B981"
                       strokeDasharray="3 3"
                       label={{ 
-                        value: `Take Profit ($${displayedAnalysis.bearish_tp.toFixed(2)})`, 
+                        value: `Take Profit ($${adjustPriceWithDelta(
+                          displayedAnalysis.bearish_tp,
+                          displayedAnalysis.delta,
+                          showSpotPrice
+                        ).toFixed(2)})`, 
                         position: 'right', 
                         fill: '#10B981',
                         fontSize: 12,
@@ -523,11 +681,19 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
                       }}
                     />
                     <ReferenceLine 
-                      y={displayedAnalysis.bearish_sl} 
+                      y={adjustPriceWithDelta(
+                        displayedAnalysis.bearish_sl,
+                        displayedAnalysis.delta,
+                        showSpotPrice
+                      )} 
                       stroke="#EF4444"
                       strokeDasharray="3 3"
                       label={{ 
-                        value: `Stop Loss ($${displayedAnalysis.bearish_sl.toFixed(2)})`, 
+                        value: `Stop Loss ($${adjustPriceWithDelta(
+                          displayedAnalysis.bearish_sl,
+                          displayedAnalysis.delta,
+                          showSpotPrice
+                        ).toFixed(2)})`, 
                         position: 'right', 
                         fill: '#EF4444',
                         fontSize: 12,
@@ -555,9 +721,10 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
                 <Line 
                   type="linear" 
                   dataKey="price"
+                  data={adjustedChartData}
                   stroke="#2563EB" 
                   strokeWidth={2}
-                  name="Price"
+                  name={showSpotPrice ? "Spot Price" : "Futures Price"}
                   animationDuration={300}
                   connectNulls={true}
                   isAnimationActive={false}
