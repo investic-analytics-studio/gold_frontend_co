@@ -1,6 +1,6 @@
 import OiDistributionChart from "@/components/gammaOiChart/OiDistributionChart";
 import GammaAnalysisCard from "@/components/gammaOiChart/GammaAnalysisCard";
-import { useGammaOi } from "@/hooks/useGammaOi";
+import { useGammaOi, useAvailableMonths } from "@/hooks/useGammaOi";
 import { useGammaAnalysis } from "@/hooks/useGammaAnalysis";
 import {
   Breadcrumb,
@@ -21,8 +21,8 @@ const InvesticWeightOiPage: React.FC = () => {
   // State for selected month
   const [selectedMonth, setSelectedMonth] = useState("");
 
-  // First, get available months without filtering
-  const { availableMonths } = useGammaOi("", "1");
+  // Get available months separately
+  const { data: availableMonths = [], isLoading: isMonthsLoading } = useAvailableMonths();
 
   // Set initial month when availableMonths loads
   useEffect(() => {
@@ -31,14 +31,14 @@ const InvesticWeightOiPage: React.FC = () => {
     }
   }, [availableMonths, selectedMonth]);
 
-  // Fetch gamma analysis data at parent level
+  // Fetch gamma analysis data
   const gammaAnalysis = useGammaAnalysis();
   
-  // Fetch gamma OI data at parent level with selected month
+  // Fetch gamma OI data only when we have a selected month
   const gammaOi = useGammaOi(selectedMonth, "60");
 
   // Loading state
-  if (gammaAnalysis.isLoading || gammaOi.loading) {
+  if (isMonthsLoading || gammaAnalysis.isLoading || gammaOi.loading) {
     return <div>Loading...</div>;
   }
 

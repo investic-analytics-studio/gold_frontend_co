@@ -53,47 +53,53 @@ const fetchOiData = async () => {
   return response.data;
 };
 
+export function useAvailableMonths() {
+  return useQuery({
+    queryKey: ['available-months'],
+    queryFn: async () => {
+      const response = await axios.get<OIData[]>(
+        getApiUrl('investic-weighted-oi-graph')
+      );
+      return [...new Set(response.data.map(item => item.month_year))];
+    },
+    staleTime: Infinity,
+    gcTime: Infinity,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+  });
+}
+
 export const useGammaOi = (selectedMonth: string, timeframe: string = "60"): UseGammaOiResult => {
-  const {
-    data: historicalData,
-    isLoading: isHistoricalLoading,
-    error: historicalError
-  } = useQuery({
+  const priceQuery = useQuery({
     queryKey: ['historical', timeframe],
     queryFn: () => fetchHistoricalData(timeframe),
     staleTime: 5 * 60 * 1000,
     refetchInterval: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    refetchOnReconnect: false,
+    enabled: true,
   });
 
-  const {
-    data: oiData,
-    isLoading: isOiLoading,
-    error: oiError
-  } = useQuery({
+  const oiQuery = useQuery({
     queryKey: ['oi-data', selectedMonth],
     queryFn: fetchOiData,
     staleTime: Infinity,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     refetchOnReconnect: false,
+    enabled: !!selectedMonth,
+    select: (data) => data.filter(item => item.month_year === selectedMonth),
   });
 
-  const currentPrice = historicalData?.data?.[historicalData.data.length - 1]?.close ?? 2000;
-
-  const filteredOiData = oiData?.filter(item => item.month_year === selectedMonth) ?? [];
-
-  const availableMonths = [...new Set(oiData?.map(item => item.month_year) ?? [])];
+  const currentPrice = priceQuery.data?.data?.[priceQuery.data.data.length - 1]?.close ?? 2000;
 
   return {
-    oiData: filteredOiData,
-    priceData: historicalData?.data ?? [],
+    oiData: oiQuery.data ?? [],
+    priceData: priceQuery.data?.data ?? [],
     currentPrice,
-    loading: isHistoricalLoading || isOiLoading,
-    error: (historicalError || oiError) as Error | null,
-    availableMonths,
+    loading: priceQuery.isLoading || oiQuery.isLoading,
+    error: (priceQuery.error || oiQuery.error) as Error | null,
+    availableMonths: [],
   };
 };
 
