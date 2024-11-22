@@ -23,7 +23,6 @@ const GoldSentimentRatioChart: React.FC = () => {
   const [data, setData] = useState<SentimentRatioData[]>([]);
   const [timeframe, setTimeframe] = useState<'3M' | '6M'>('3M');
   const backendApiUrl = import.meta.env.VITE_BACKEND_API;
-  console.log(data);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -245,9 +244,7 @@ const GoldSentimentRatioChart: React.FC = () => {
                                 : 'white',
                           }}
                         >
-                          {contentSentimentData.name === 'Upper Band'
-                            ? Number(contentSentimentData?.value).toFixed(2)
-                            : contentSentimentData?.value}
+                          {Number(contentSentimentData.value).toFixed(2)}
                         </span>
                       </div>
                     </div>
