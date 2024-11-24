@@ -1,4 +1,4 @@
-import React, {  useMemo } from "react";
+import React, { useMemo } from "react";
 import {
   Bar,
   BarChart,
@@ -14,7 +14,6 @@ import {
 } from "recharts";
 import { Card, CardContent, CardDescription, CardTitle } from "../ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import { PriceData } from "@/hooks/fetchMultiHistoricalData";
 // Add these type definitions
 interface GoldOptionContract {
   'Contract Month': string;
@@ -201,7 +200,7 @@ const OiDistributionChart: React.FC<OiDistributionChartProps> = ({
   },  
 ];
 
-  // Function to get current gold contract option
+  // Function to get current gold contract optionß∂
   const getCurrentGoldContractOption = (): string => {
     const currentDate = new Date();
     

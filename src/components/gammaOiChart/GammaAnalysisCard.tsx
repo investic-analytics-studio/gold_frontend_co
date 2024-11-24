@@ -1,41 +1,50 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp as StockUpIcon, TrendingDown as StockDownIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState, useMemo, useEffect } from "react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
-
-import { format } from "date-fns";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  LineChart,
-  Line, 
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  ReferenceLine,
-} from "recharts";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import {
+  TrendingDown as StockDownIcon,
+  TrendingUp as StockUpIcon,
+} from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+
 import { Badge } from "@/components/ui/badge";
 import { getCurrentGoldContractOption } from "@/hooks/useGammaOi";
+import { format } from "date-fns";
+import {
+  CartesianGrid,
+  Legend,
+  Line,
+  LineChart,
+  ReferenceLine,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 interface GammaAnalysis {
-    price: number;
-    spot_price: number;
-    delta: number;
-    created_at: string;
-    trading_range: number;
-    bullish_entry: number;
-    bullish_sl: number;
-    bullish_tp: number;
-    bearish_entry: number;
-    bearish_sl: number;
-    bearish_tp: number;
-    major_support_level: number;
-    minor_support_level: number;
-    major_resistance_level: number;
-    minor_resistance_level: number;
+  price: number;
+  spot_price: number;
+  delta: number;
+  created_at: string;
+  trading_range: number;
+  bullish_entry: number;
+  bullish_sl: number;
+  bullish_tp: number;
+  bearish_entry: number;
+  bearish_sl: number;
+  bearish_tp: number;
+  major_support_level: number;
+  minor_support_level: number;
+  major_resistance_level: number;
+  minor_resistance_level: number;
 }
 
 interface PriceData {
@@ -51,10 +60,10 @@ interface GammaAnalysisCardProps {
 
 // Add this helper function at the top of the file, outside the component
 function formatChartData(priceData: PriceData[]) {
-  return priceData.map(item => ({
+  return priceData.map((item) => ({
     timestamp: new Date(item.datetime).getTime(),
     price: item.price,
-    datetime: item.datetime
+    datetime: item.datetime,
   }));
 }
 
@@ -67,32 +76,27 @@ interface PositionVisibility {
 // Update the filterDataFromTimestamp function
 function filterDataFromTimestamp(data: any[], timestamp: string) {
   const selectedTime = new Date(timestamp).getTime();
-  const selectedIndex = data.findIndex(item => 
-    new Date(item.datetime).getTime() >= selectedTime
+  const selectedIndex = data.findIndex(
+    (item) => new Date(item.datetime).getTime() >= selectedTime
   );
-  
+
   if (selectedIndex === -1) return data;
-  
+
   // Always show 20 previous points
   const startIndex = Math.max(0, selectedIndex - 20);
-  
+
   return data.slice(startIndex);
 }
 
 // Add this custom dot component at the top of the file
 const CustomDot = ({ cx, cy, payload, selectedDataPoint }: any) => {
-  const isSelected = payload.timestamp === new Date(selectedDataPoint).getTime();
-  
+  const isSelected =
+    payload.timestamp === new Date(selectedDataPoint).getTime();
+
   if (!isSelected) {
     return (
       <svg x={cx - 2} y={cy - 2} width={4} height={4} viewBox="0 0 4 4">
-        <circle
-          cx="2"
-          cy="2"
-          r="2"
-          fill="#2563EB"
-          opacity={0.5}
-        />
+        <circle cx="2" cy="2" r="2" fill="#2563EB" opacity={0.5} />
       </svg>
     );
   }
@@ -111,29 +115,33 @@ const CustomDot = ({ cx, cy, payload, selectedDataPoint }: any) => {
   );
 };
 
-const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({ 
+const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
   gammaAnalysis: data,
-  priceData ,
+  priceData,
   currentPrice,
 }) => {
   const [tradingRange, setTradingRange] = useState(10);
   const [selectedDataPoint, setSelectedDataPoint] = useState<string>("");
-  const [showPositionsSelected, setShowPositionsSelected] = useState<PositionVisibility>({
-    bullish: false,
-    bearish: false
-  });
+  const [showPositionsSelected, setShowPositionsSelected] =
+    useState<PositionVisibility>({
+      bullish: false,
+      bearish: false,
+    });
   const [showSpotPrice, setShowSpotPrice] = useState(false);
 
   // Filter data based on trading range
   const filteredData = useMemo(() => {
     console.log(priceData);
-    return data.filter(item => item.trading_range === tradingRange);
+    return data.filter((item) => item.trading_range === tradingRange);
   }, [data, tradingRange]);
 
   // Get the analysis point to display (either selected or latest)
   const displayedAnalysis = useMemo(() => {
     if (selectedDataPoint) {
-      return filteredData.find(item => item.created_at === selectedDataPoint) || filteredData[0];
+      return (
+        filteredData.find((item) => item.created_at === selectedDataPoint) ||
+        filteredData[0]
+      );
     }
     return filteredData[0];
   }, [filteredData, selectedDataPoint]);
@@ -146,37 +154,44 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
   }, [filteredData]);
 
   // Add this before the return statement
-  const formattedPriceData = useMemo(() => formatChartData(priceData), [priceData]);
+  const formattedPriceData = useMemo(
+    () => formatChartData(priceData),
+    [priceData]
+  );
 
   // Add these helper functions
   const toggleBullishPosition = () => {
-    setShowPositionsSelected(prev => ({
+    setShowPositionsSelected((prev) => ({
       ...prev,
-      bullish: !prev.bullish
+      bullish: !prev.bullish,
     }));
   };
 
   const toggleBearishPosition = () => {
-    setShowPositionsSelected(prev => ({
+    setShowPositionsSelected((prev) => ({
       ...prev,
-      bearish: !prev.bearish
+      bearish: !prev.bearish,
     }));
   };
 
   // Update the filteredChartData calculation
   const filteredChartData = useMemo(() => {
-    if (!selectedDataPoint || !formattedPriceData.length) return formattedPriceData;
+    if (!selectedDataPoint || !formattedPriceData.length)
+      return formattedPriceData;
     return filterDataFromTimestamp(formattedPriceData, selectedDataPoint);
   }, [formattedPriceData, selectedDataPoint]);
 
   // Inside the GammaAnalysisCard component, add this function to calculate the domain
-  const calculateYAxisDomain = (data: any[], analysis: GammaAnalysis | undefined) => {
-    if (!data.length || !analysis) return ['auto', 'auto'];
-    
+  const calculateYAxisDomain = (
+    data: any[],
+    analysis: GammaAnalysis | undefined
+  ) => {
+    if (!data.length || !analysis) return ["auto", "auto"];
+
     // Get min/max from price data
-    let minPrice = Math.min(...data.map(d => d.price));
-    let maxPrice = Math.max(...data.map(d => d.price));
-    
+    let minPrice = Math.min(...data.map((d) => d.price));
+    let maxPrice = Math.max(...data.map((d) => d.price));
+
     // Consider stop losses and take profits
     if (analysis) {
       const levels = [
@@ -187,13 +202,13 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
         analysis.major_support_level,
         analysis.major_resistance_level,
         analysis.minor_support_level,
-        analysis.minor_resistance_level
+        analysis.minor_resistance_level,
       ];
-      
+
       minPrice = Math.min(minPrice, ...levels);
       maxPrice = Math.max(maxPrice, ...levels);
     }
-    
+
     // Add some padding (5%)
     const padding = (maxPrice - minPrice) * 0.05;
     return [minPrice - padding, maxPrice + padding];
@@ -201,51 +216,68 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
 
   const currentContract = useMemo(() => getCurrentGoldContractOption(), []);
 
-  const adjustPriceWithDelta = (price: number, delta: number, isSpot: boolean) => {
+  const adjustPriceWithDelta = (
+    price: number,
+    delta: number,
+    isSpot: boolean
+  ) => {
     return isSpot ? price - delta : price;
   };
 
   const adjustedChartData = useMemo(() => {
-    return filteredChartData.map(point => ({
+    return filteredChartData.map((point) => ({
       ...point,
       price: adjustPriceWithDelta(
         point.price,
         displayedAnalysis?.delta ?? 0,
         showSpotPrice
-      )
+      ),
     }));
   }, [filteredChartData, displayedAnalysis?.delta, showSpotPrice]);
 
   return (
     <div className="space-y-4">
       {/* Latest Analysis Summary */}
-      <Card className="bg-[#030816] border-[#20293A] hover:bg-[#0A1122] transition-colors">
+      <Card className="bg-[#030816] border-none">
         <CardHeader>
           <CardTitle className="text-[#FAFAFA] flex items-center justify-between">
             <div className="flex items-center justify-between w-full">
-              <div className="flex items-center gap-4">
+              <div className="items-center gap-4">
                 <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                  <span className="font-medium">Current Analysis</span>
+                  <div className="w-2 h-2 rounded-full bg-[#209CFF] animate-pulse" />
+                  <span className="font-medium text-[16px] text-[#FAFAFA]">
+                    Current Analysis
+                  </span>
                 </div>
-                <div className="flex items-center gap-2 text-sm">
+                <div className="flex items-center gap-2 text-[14px] font-normal mt-2">
                   <span className="text-[#A1A1AA]">{currentContract}</span>
                   <div className="h-4 w-[1px] bg-[#20293A]" />
                   <div className="flex items-center gap-1">
                     <span className="text-[#A1A1AA]">Futures:</span>
-                    <span className="font-medium">${displayedAnalysis?.price.toFixed(2)}</span>
+                    <span className="font-normal text-[#209CFF]">
+                      ${displayedAnalysis?.price.toFixed(2)}
+                    </span>
                   </div>
                   <div className="h-4 w-[1px] bg-[#20293A]" />
                   <div className="flex items-center gap-1">
                     <span className="text-[#A1A1AA]">Spot:</span>
-                    <span className="font-medium">${displayedAnalysis?.spot_price.toFixed(2)}</span>
+                    <span className="font-normal text-[#209CFF]">
+                      ${displayedAnalysis?.spot_price.toFixed(2)}
+                    </span>
                   </div>
                   <div className="h-4 w-[1px] bg-[#20293A]" />
                   <div className="flex items-center gap-1">
                     <span className="text-[#A1A1AA]">Delta:</span>
-                    <span className="font-medium">${displayedAnalysis?.delta.toFixed(2)}</span>
+                    <span className="font-normal text-[#209CFF]">
+                      ${displayedAnalysis?.delta.toFixed(2)}
+                    </span>
                     <span className="text-xs text-[#A1A1AA]">
-                      ({((displayedAnalysis.delta / displayedAnalysis.price) * 100).toFixed(2)}%)
+                      (
+                      {(
+                        (displayedAnalysis.delta / displayedAnalysis.price) *
+                        100
+                      ).toFixed(2)}
+                      %)
                     </span>
                   </div>
                 </div>
@@ -255,32 +287,32 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
               {/* Time Selection Dropdown */}
               <div className="flex items-center gap-2">
                 <span className="text-sm text-[#A1A1AA]">Time:</span>
-                <Select 
-                  value={selectedDataPoint} 
+                <Select
+                  value={selectedDataPoint}
                   onValueChange={setSelectedDataPoint}
                 >
                   <SelectTrigger className="w-[200px] bg-[#0A1122] border-[#20293A]">
                     <SelectValue>
-                      {selectedDataPoint ? 
-                        format(new Date(selectedDataPoint), 'HH:mm:ss dd/MM') : 
-                        'Select time'
-                      }
+                      {selectedDataPoint
+                        ? format(new Date(selectedDataPoint), "HH:mm:ss dd/MM")
+                        : "Select time"}
                     </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     {filteredData.map((item) => (
-                      <SelectItem 
-                        key={item.created_at} 
+                      <SelectItem
+                        key={item.created_at}
                         value={item.created_at}
                         className="text-sm"
                       >
-                        {format(new Date(item.created_at), 'HH:mm:ss dd/MM')} - ${item.price.toFixed(2)}
+                        {format(new Date(item.created_at), "HH:mm:ss dd/MM")} -
+                        ${item.price.toFixed(2)}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
-              
+
               {/* Trading Range Buttons */}
               <div className="flex items-center gap-2">
                 <span className="text-sm text-[#A1A1AA]">Trading Range:</span>
@@ -293,9 +325,9 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
                       setSelectedDataPoint(""); // Reset selection when changing range
                     }}
                     className={`px-3 py-1 ${
-                      tradingRange === 10 
-                        ? 'bg-[#2563EB] text-white' 
-                        : 'bg-transparent text-[#A1A1AA] border-[#20293A] hover:bg-[#0A1122]'
+                      tradingRange === 10
+                        ? "bg-[#2563EB] text-white"
+                        : "bg-transparent text-[#A1A1AA] border-[#20293A] hover:bg-[#0A1122]"
                     }`}
                   >
                     10
@@ -308,9 +340,9 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
                       setSelectedDataPoint(""); // Reset selection when changing range
                     }}
                     className={`px-3 py-1 ${
-                      tradingRange === 20 
-                        ? 'bg-[#2563EB] text-white' 
-                        : 'bg-transparent text-[#A1A1AA] border-[#20293A] hover:bg-[#0A1122]'
+                      tradingRange === 20
+                        ? "bg-[#2563EB] text-white"
+                        : "bg-transparent text-[#A1A1AA] border-[#20293A] hover:bg-[#0A1122]"
                     }`}
                   >
                     20
@@ -322,78 +354,133 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Price Section */}
-          <div className="space-y-3 p-4 rounded-lg bg-[#0A1122] border border-[#20293A]">
-            <div className="flex justify-between items-center">
-              <p className="text-[#A1A1AA] font-medium">
-                {showSpotPrice ? "Spot Price Analysis" : "Futures Price Analysis"}
+          <div className="space-y-0 pt-3 px-0 rounded-lg bg-[#030816] border border-[#20293A]">
+            <div className="flex justify-between items-center border-b border-[#20293A] pb-3 px-4">
+              <p className="text-[#A1A1AA] font-normal text-[14px]">
+                {showSpotPrice
+                  ? "Spot Price Analysis"
+                  : "Futures Price Analysis"}
               </p>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-[#A1A1AA]">Show Spot</span>
+                <span className="text-[12px] text-[#A1A1AA]">Show Spot</span>
                 <Switch
                   checked={showSpotPrice}
                   onCheckedChange={setShowSpotPrice}
-                  className="data-[state=checked]:bg-green-500"
+                  className="data-[state=checked]:bg-[#209CFF]"
                 />
               </div>
             </div>
-            <div className="flex items-baseline gap-2">
-              <p className="text-3xl font-bold text-[#FAFAFA]">
-                ${adjustPriceWithDelta(
-                  displayedAnalysis?.price ?? 0,
-                  displayedAnalysis?.delta ?? 0,
-                  showSpotPrice
-                ).toFixed(2)}
-              </p>
-           
+            <div className="grid grid-cols-12 items-center h-[120px]">
+              <div className="col-span-5 flex flex-col gap-2 bg-[#060E21] h-full">
+                <div className="flex flex-col items-center justify-center h-full">
+                  <div className="text-[12px] text-[#A1A1AA]">
+                    {showSpotPrice
+                      ? "Spot Price"
+                      : "Futures Price"}
+                  </div>
+                  <div className="text-[22px] font-semibold text-[#FAFAFA]">
+                    $
+                    {adjustPriceWithDelta(
+                      displayedAnalysis?.price ?? 0,
+                      displayedAnalysis?.delta ?? 0,
+                      showSpotPrice
+                    ).toFixed(2)}
+                  </div>
+                </div>
+              </div>
+              <div className="col-span-4 border-l border-r border-[#20293A] h-full flex items-center justify-center">
+                <div className="flex flex-col items-center">
+                  <div className="text-[12px] text-[#A1A1AA] text-center">
+                    Trading Range
+                  </div>
+                  <div className="text-[20px] font-semibold text-[#FAFAFA]">
+                    {tradingRange}
+                  </div>
+                </div>
+              </div>
+              <div className="col-span-3 flex gap-2 flex-wrap justify-center">
+                <div className="flex flex-col items-center w-full">
+                  <div className="text-[12px] text-[#A1A1AA] text-center w-full">
+                    Delta
+                  </div>
+                  {displayedAnalysis?.delta !== undefined && (
+                    <Badge
+                      variant={
+                        displayedAnalysis.delta > 0 ? "default" : "destructive"
+                      }
+                      className="text-[20px] font-semibold text-[#FAFAFA] py-0"
+                    >
+                      {displayedAnalysis.delta.toFixed(2)}
+                    </Badge>
+                  )}
+                </div>
+              </div>
             </div>
-            <Badge className="text-md text-[#FAFAFA]">
-              trading range: {tradingRange}
-            </Badge>
-            <div className="flex gap-2 flex-wrap">
-              {displayedAnalysis?.delta !== undefined && (
-                <Badge 
-                  variant={displayedAnalysis.delta > 0 ? "default" : "destructive"}
-                  className="text-sm"
-                >
-                  Delta: {displayedAnalysis.delta.toFixed(2)}
-                </Badge>
-              )}
+
+            {/* Major Section */}
+            <div className="pt-0 w-full border-t border-[#20293A] bg-[#0A1020]/30 px-4 h-auto">
+              <div className="w-[100%] py-1 h-full flex justify-center">
+                <span className="text-[12px] text-[#A1A1AA]">Major</span>
+              </div>
             </div>
-            <div className="space-y-2 pt-2 border-t border-[#20293A]">
-              <div className="flex justify-between">
-                <span className="text-sm text-[#A1A1AA]">Major Support</span>
+
+            <div className="grid grid-cols-2 border-t border-[#20293A] h-[60px]">
+              <div className="flex flex-col justify-center items-center border-r border-[#20293A]">
+                <span className="text-[12px] text-[#A1A1AA]">
+                  Major Support
+                </span>
                 <span className="text-sm font-medium">
-                  ${adjustPriceWithDelta(
+                  $
+                  {adjustPriceWithDelta(
                     displayedAnalysis?.major_support_level ?? 0,
                     displayedAnalysis?.delta ?? 0,
                     showSpotPrice
                   ).toFixed(2)}
                 </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-[#A1A1AA]">Major Resistance</span>
+              <div className="flex flex-col justify-center items-center">
+                <span className="text-[12px] text-[#A1A1AA]">
+                  Major Resistance
+                </span>
                 <span className="text-sm font-medium">
-                  ${adjustPriceWithDelta(
+                  $
+                  {adjustPriceWithDelta(
                     displayedAnalysis?.major_resistance_level ?? 0,
                     displayedAnalysis?.delta ?? 0,
                     showSpotPrice
                   ).toFixed(2)}
                 </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-[#A1A1AA]">Minor Support</span>
+            </div>
+
+            {/* Minor Section */}
+            <div className="pt-0 w-full border-t border-[#20293A] bg-[#0A1020]/30 px-4 h-auto">
+              <div className="w-[100%] py-1 h-full flex justify-center">
+                <span className="text-[12px] text-[#A1A1AA]">Minor</span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 border-t border-[#20293A] h-[60px]">
+              <div className="flex flex-col justify-center items-center border-r border-[#20293A]">
+                <span className="text-[12px] text-[#A1A1AA]">
+                  Minor Support
+                </span>
                 <span className="text-sm font-medium">
-                  ${adjustPriceWithDelta(
+                  $
+                  {adjustPriceWithDelta(
                     displayedAnalysis?.minor_support_level ?? 0,
                     displayedAnalysis?.delta ?? 0,
                     showSpotPrice
                   ).toFixed(2)}
                 </span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-[#A1A1AA]">Minor Resistance</span>
+              <div className="flex flex-col justify-center items-center">
+                <span className="text-[12px] text-[#A1A1AA]">
+                  Minor Resistance
+                </span>
                 <span className="text-sm font-medium">
-                  ${adjustPriceWithDelta(
+                  $
+                  {adjustPriceWithDelta(
                     displayedAnalysis?.minor_resistance_level ?? 0,
                     displayedAnalysis?.delta ?? 0,
                     showSpotPrice
@@ -404,107 +491,119 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
           </div>
 
           {/* Bullish Scenario */}
-          <div className="space-y-3 p-4 rounded-lg bg-[#0A1122] border border-[#20293A]">
-            <div className="flex justify-between items-center">
-              <p className="text-[#A1A1AA] font-medium flex items-center gap-2">
-                <span className="text-green-500"><StockUpIcon /></span> Bullish Scenario
+          <div className="space-y-0 pt-3 rounded-lg bg-[#030816] border border-[#20293A] overflow-hidden">
+            <div className="flex justify-between items-center border-b border-[#20293A] pb-3 px-4">
+              <p className="text-[#A1A1AA] font-normal text-[14px] flex items-center gap-2">
+                <span className="text-green-500">
+                  <StockUpIcon size={16} />
+                </span>{" "}
+                Bullish Scenario
               </p>
-              <Button
-                variant={showPositionsSelected.bullish ? "default" : "outline"}
-                size="sm"
-                onClick={toggleBullishPosition}
-                className={`px-3 py-1 ${
-                  showPositionsSelected.bullish 
-                    ? 'bg-green-500 text-white' 
-                    : 'bg-transparent text-[#A1A1AA] border-[#20293A]'
-                }`}
-              >
-                Show Long
-              </Button>
+              <div className="flex items-center gap-2">
+                <span className="text-[12px] text-[#A1A1AA]">Show Long</span>
+                <Switch
+                  checked={showPositionsSelected.bullish}
+                  onCheckedChange={toggleBullishPosition}
+                  className="data-[state=checked]:bg-[#209CFF]"
+                />
+              </div>
             </div>
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-sm text-[#A1A1AA]">Entry</span>
-                <span className="text-sm font-medium">
-                  ${adjustPriceWithDelta(
+
+            <div className="grid grid-cols-1 h-[40%] border-b border-[#20293A]">
+              <div className="flex flex-col justify-center items-center">
+                <div className="text-[12px] text-[#A1A1AA]">Entry</div>
+                <div className="text-[20px] font-semibold text-[#FAFAFA]">
+                  $
+                  {adjustPriceWithDelta(
                     displayedAnalysis?.bullish_entry ?? 0,
                     displayedAnalysis?.delta ?? 0,
                     showSpotPrice
                   ).toFixed(2)}
-                </span>
+                </div>
               </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-[#A1A1AA]">Target</span>
-                <span className="text-sm font-medium text-green-500">
-                  ${adjustPriceWithDelta(
+            </div>
+
+            <div className="grid grid-cols-2 h-[50%]">
+              <div className="flex flex-col justify-center items-center border-r border-[#20293A]">
+                <div className="text-[12px] text-[#A1A1AA]">Target</div>
+                <div className="text-[20px] font-semibold text-green-500">
+                  $
+                  {adjustPriceWithDelta(
                     displayedAnalysis?.bullish_tp ?? 0,
                     displayedAnalysis?.delta ?? 0,
                     showSpotPrice
                   ).toFixed(2)}
-                </span>
+                </div>
               </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-[#A1A1AA]">Stop Loss</span>
-                <span className="text-sm font-medium text-red-500">
-                  ${adjustPriceWithDelta(
+              <div className="flex flex-col justify-center items-center">
+                <div className="text-[12px] text-[#A1A1AA]">Stop Loss</div>
+                <div className="text-[20px] font-semibold text-red-500">
+                  $
+                  {adjustPriceWithDelta(
                     displayedAnalysis?.bullish_sl ?? 0,
                     displayedAnalysis?.delta ?? 0,
                     showSpotPrice
                   ).toFixed(2)}
-                </span>
+                </div>
               </div>
             </div>
           </div>
 
           {/* Bearish Scenario */}
-          <div className="space-y-3 p-4 rounded-lg bg-[#0A1122] border border-[#20293A]">
-            <div className="flex justify-between items-center">
-              <p className="text-[#A1A1AA] font-medium flex items-center gap-2">
-                <span className="text-red-500"><StockDownIcon /></span> Bearish Scenario
+          <div className="space-y-0 pt-3 rounded-lg bg-[#030816] border border-[#20293A] overflow-hidden">
+            <div className="flex justify-between items-center border-b border-[#20293A] pb-3 px-4">
+              <p className="text-[#A1A1AA] font-normal text-[14px] flex items-center gap-2">
+                <span className="text-red-500">
+                  <StockDownIcon size={16} />
+                </span>{" "}
+                Bearish Scenario
               </p>
-              <Button
-                variant={showPositionsSelected.bearish ? "default" : "outline"}
-                size="sm"
-                onClick={toggleBearishPosition}
-                className={`px-3 py-1 ${
-                  showPositionsSelected.bearish 
-                    ? 'bg-red-500 text-white' 
-                    : 'bg-transparent text-[#A1A1AA] border-[#20293A]'
-                }`}
-              >
-                Show Short
-              </Button>
+              <div className="flex items-center gap-2">
+                <span className="text-[12px] text-[#A1A1AA]">Show Short</span>
+                <Switch
+                  checked={showPositionsSelected.bearish}
+                  onCheckedChange={toggleBearishPosition}
+                  className="data-[state=checked]:bg-red-500"
+                />
+              </div>
             </div>
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-sm text-[#A1A1AA]">Entry</span>
-                <span className="text-sm font-medium">
-                  ${adjustPriceWithDelta(
+
+            <div className="grid grid-cols-1 h-[40%] border-b border-[#20293A]">
+              <div className="flex flex-col justify-center items-center">
+                <div className="text-[12px] text-[#A1A1AA]">Entry</div>
+                <div className="text-[20px] font-semibold text-[#FAFAFA]">
+                  $
+                  {adjustPriceWithDelta(
                     displayedAnalysis?.bearish_entry ?? 0,
                     displayedAnalysis?.delta ?? 0,
                     showSpotPrice
                   ).toFixed(2)}
-                </span>
+                </div>
               </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-[#A1A1AA]">Target</span>
-                <span className="text-sm font-medium text-green-500">
-                  ${adjustPriceWithDelta(
+            </div>
+
+            <div className="grid grid-cols-2 h-[50%]">
+              <div className="flex flex-col justify-center items-center border-r border-[#20293A]">
+                <div className="text-[12px] text-[#A1A1AA]">Target</div>
+                <div className="text-[20px] font-semibold text-green-500">
+                  $
+                  {adjustPriceWithDelta(
                     displayedAnalysis?.bearish_tp ?? 0,
                     displayedAnalysis?.delta ?? 0,
                     showSpotPrice
                   ).toFixed(2)}
-                </span>
+                </div>
               </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-[#A1A1AA]">Stop Loss</span>
-                <span className="text-sm font-medium text-red-500">
-                  ${adjustPriceWithDelta(
+              <div className="flex flex-col justify-center items-center">
+                <div className="text-[12px] text-[#A1A1AA]">Stop Loss</div>
+                <div className="text-[20px] font-semibold text-red-500">
+                  $
+                  {adjustPriceWithDelta(
                     displayedAnalysis?.bearish_sl ?? 0,
                     displayedAnalysis?.delta ?? 0,
                     showSpotPrice
                   ).toFixed(2)}
-                </span>
+                </div>
               </div>
             </div>
           </div>
@@ -512,238 +611,249 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
       </Card>
 
       {/* Price Chart */}
-      <Card className="bg-[#030816] border-[#20293A] hover:bg-[#0A1122] transition-colors">
-        <CardHeader>
-          <CardTitle className="text-[#FAFAFA] flex items-center justify-between">
-            <span>Price Analysis</span>
-            <div className="flex items-center gap-4">
-              {selectedDataPoint && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setSelectedDataPoint("")}
-                  className="text-xs bg-transparent text-[#A1A1AA] border-[#20293A] hover:bg-[#0A1122]"
+      <div className="rounded-none border-t border-[#20293A]">
+        <Card className="bg-[#030816] rounded-[12px] border-none">
+          <CardHeader>
+            <CardTitle className="text-[#FAFAFA] text-[16px] flex items-center justify-between">
+              <span>Price Analysis</span>
+              <div className="flex items-center gap-4">
+                {selectedDataPoint && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setSelectedDataPoint("")}
+                    className="text-xs bg-transparent text-[#A1A1AA] border-[#20293A] hover:bg-[#0A1122]"
+                  >
+                    Reset Zoom
+                  </Button>
+                )}
+                {filteredData[0] && (
+                  <Badge variant="outline" className="text-xs">
+                    Last updated:{" "}
+                    {format(new Date(filteredData[0].created_at), "HH:mm:ss")}
+                  </Badge>
+                )}
+              </div>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-[400px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart
+                  data={adjustedChartData}
+                  margin={{ top: 5, right: 120, left: 20, bottom: 5 }}
                 >
-                  Reset Zoom
-                </Button>
-              )}
-              {filteredData[0] && (
-                <Badge variant="outline" className="text-xs">
-                  Last updated: {format(new Date(filteredData[0].created_at), 'HH:mm:ss')}
-                </Badge>
-              )}
-            </div>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="h-[400px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart
-                data={adjustedChartData}
-                margin={{ top: 5, right: 120, left: 20, bottom: 5 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" stroke="#20293A" />
-                <XAxis 
-                  dataKey="timestamp"
-                  stroke="#A1A1AA"
-                  type="number"
-                  scale="time"
-                  domain={['auto', 'auto']}
-                  tickFormatter={(value) => format(new Date(value), 'yyyy-MM-dd HH:mm')}
-                />
-                <YAxis 
-                  stroke="#A1A1AA"
-                  domain={calculateYAxisDomain(adjustedChartData, displayedAnalysis)}
-                  tickFormatter={(value) => value.toFixed(0)}
-                />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: '#0A1122',
-                    border: '1px solid #20293A',
-                    borderRadius: '8px',
-                    padding: '8px'
-                  }}
-                  labelStyle={{
-                    color: '#A1A1AA'
-                  }}
-                  labelFormatter={(value) => format(new Date(value), 'yyyy-MM-dd HH:mm:ss')}
-                  formatter={(value: number, name: string) => [`$${value.toFixed(2)}`, name]}
-                />
-                <Legend />
-                
-                {/* Bullish Position Lines */}
-                {showPositionsSelected.bullish && displayedAnalysis && (
-                  <>
-                    <ReferenceLine 
-                      y={adjustPriceWithDelta(
-                        displayedAnalysis.bullish_entry,
-                        displayedAnalysis.delta,
-                        showSpotPrice
-                      )} 
-                      stroke="#10B981" 
-                      strokeDasharray="3 3"
-                      label={{ 
-                        value: `Long Entry ($${adjustPriceWithDelta(
+                  <CartesianGrid strokeDasharray="3 3" stroke="#20293A" />
+                  <XAxis
+                    dataKey="timestamp"
+                    stroke="#A1A1AA"
+                    type="number"
+                    scale="time"
+                    domain={["auto", "auto"]}
+                    tickFormatter={(value) =>
+                      format(new Date(value), "yyyy-MM-dd HH:mm")
+                    }
+                  />
+                  <YAxis
+                    stroke="#A1A1AA"
+                    domain={calculateYAxisDomain(
+                      adjustedChartData,
+                      displayedAnalysis
+                    )}
+                    tickFormatter={(value) => value.toFixed(0)}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#0A1122",
+                      border: "1px solid #20293A",
+                      borderRadius: "8px",
+                      padding: "8px",
+                    }}
+                    labelStyle={{
+                      color: "#A1A1AA",
+                    }}
+                    labelFormatter={(value) =>
+                      format(new Date(value), "yyyy-MM-dd HH:mm:ss")
+                    }
+                    formatter={(value: number, name: string) => [
+                      `$${value.toFixed(2)}`,
+                      name,
+                    ]}
+                  />
+                  <Legend />
+
+                  {/* Bullish Position Lines */}
+                  {showPositionsSelected.bullish && displayedAnalysis && (
+                    <>
+                      <ReferenceLine
+                        y={adjustPriceWithDelta(
                           displayedAnalysis.bullish_entry,
                           displayedAnalysis.delta,
                           showSpotPrice
-                        ).toFixed(2)})`, 
-                        position: 'right', 
-                        fill: '#10B981',
-                        fontSize: 12,
-                        offset: 5
-                      }}
-                    />
-                    <ReferenceLine 
-                      y={adjustPriceWithDelta(
-                        displayedAnalysis.bullish_tp,
-                        displayedAnalysis.delta,
-                        showSpotPrice
-                      )} 
-                      stroke="#10B981"
-                      strokeDasharray="3 3"
-                      label={{ 
-                        value: `Take Profit ($${adjustPriceWithDelta(
+                        )}
+                        stroke="#10B981"
+                        strokeDasharray="3 3"
+                        label={{
+                          value: `Long Entry ($${adjustPriceWithDelta(
+                            displayedAnalysis.bullish_entry,
+                            displayedAnalysis.delta,
+                            showSpotPrice
+                          ).toFixed(2)})`,
+                          position: "right",
+                          fill: "#10B981",
+                          fontSize: 12,
+                          offset: 5,
+                        }}
+                      />
+                      <ReferenceLine
+                        y={adjustPriceWithDelta(
                           displayedAnalysis.bullish_tp,
                           displayedAnalysis.delta,
                           showSpotPrice
-                        ).toFixed(2)})`, 
-                        position: 'right', 
-                        fill: '#10B981',
-                        fontSize: 12,
-                        offset: 5
-                      }}
-                    />
-                    <ReferenceLine 
-                      y={adjustPriceWithDelta(
-                        displayedAnalysis.bullish_sl,
-                        displayedAnalysis.delta,
-                        showSpotPrice
-                      )} 
-                      stroke="#EF4444"
-                      strokeDasharray="3 3"
-                      label={{ 
-                        value: `Stop Loss ($${adjustPriceWithDelta(
+                        )}
+                        stroke="#10B981"
+                        strokeDasharray="3 3"
+                        label={{
+                          value: `Take Profit ($${adjustPriceWithDelta(
+                            displayedAnalysis.bullish_tp,
+                            displayedAnalysis.delta,
+                            showSpotPrice
+                          ).toFixed(2)})`,
+                          position: "right",
+                          fill: "#10B981",
+                          fontSize: 12,
+                          offset: 5,
+                        }}
+                      />
+                      <ReferenceLine
+                        y={adjustPriceWithDelta(
                           displayedAnalysis.bullish_sl,
                           displayedAnalysis.delta,
                           showSpotPrice
-                        ).toFixed(2)})`, 
-                        position: 'right', 
-                        fill: '#EF4444',
-                        fontSize: 12,
-                        offset: 5
-                      }}
-                    />
-                  </>
-                )}
+                        )}
+                        stroke="#EF4444"
+                        strokeDasharray="3 3"
+                        label={{
+                          value: `Stop Loss ($${adjustPriceWithDelta(
+                            displayedAnalysis.bullish_sl,
+                            displayedAnalysis.delta,
+                            showSpotPrice
+                          ).toFixed(2)})`,
+                          position: "right",
+                          fill: "#EF4444",
+                          fontSize: 12,
+                          offset: 5,
+                        }}
+                      />
+                    </>
+                  )}
 
-                {/* Bearish Position Lines */}
-                {showPositionsSelected.bearish && displayedAnalysis && (
-                  <>
-                    <ReferenceLine 
-                      y={adjustPriceWithDelta(
-                        displayedAnalysis.bearish_entry,
-                        displayedAnalysis.delta,
-                        showSpotPrice
-                      )} 
-                      stroke="#EF4444" 
-                      strokeDasharray="3 3"
-                      label={{ 
-                        value: `Short Entry ($${adjustPriceWithDelta(
+                  {/* Bearish Position Lines */}
+                  {showPositionsSelected.bearish && displayedAnalysis && (
+                    <>
+                      <ReferenceLine
+                        y={adjustPriceWithDelta(
                           displayedAnalysis.bearish_entry,
                           displayedAnalysis.delta,
                           showSpotPrice
-                        ).toFixed(2)})`, 
-                        position: 'right', 
-                        fill: '#EF4444',
-                        fontSize: 12,
-                        offset: 5
-                      }}
-                    />
-                    <ReferenceLine 
-                      y={adjustPriceWithDelta(
-                        displayedAnalysis.bearish_tp,
-                        displayedAnalysis.delta,
-                        showSpotPrice
-                      )} 
-                      stroke="#10B981"
-                      strokeDasharray="3 3"
-                      label={{ 
-                        value: `Take Profit ($${adjustPriceWithDelta(
+                        )}
+                        stroke="#EF4444"
+                        strokeDasharray="3 3"
+                        label={{
+                          value: `Short Entry ($${adjustPriceWithDelta(
+                            displayedAnalysis.bearish_entry,
+                            displayedAnalysis.delta,
+                            showSpotPrice
+                          ).toFixed(2)})`,
+                          position: "right",
+                          fill: "#EF4444",
+                          fontSize: 12,
+                          offset: 5,
+                        }}
+                      />
+                      <ReferenceLine
+                        y={adjustPriceWithDelta(
                           displayedAnalysis.bearish_tp,
                           displayedAnalysis.delta,
                           showSpotPrice
-                        ).toFixed(2)})`, 
-                        position: 'right', 
-                        fill: '#10B981',
-                        fontSize: 12,
-                        offset: 5
-                      }}
-                    />
-                    <ReferenceLine 
-                      y={adjustPriceWithDelta(
-                        displayedAnalysis.bearish_sl,
-                        displayedAnalysis.delta,
-                        showSpotPrice
-                      )} 
-                      stroke="#EF4444"
-                      strokeDasharray="3 3"
-                      label={{ 
-                        value: `Stop Loss ($${adjustPriceWithDelta(
+                        )}
+                        stroke="#10B981"
+                        strokeDasharray="3 3"
+                        label={{
+                          value: `Take Profit ($${adjustPriceWithDelta(
+                            displayedAnalysis.bearish_tp,
+                            displayedAnalysis.delta,
+                            showSpotPrice
+                          ).toFixed(2)})`,
+                          position: "right",
+                          fill: "#10B981",
+                          fontSize: 12,
+                          offset: 5,
+                        }}
+                      />
+                      <ReferenceLine
+                        y={adjustPriceWithDelta(
                           displayedAnalysis.bearish_sl,
                           displayedAnalysis.delta,
                           showSpotPrice
-                        ).toFixed(2)})`, 
-                        position: 'right', 
-                        fill: '#EF4444',
+                        )}
+                        stroke="#EF4444"
+                        strokeDasharray="3 3"
+                        label={{
+                          value: `Stop Loss ($${adjustPriceWithDelta(
+                            displayedAnalysis.bearish_sl,
+                            displayedAnalysis.delta,
+                            showSpotPrice
+                          ).toFixed(2)})`,
+                          position: "right",
+                          fill: "#EF4444",
+                          fontSize: 12,
+                          offset: 5,
+                        }}
+                      />
+                    </>
+                  )}
+
+                  {selectedDataPoint && (
+                    <ReferenceLine
+                      x={new Date(selectedDataPoint).getTime()}
+                      stroke="#FFFFFF"
+                      strokeDasharray="3 3"
+                      label={{
+                        value: format(new Date(selectedDataPoint), "HH:mm:ss"),
+                        position: "top",
+                        fill: "#FFFFFF",
                         fontSize: 12,
-                        offset: 5
+                        offset: 5,
                       }}
                     />
-                  </>
-                )}
-
-                {selectedDataPoint && (
-                  <ReferenceLine
-                    x={new Date(selectedDataPoint).getTime()}
-                    stroke="#FFFFFF"
-                    strokeDasharray="3 3"
-                    label={{ 
-                      value: format(new Date(selectedDataPoint), 'HH:mm:ss'), 
-                      position: 'top',
-                      fill: "#FFFFFF",
-                      fontSize: 12,
-                      offset: 5
-                    }}
-                  />
-                )}
-
-                <Line 
-                  type="linear" 
-                  dataKey="price"
-                  data={adjustedChartData}
-                  stroke="#2563EB" 
-                  strokeWidth={2}
-                  name={showSpotPrice ? "Spot Price" : "Futures Price"}
-                  animationDuration={300}
-                  connectNulls={true}
-                  isAnimationActive={false}
-                  dot={(props) => (
-                    <CustomDot 
-                      {...props} 
-                      selectedDataPoint={selectedDataPoint}
-                    />
                   )}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </CardContent>
-      </Card>
 
-
+                  <Line
+                    type="linear"
+                    dataKey="price"
+                    data={adjustedChartData}
+                    stroke="#2563EB"
+                    strokeWidth={2}
+                    name={showSpotPrice ? "Spot Price" : "Futures Price"}
+                    animationDuration={300}
+                    connectNulls={true}
+                    isAnimationActive={false}
+                    dot={(props) => (
+                      <CustomDot
+                        {...props}
+                        selectedDataPoint={selectedDataPoint}
+                      />
+                    )}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
 
-export default GammaAnalysisCard; 
+export default GammaAnalysisCard;
