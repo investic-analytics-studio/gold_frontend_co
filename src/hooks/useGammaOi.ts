@@ -28,7 +28,7 @@ interface UseGammaOiResult {
   availableMonths: string[];
 }
 
-interface HistoricalDataResponse {
+interface HistoricalDataTradingview {
   data: PriceData[];
   meta: {
     bars: number;
@@ -40,8 +40,8 @@ interface HistoricalDataResponse {
 }
 
 const fetchHistoricalData = async (timeframe: string) => {
-  const response = await axios.get<HistoricalDataResponse>(
-    getApiUrl(`tradingview/historical?symbol=XAUUSD&exchange=OANDA&interval=${timeframe}&bars=10`)
+  const response = await axios.get<HistoricalDataTradingview>(
+    getApiUrl(`tradingview/historical?symbol=XAUUSD&exchange=OANDA&interval=${timeframe}&bars=200`)
   );
   return response.data;
 };
@@ -53,48 +53,83 @@ const fetchOiData = async () => {
   return response.data;
 };
 
+export function useAvailableMonths() {
+  return useQuery({
+    queryKey: ['available-months'],
+    queryFn: async () => {
+      const response = await axios.get<OIData[]>(
+        getApiUrl('investic-weighted-oi-graph')
+      );
+      return [...new Set(response.data.map(item => item.month_year))];
+    },
+    staleTime: Infinity,
+    gcTime: Infinity,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+  });
+}
+
 export const useGammaOi = (selectedMonth: string, timeframe: string = "60"): UseGammaOiResult => {
-  const {
-    data: historicalData,
-    isLoading: isHistoricalLoading,
-    error: historicalError
-  } = useQuery({
+  const priceQuery = useQuery({
     queryKey: ['historical', timeframe],
     queryFn: () => fetchHistoricalData(timeframe),
     staleTime: 5 * 60 * 1000,
     refetchInterval: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    refetchOnReconnect: false,
+    enabled: true,
   });
 
-  const {
-    data: oiData,
-    isLoading: isOiLoading,
-    error: oiError
-  } = useQuery({
+  const oiQuery = useQuery({
     queryKey: ['oi-data', selectedMonth],
     queryFn: fetchOiData,
     staleTime: Infinity,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     refetchOnReconnect: false,
+    enabled: !!selectedMonth,
+    select: (data) => data.filter(item => item.month_year === selectedMonth),
   });
 
-  const currentPrice = historicalData?.data?.[historicalData.data.length - 1]?.close ?? 2000;
-
-  const filteredOiData = oiData?.filter(item => item.month_year === selectedMonth) ?? [];
-
-  const availableMonths = [...new Set(oiData?.map(item => item.month_year) ?? [])];
+  const currentPrice = priceQuery.data?.data?.[priceQuery.data.data.length - 1]?.close ?? 2000;
 
   return {
-    oiData: filteredOiData,
-    priceData: historicalData?.data ?? [],
+    oiData: oiQuery.data ?? [],
+    priceData: priceQuery.data?.data ?? [],
     currentPrice,
-    loading: isHistoricalLoading || isOiLoading,
-    error: (historicalError || oiError) as Error | null,
-    availableMonths,
+    loading: priceQuery.isLoading || oiQuery.isLoading,
+    error: (priceQuery.error || oiQuery.error) as Error | null,
+    availableMonths: [],
   };
 };
 
-export type { OIData, PriceData }; 
+export type { OIData, PriceData };
+
+export function getCurrentGoldContractOption() {
+  const now = new Date();
+  const currentMonth = now.getMonth();
+  const currentYear = now.getFullYear();
+  
+  // Gold futures months are: Feb(G), Apr(J), Jun(M), Aug(Q), Oct(V), Dec(Z)
+  const futuresMonths = [
+    { month: 1, code: 'G' },  // February
+    { month: 3, code: 'J' },  // April
+    { month: 5, code: 'M' },  // June
+    { month: 7, code: 'Q' },  // August
+    { month: 9, code: 'V' },  // October
+    { month: 11, code: 'Z' }, // December
+  ];
+
+  // Find the next valid futures month
+  let selectedMonth = futuresMonths.find(m => m.month > currentMonth);
+  if (!selectedMonth) {
+    selectedMonth = futuresMonths[0]; // If we're past December, use February of next year
+  }
+
+  // Format the year to two digits
+  const yearCode = (selectedMonth.month > currentMonth ? currentYear : currentYear + 1)
+    .toString()
+    .slice(-2);
+
+  return `GC${selectedMonth.code}${yearCode}`;
+} 
