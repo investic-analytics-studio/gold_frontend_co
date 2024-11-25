@@ -11,6 +11,9 @@ import { Switch } from "@/components/ui/switch";
 import {
   TrendingDown as StockDownIcon,
   TrendingUp as StockUpIcon,
+  RotateCcw,
+  ListFilter,
+  ChartArea,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
@@ -28,6 +31,20 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import ShimmerButton from "@/components/ui/shimmer-button";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
+import { SegmentedControl } from "@/components/ui/segmented-control";
 
 interface GammaAnalysis {
   price: number;
@@ -238,18 +255,207 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
   return (
     <div className="space-y-4">
       {/* Latest Analysis Summary */}
-      <Card className="bg-[#030816] border-none">
+      <Card className="bg-[#030816] border-none rounded-[12px]">
+        <div className="border-b border-[#20293A] p-3 pl-4 pr-2 text-[13px] text-[#A1A1AA] flex items-center justify-between h-[50px]">
+          <div className="flex items-center gap-2">
+            <div>
+              <ChartArea className="size-4" />
+            </div>
+            <div>Gamma AI</div>
+          </div>
+
+          <div className="lg:hidden">
+            <Drawer>
+              <DrawerTrigger asChild>
+                <div className="z-10 flex items-center justify-center">
+                  <ShimmerButton className="shadow-2xl w-auto px-4">
+                    <span className="text-[#209CFF]">
+                      <ListFilter className="size-4" />
+                    </span>
+                  </ShimmerButton>
+                </div>
+              </DrawerTrigger>
+              <DrawerContent className="h-[40%] bg-[#030816] border-t border-[#20293A]">
+                <DrawerHeader>
+                  <DrawerTitle className="text-[#FAFAFA] flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <ListFilter className="h-4 w-4" />
+                      Filter
+                    </div>
+                    <Button
+                      // onClick={handleResetAllFilters}
+                      variant="outline"
+                      className="font-normal text-[#209CFF] border-none hover:bg-[#172036] hover:text-[#209CFF] group"
+                    >
+                      <RotateCcw className="transition-transform duration-200 group-hover:-rotate-180" />
+                      Default Filters
+                    </Button>
+                  </DrawerTitle>
+                </DrawerHeader>
+                <div className="bg-[#030816] px-4">
+                  <div className="mt-4">
+                    <label className="text-[14px] font-normal text-[#A1A1AA]/70">
+                      Timeframe
+                    </label>
+                  </div>
+                  <Select
+                    value={selectedDataPoint}
+                    onValueChange={setSelectedDataPoint}
+                  >
+                    <SelectTrigger className="w-full mt-2 bg-transparent border-[#20293A]">
+                      <SelectValue>
+                        {selectedDataPoint
+                          ? format(
+                              new Date(selectedDataPoint),
+                              "HH:mm:ss dd/MM"
+                            )
+                          : "Select time"}
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {filteredData.map((item) => (
+                        <SelectItem
+                          key={item.created_at}
+                          value={item.created_at}
+                          className="text-sm"
+                        >
+                          {format(new Date(item.created_at), "HH:mm:ss dd/MM")}{" "}
+                          - ${item.price.toFixed(2)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <div className="mt-4">
+                    <label className="text-[14px] font-normal text-[#A1A1AA]/70">
+                      Trading Range
+                    </label>
+                  </div>
+                  <div className="flex items-center gap-2 mt-2">
+                    <SegmentedControl
+                      value={tradingRange}
+                      onChange={(value) => {
+                        setTradingRange(Number(value));
+                        setSelectedDataPoint("");
+                      }}
+                      segments={[
+                        { value: 10, label: "10" },
+                        { value: 20, label: "20" },
+                      ]}
+                    />
+                  </div>
+                </div>
+              </DrawerContent>
+            </Drawer>
+          </div>
+          <div className="hidden lg:block">
+            <Popover>
+              <PopoverTrigger asChild>
+                <div className="z-10 flex items-center justify-center">
+                  <ShimmerButton className="shadow-2xl w-[90px] gap-2">
+                    <span className="text-[#209CFF]">
+                      <ListFilter className="size-4" />
+                    </span>
+                    <span className="whitespace-pre-wrap text-center text-sm font-normal leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-sm">
+                      Filter
+                    </span>
+                  </ShimmerButton>
+                </div>
+              </PopoverTrigger>
+              <PopoverContent
+                className="w-[350px] h-auto overflow-y-auto scrollbar-track-transparent custom-scrollbar bg-[#030816] border-[#20293A] rounded-[12px] backdrop-blur-[10px] pt-0"
+                align="end"
+                side="bottom"
+                sideOffset={5}
+              >
+                <div className="sticky top-0 z-10 bg-[#030816] p-0 pb-2 pt-4">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <h4 className="font-medium leading-none text-[#FAFAFA]">
+                        Filter
+                      </h4>
+                    </div>
+                    <div>
+                      <Button
+                        // onClick={handleResetAllFilters}
+                        variant="outline"
+                        className="font-normal text-[#209CFF] border-none hover:bg-[#172036] hover:text-[#209CFF] group"
+                      >
+                        <RotateCcw className="transition-transform duration-200 group-hover:-rotate-180" />
+                        Default Filters
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="mt-4">
+                    <label className="text-[14px] font-normal text-[#A1A1AA]/70">
+                      Timeframe
+                    </label>
+                  </div>
+                  <Select
+                    value={selectedDataPoint}
+                    onValueChange={setSelectedDataPoint}
+                  >
+                    <SelectTrigger className="w-full mt-2 bg-transparent border-[#20293A]">
+                      <SelectValue>
+                        {selectedDataPoint
+                          ? format(
+                              new Date(selectedDataPoint),
+                              "HH:mm:ss dd/MM"
+                            )
+                          : "Select time"}
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {filteredData.map((item) => (
+                        <SelectItem
+                          key={item.created_at}
+                          value={item.created_at}
+                          className="text-sm"
+                        >
+                          {format(new Date(item.created_at), "HH:mm:ss dd/MM")}{" "}
+                          - ${item.price.toFixed(2)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <div className="mt-4">
+                    <label className="text-[14px] font-normal text-[#A1A1AA]/70">
+                      Trading Range
+                    </label>
+                  </div>
+                  <div className="flex items-center gap-2 mt-2">
+                    <SegmentedControl
+                      value={tradingRange}
+                      onChange={(value) => {
+                        setTradingRange(Number(value));
+                        setSelectedDataPoint("");
+                      }}
+                      segments={[
+                        { value: 10, label: "10" },
+                        { value: 20, label: "20" },
+                      ]}
+                    />
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
+          </div>
+        </div>
         <CardHeader>
-          <CardTitle className="text-[#FAFAFA] flex items-center justify-between">
-            <div className="flex items-center justify-between w-full">
-              <div className="items-center gap-4">
+          <CardTitle className="text-[#FAFAFA]">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between w-full gap-4">
+              {/* Left side content */}
+              <div className="space-y-4">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full bg-[#209CFF] animate-pulse" />
-                  <span className="font-medium text-[16px] text-[#FAFAFA]">
+                  <div className="font-medium text-[16px] text-[#FAFAFA]">
                     Current Analysis
-                  </span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 text-[14px] font-normal mt-2">
+              </div>
+
+              {/* Right side controls */}
+              <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex flex-row sm:items-center gap-2 text-[14px] font-normal flex-wrap">
                   <span className="text-[#A1A1AA]">{currentContract}</span>
                   <div className="h-4 w-[1px] bg-[#20293A]" />
                   <div className="flex items-center gap-1">
@@ -283,326 +489,263 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
                 </div>
               </div>
             </div>
-            <div className="flex items-center gap-4">
-              {/* Time Selection Dropdown */}
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-[#A1A1AA]">Time:</span>
-                <Select
-                  value={selectedDataPoint}
-                  onValueChange={setSelectedDataPoint}
-                >
-                  <SelectTrigger className="w-[200px] bg-[#0A1122] border-[#20293A]">
-                    <SelectValue>
-                      {selectedDataPoint
-                        ? format(new Date(selectedDataPoint), "HH:mm:ss dd/MM")
-                        : "Select time"}
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    {filteredData.map((item) => (
-                      <SelectItem
-                        key={item.created_at}
-                        value={item.created_at}
-                        className="text-sm"
+          </CardTitle>
+        </CardHeader>
+
+        <CardContent>
+          {/* Analysis Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Price Section */}
+            <div className="space-y-0 pt-3 px-0 rounded-lg bg-[#030816] border border-[#20293A]">
+              <div className="flex justify-between items-center border-b border-[#20293A] pb-3 px-4">
+                <p className="text-[#A1A1AA] font-normal text-[14px]">
+                  {showSpotPrice
+                    ? "Spot Price Analysis"
+                    : "Futures Price Analysis"}
+                </p>
+                <div className="flex items-center gap-2">
+                  <span className="text-[12px] text-[#A1A1AA]">Show Spot</span>
+                  <Switch
+                    checked={showSpotPrice}
+                    onCheckedChange={setShowSpotPrice}
+                    className="data-[state=checked]:bg-[#209CFF]"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-12 items-center h-[120px]">
+                <div className="col-span-5 flex flex-col gap-2 bg-[#060E21] h-full">
+                  <div className="flex flex-col items-center justify-center h-full">
+                    <div className="text-[12px] text-[#A1A1AA]">
+                      {showSpotPrice ? "Spot Price" : "Futures Price"}
+                    </div>
+                    <div className="text-[22px] font-semibold text-[#FAFAFA]">
+                      $
+                      {adjustPriceWithDelta(
+                        displayedAnalysis?.price ?? 0,
+                        displayedAnalysis?.delta ?? 0,
+                        showSpotPrice
+                      ).toFixed(2)}
+                    </div>
+                  </div>
+                </div>
+                <div className="col-span-4 border-l border-r border-[#20293A] h-full flex items-center justify-center">
+                  <div className="flex flex-col items-center">
+                    <div className="text-[12px] text-[#A1A1AA] text-center">
+                      Trading Range
+                    </div>
+                    <div className="text-[20px] font-semibold text-[#FAFAFA]">
+                      {tradingRange}
+                    </div>
+                  </div>
+                </div>
+                <div className="col-span-3 flex gap-2 flex-wrap justify-center">
+                  <div className="flex flex-col items-center w-full">
+                    <div className="text-[12px] text-[#A1A1AA] text-center w-full">
+                      Delta
+                    </div>
+                    {displayedAnalysis?.delta !== undefined && (
+                      <Badge
+                        variant={
+                          displayedAnalysis.delta > 0
+                            ? "default"
+                            : "destructive"
+                        }
+                        className="text-[20px] font-semibold text-[#FAFAFA] py-0"
                       >
-                        {format(new Date(item.created_at), "HH:mm:ss dd/MM")} -
-                        ${item.price.toFixed(2)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                        {displayedAnalysis.delta.toFixed(2)}
+                      </Badge>
+                    )}
+                  </div>
+                </div>
               </div>
 
-              {/* Trading Range Buttons */}
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-[#A1A1AA]">Trading Range:</span>
-                <div className="flex gap-1">
-                  <Button
-                    variant={tradingRange === 10 ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => {
-                      setTradingRange(10);
-                      setSelectedDataPoint(""); // Reset selection when changing range
-                    }}
-                    className={`px-3 py-1 ${
-                      tradingRange === 10
-                        ? "bg-[#2563EB] text-white"
-                        : "bg-transparent text-[#A1A1AA] border-[#20293A] hover:bg-[#0A1122]"
-                    }`}
-                  >
-                    10
-                  </Button>
-                  <Button
-                    variant={tradingRange === 20 ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => {
-                      setTradingRange(20);
-                      setSelectedDataPoint(""); // Reset selection when changing range
-                    }}
-                    className={`px-3 py-1 ${
-                      tradingRange === 20
-                        ? "bg-[#2563EB] text-white"
-                        : "bg-transparent text-[#A1A1AA] border-[#20293A] hover:bg-[#0A1122]"
-                    }`}
-                  >
-                    20
-                  </Button>
+              {/* Major Section */}
+              <div className="pt-0 w-full border-t border-[#20293A] bg-[#0A1020]/30 px-4 h-auto">
+                <div className="w-[100%] py-1 h-full flex justify-center">
+                  <span className="text-[12px] text-[#A1A1AA]">Major</span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 border-t border-[#20293A] h-[60px]">
+                <div className="flex flex-col justify-center items-center border-r border-[#20293A]">
+                  <span className="text-[12px] text-[#A1A1AA]">
+                    Major Support
+                  </span>
+                  <span className="text-sm font-medium">
+                    $
+                    {adjustPriceWithDelta(
+                      displayedAnalysis?.major_support_level ?? 0,
+                      displayedAnalysis?.delta ?? 0,
+                      showSpotPrice
+                    ).toFixed(2)}
+                  </span>
+                </div>
+                <div className="flex flex-col justify-center items-center">
+                  <span className="text-[12px] text-[#A1A1AA]">
+                    Major Resistance
+                  </span>
+                  <span className="text-sm font-medium">
+                    $
+                    {adjustPriceWithDelta(
+                      displayedAnalysis?.major_resistance_level ?? 0,
+                      displayedAnalysis?.delta ?? 0,
+                      showSpotPrice
+                    ).toFixed(2)}
+                  </span>
+                </div>
+              </div>
+
+              {/* Minor Section */}
+              <div className="pt-0 w-full border-t border-[#20293A] bg-[#0A1020]/30 px-4 h-auto">
+                <div className="w-[100%] py-1 h-full flex justify-center">
+                  <span className="text-[12px] text-[#A1A1AA]">Minor</span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 border-t border-[#20293A] h-[60px]">
+                <div className="flex flex-col justify-center items-center border-r border-[#20293A]">
+                  <span className="text-[12px] text-[#A1A1AA]">
+                    Minor Support
+                  </span>
+                  <span className="text-sm font-medium">
+                    $
+                    {adjustPriceWithDelta(
+                      displayedAnalysis?.minor_support_level ?? 0,
+                      displayedAnalysis?.delta ?? 0,
+                      showSpotPrice
+                    ).toFixed(2)}
+                  </span>
+                </div>
+                <div className="flex flex-col justify-center items-center">
+                  <span className="text-[12px] text-[#A1A1AA]">
+                    Minor Resistance
+                  </span>
+                  <span className="text-sm font-medium">
+                    $
+                    {adjustPriceWithDelta(
+                      displayedAnalysis?.minor_resistance_level ?? 0,
+                      displayedAnalysis?.delta ?? 0,
+                      showSpotPrice
+                    ).toFixed(2)}
+                  </span>
                 </div>
               </div>
             </div>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Price Section */}
-          <div className="space-y-0 pt-3 px-0 rounded-lg bg-[#030816] border border-[#20293A]">
-            <div className="flex justify-between items-center border-b border-[#20293A] pb-3 px-4">
-              <p className="text-[#A1A1AA] font-normal text-[14px]">
-                {showSpotPrice
-                  ? "Spot Price Analysis"
-                  : "Futures Price Analysis"}
-              </p>
-              <div className="flex items-center gap-2">
-                <span className="text-[12px] text-[#A1A1AA]">Show Spot</span>
-                <Switch
-                  checked={showSpotPrice}
-                  onCheckedChange={setShowSpotPrice}
-                  className="data-[state=checked]:bg-[#209CFF]"
-                />
+
+            {/* Bullish Scenario */}
+            <div className="min-h-[350px] md:min-h-auto space-y-0 pt-3 rounded-lg bg-[#030816] border border-[#20293A] overflow-hidden">
+              <div className="flex justify-between items-center border-b border-[#20293A] pb-3 px-4">
+                <p className="text-[#A1A1AA] font-normal text-[14px] flex items-center gap-2">
+                  <span className="text-green-500">
+                    <StockUpIcon size={16} />
+                  </span>{" "}
+                  Bullish Scenario
+                </p>
+                <div className="flex items-center gap-2">
+                  <span className="text-[12px] text-[#A1A1AA]">Show Long</span>
+                  <Switch
+                    checked={showPositionsSelected.bullish}
+                    onCheckedChange={toggleBullishPosition}
+                    className="data-[state=checked]:bg-[#209CFF]"
+                  />
+                </div>
               </div>
-            </div>
-            <div className="grid grid-cols-12 items-center h-[120px]">
-              <div className="col-span-5 flex flex-col gap-2 bg-[#060E21] h-full">
-                <div className="flex flex-col items-center justify-center h-full">
-                  <div className="text-[12px] text-[#A1A1AA]">
-                    {showSpotPrice
-                      ? "Spot Price"
-                      : "Futures Price"}
-                  </div>
-                  <div className="text-[22px] font-semibold text-[#FAFAFA]">
+
+              <div className="grid grid-cols-1 h-[40%] border-b border-[#20293A]">
+                <div className="flex flex-col justify-center items-center">
+                  <div className="text-[12px] text-[#A1A1AA]">Entry</div>
+                  <div className="text-[20px] font-semibold text-[#FAFAFA]">
                     $
                     {adjustPriceWithDelta(
-                      displayedAnalysis?.price ?? 0,
+                      displayedAnalysis?.bullish_entry ?? 0,
                       displayedAnalysis?.delta ?? 0,
                       showSpotPrice
                     ).toFixed(2)}
                   </div>
                 </div>
               </div>
-              <div className="col-span-4 border-l border-r border-[#20293A] h-full flex items-center justify-center">
-                <div className="flex flex-col items-center">
-                  <div className="text-[12px] text-[#A1A1AA] text-center">
-                    Trading Range
+
+              <div className="grid grid-cols-2 h-[50%]">
+                <div className="flex flex-col justify-center items-center border-r border-[#20293A]">
+                  <div className="text-[12px] text-[#A1A1AA]">Target</div>
+                  <div className="text-[20px] font-semibold text-green-500">
+                    $
+                    {adjustPriceWithDelta(
+                      displayedAnalysis?.bullish_tp ?? 0,
+                      displayedAnalysis?.delta ?? 0,
+                      showSpotPrice
+                    ).toFixed(2)}
                   </div>
+                </div>
+                <div className="flex flex-col justify-center items-center">
+                  <div className="text-[12px] text-[#A1A1AA]">Stop Loss</div>
+                  <div className="text-[20px] font-semibold text-red-500">
+                    $
+                    {adjustPriceWithDelta(
+                      displayedAnalysis?.bullish_sl ?? 0,
+                      displayedAnalysis?.delta ?? 0,
+                      showSpotPrice
+                    ).toFixed(2)}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Bearish Scenario */}
+            <div className="min-h-[350px] md:min-h-auto space-y-0 pt-3 rounded-lg bg-[#030816] border border-[#20293A] overflow-hidden">
+              <div className="flex justify-between items-center border-b border-[#20293A] pb-3 px-4">
+                <p className="text-[#A1A1AA] font-normal text-[14px] flex items-center gap-2">
+                  <span className="text-red-500">
+                    <StockDownIcon size={16} />
+                  </span>{" "}
+                  Bearish Scenario
+                </p>
+                <div className="flex items-center gap-2">
+                  <span className="text-[12px] text-[#A1A1AA]">Show Short</span>
+                  <Switch
+                    checked={showPositionsSelected.bearish}
+                    onCheckedChange={toggleBearishPosition}
+                    className="data-[state=checked]:bg-red-500"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 h-[40%] border-b border-[#20293A]">
+                <div className="flex flex-col justify-center items-center">
+                  <div className="text-[12px] text-[#A1A1AA]">Entry</div>
                   <div className="text-[20px] font-semibold text-[#FAFAFA]">
-                    {tradingRange}
+                    $
+                    {adjustPriceWithDelta(
+                      displayedAnalysis?.bearish_entry ?? 0,
+                      displayedAnalysis?.delta ?? 0,
+                      showSpotPrice
+                    ).toFixed(2)}
                   </div>
                 </div>
               </div>
-              <div className="col-span-3 flex gap-2 flex-wrap justify-center">
-                <div className="flex flex-col items-center w-full">
-                  <div className="text-[12px] text-[#A1A1AA] text-center w-full">
-                    Delta
+
+              <div className="grid grid-cols-2 h-[50%]">
+                <div className="flex flex-col justify-center items-center border-r border-[#20293A]">
+                  <div className="text-[12px] text-[#A1A1AA]">Target</div>
+                  <div className="text-[20px] font-semibold text-green-500">
+                    $
+                    {adjustPriceWithDelta(
+                      displayedAnalysis?.bearish_tp ?? 0,
+                      displayedAnalysis?.delta ?? 0,
+                      showSpotPrice
+                    ).toFixed(2)}
                   </div>
-                  {displayedAnalysis?.delta !== undefined && (
-                    <Badge
-                      variant={
-                        displayedAnalysis.delta > 0 ? "default" : "destructive"
-                      }
-                      className="text-[20px] font-semibold text-[#FAFAFA] py-0"
-                    >
-                      {displayedAnalysis.delta.toFixed(2)}
-                    </Badge>
-                  )}
                 </div>
-              </div>
-            </div>
-
-            {/* Major Section */}
-            <div className="pt-0 w-full border-t border-[#20293A] bg-[#0A1020]/30 px-4 h-auto">
-              <div className="w-[100%] py-1 h-full flex justify-center">
-                <span className="text-[12px] text-[#A1A1AA]">Major</span>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 border-t border-[#20293A] h-[60px]">
-              <div className="flex flex-col justify-center items-center border-r border-[#20293A]">
-                <span className="text-[12px] text-[#A1A1AA]">
-                  Major Support
-                </span>
-                <span className="text-sm font-medium">
-                  $
-                  {adjustPriceWithDelta(
-                    displayedAnalysis?.major_support_level ?? 0,
-                    displayedAnalysis?.delta ?? 0,
-                    showSpotPrice
-                  ).toFixed(2)}
-                </span>
-              </div>
-              <div className="flex flex-col justify-center items-center">
-                <span className="text-[12px] text-[#A1A1AA]">
-                  Major Resistance
-                </span>
-                <span className="text-sm font-medium">
-                  $
-                  {adjustPriceWithDelta(
-                    displayedAnalysis?.major_resistance_level ?? 0,
-                    displayedAnalysis?.delta ?? 0,
-                    showSpotPrice
-                  ).toFixed(2)}
-                </span>
-              </div>
-            </div>
-
-            {/* Minor Section */}
-            <div className="pt-0 w-full border-t border-[#20293A] bg-[#0A1020]/30 px-4 h-auto">
-              <div className="w-[100%] py-1 h-full flex justify-center">
-                <span className="text-[12px] text-[#A1A1AA]">Minor</span>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 border-t border-[#20293A] h-[60px]">
-              <div className="flex flex-col justify-center items-center border-r border-[#20293A]">
-                <span className="text-[12px] text-[#A1A1AA]">
-                  Minor Support
-                </span>
-                <span className="text-sm font-medium">
-                  $
-                  {adjustPriceWithDelta(
-                    displayedAnalysis?.minor_support_level ?? 0,
-                    displayedAnalysis?.delta ?? 0,
-                    showSpotPrice
-                  ).toFixed(2)}
-                </span>
-              </div>
-              <div className="flex flex-col justify-center items-center">
-                <span className="text-[12px] text-[#A1A1AA]">
-                  Minor Resistance
-                </span>
-                <span className="text-sm font-medium">
-                  $
-                  {adjustPriceWithDelta(
-                    displayedAnalysis?.minor_resistance_level ?? 0,
-                    displayedAnalysis?.delta ?? 0,
-                    showSpotPrice
-                  ).toFixed(2)}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Bullish Scenario */}
-          <div className="space-y-0 pt-3 rounded-lg bg-[#030816] border border-[#20293A] overflow-hidden">
-            <div className="flex justify-between items-center border-b border-[#20293A] pb-3 px-4">
-              <p className="text-[#A1A1AA] font-normal text-[14px] flex items-center gap-2">
-                <span className="text-green-500">
-                  <StockUpIcon size={16} />
-                </span>{" "}
-                Bullish Scenario
-              </p>
-              <div className="flex items-center gap-2">
-                <span className="text-[12px] text-[#A1A1AA]">Show Long</span>
-                <Switch
-                  checked={showPositionsSelected.bullish}
-                  onCheckedChange={toggleBullishPosition}
-                  className="data-[state=checked]:bg-[#209CFF]"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 h-[40%] border-b border-[#20293A]">
-              <div className="flex flex-col justify-center items-center">
-                <div className="text-[12px] text-[#A1A1AA]">Entry</div>
-                <div className="text-[20px] font-semibold text-[#FAFAFA]">
-                  $
-                  {adjustPriceWithDelta(
-                    displayedAnalysis?.bullish_entry ?? 0,
-                    displayedAnalysis?.delta ?? 0,
-                    showSpotPrice
-                  ).toFixed(2)}
-                </div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 h-[50%]">
-              <div className="flex flex-col justify-center items-center border-r border-[#20293A]">
-                <div className="text-[12px] text-[#A1A1AA]">Target</div>
-                <div className="text-[20px] font-semibold text-green-500">
-                  $
-                  {adjustPriceWithDelta(
-                    displayedAnalysis?.bullish_tp ?? 0,
-                    displayedAnalysis?.delta ?? 0,
-                    showSpotPrice
-                  ).toFixed(2)}
-                </div>
-              </div>
-              <div className="flex flex-col justify-center items-center">
-                <div className="text-[12px] text-[#A1A1AA]">Stop Loss</div>
-                <div className="text-[20px] font-semibold text-red-500">
-                  $
-                  {adjustPriceWithDelta(
-                    displayedAnalysis?.bullish_sl ?? 0,
-                    displayedAnalysis?.delta ?? 0,
-                    showSpotPrice
-                  ).toFixed(2)}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Bearish Scenario */}
-          <div className="space-y-0 pt-3 rounded-lg bg-[#030816] border border-[#20293A] overflow-hidden">
-            <div className="flex justify-between items-center border-b border-[#20293A] pb-3 px-4">
-              <p className="text-[#A1A1AA] font-normal text-[14px] flex items-center gap-2">
-                <span className="text-red-500">
-                  <StockDownIcon size={16} />
-                </span>{" "}
-                Bearish Scenario
-              </p>
-              <div className="flex items-center gap-2">
-                <span className="text-[12px] text-[#A1A1AA]">Show Short</span>
-                <Switch
-                  checked={showPositionsSelected.bearish}
-                  onCheckedChange={toggleBearishPosition}
-                  className="data-[state=checked]:bg-red-500"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 h-[40%] border-b border-[#20293A]">
-              <div className="flex flex-col justify-center items-center">
-                <div className="text-[12px] text-[#A1A1AA]">Entry</div>
-                <div className="text-[20px] font-semibold text-[#FAFAFA]">
-                  $
-                  {adjustPriceWithDelta(
-                    displayedAnalysis?.bearish_entry ?? 0,
-                    displayedAnalysis?.delta ?? 0,
-                    showSpotPrice
-                  ).toFixed(2)}
-                </div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 h-[50%]">
-              <div className="flex flex-col justify-center items-center border-r border-[#20293A]">
-                <div className="text-[12px] text-[#A1A1AA]">Target</div>
-                <div className="text-[20px] font-semibold text-green-500">
-                  $
-                  {adjustPriceWithDelta(
-                    displayedAnalysis?.bearish_tp ?? 0,
-                    displayedAnalysis?.delta ?? 0,
-                    showSpotPrice
-                  ).toFixed(2)}
-                </div>
-              </div>
-              <div className="flex flex-col justify-center items-center">
-                <div className="text-[12px] text-[#A1A1AA]">Stop Loss</div>
-                <div className="text-[20px] font-semibold text-red-500">
-                  $
-                  {adjustPriceWithDelta(
-                    displayedAnalysis?.bearish_sl ?? 0,
-                    displayedAnalysis?.delta ?? 0,
-                    showSpotPrice
-                  ).toFixed(2)}
+                <div className="flex flex-col justify-center items-center">
+                  <div className="text-[12px] text-[#A1A1AA]">Stop Loss</div>
+                  <div className="text-[20px] font-semibold text-red-500">
+                    $
+                    {adjustPriceWithDelta(
+                      displayedAnalysis?.bearish_sl ?? 0,
+                      displayedAnalysis?.delta ?? 0,
+                      showSpotPrice
+                    ).toFixed(2)}
+                  </div>
                 </div>
               </div>
             </div>
@@ -614,9 +757,9 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
       <div className="rounded-none border-t border-[#20293A]">
         <Card className="bg-[#030816] rounded-[12px] border-none">
           <CardHeader>
-            <CardTitle className="text-[#FAFAFA] text-[16px] flex items-center justify-between">
+            <CardTitle className="text-[#FAFAFA] text-[16px] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <span>Price Analysis</span>
-              <div className="flex items-center gap-4">
+              <div className="flex flex-wrap items-center gap-4">
                 {selectedDataPoint && (
                   <Button
                     variant="outline"
@@ -637,7 +780,7 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="h-[400px]">
+            <div className="h-[300px] sm:h-[400px]">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart
                   data={adjustedChartData}

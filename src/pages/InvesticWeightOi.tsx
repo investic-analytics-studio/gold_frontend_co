@@ -59,24 +59,15 @@ const InvesticWeightOiPage: React.FC = () => {
             </BreadcrumbItem>
             <BreadcrumbSeparator className="text-[#A1A1AA]/70" />
             <BreadcrumbItem>
-              <BreadcrumbPage>Net Sentiment</BreadcrumbPage>
+              <BreadcrumbPage>Investic Weight OI</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
       </div>
       <div className="lg:hidden text-[24px] font-medium text-[#FAFAFA] mt-3 mb-6">
-        Net Sentiment
+        Investic Weight OI
       </div>
       <Card className="w-full h-auto bg-[#030816] border border-[#20293A] rounded-[12px]">
-        <div className="border-b border-[#20293A] p-3 pl-4 pr-2 text-[13px] text-[#A1A1AA] flex items-center justify-between h-[50px]">
-          <div className="flex items-center gap-2">
-            <div>
-              <ChartArea className="size-4" />
-            </div>
-            <div>Gamma OI</div>
-          </div>
-          <div></div>
-        </div>
         <CardContent className="p-0">
           <div className="w-full h-auto bg-[#030816] border-none p-0 rounded-xl">
             <GammaAnalysisCard 
@@ -97,7 +88,7 @@ const InvesticWeightOiPage: React.FC = () => {
             <div>
               <ChartArea className="size-4" />
             </div>
-            <div>Gamma OI</div>
+            <div>Investic Weight Option OI</div>
           </div>
           <div></div>
         </div>

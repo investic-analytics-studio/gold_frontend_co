@@ -1,36 +1,44 @@
+import * as React from "react"
 import { cn } from "@/lib/utils"
 
-interface SegmentedControlProps<T extends string> {
-  options: { value: T; label: string }[]
-  value: T
-  onChange: (value: T) => void
+interface SegmentedControlProps {
+  segments: {
+    value: string | number
+    label: string | number
+  }[]
+  value: string | number
+  onChange: (value: string | number) => void
   className?: string
 }
 
-export function SegmentedControl<T extends string>({
-  options,
-  value,
-  onChange,
-  className
-}: SegmentedControlProps<T>) {
-  return (
-    <div className={cn(
-      "flex items-center bg-[#030816] border border-[#20293A] rounded-xl p-1 h-[50px]",
-      className
-    )}>
-      {options.map((option) => (
-        <button
-          key={String(option.value)}
-          onClick={() => onChange(option.value)}
-          className={cn(
-            "px-6 py-2 rounded-lg text-sm h-[40px] transition-all duration-200",
-            "text-[#535B6A] hover:text-white",
-            value === option.value && "bg-[#172036] text-white font-medium"
-          )}
-        >
-          {option.label}
-        </button>
-      ))}
-    </div>
-  )
-} 
+const SegmentedControl = React.forwardRef<HTMLDivElement, SegmentedControlProps>(
+  ({ segments, value, onChange, className }, ref) => {
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          "flex items-center bg-[#030816] border border-[#20293A] rounded-xl p-1 h-[50px] gap-1",
+          className
+        )}
+      >
+        {segments.map((segment) => (
+          <button
+            key={segment.value}
+            onClick={() => onChange(segment.value)}
+            className={cn(
+              "px-6 py-2 rounded-lg text-sm h-[40px] transition-all duration-200",
+              "text-[#535B6A] hover:bg-[#172036]",
+              value === segment.value && "bg-[#172036] text-white font-medium"
+            )}
+          >
+            {segment.label}
+          </button>
+        ))}
+      </div>
+    )
+  }
+)
+
+SegmentedControl.displayName = "SegmentedControl"
+
+export { SegmentedControl } 
