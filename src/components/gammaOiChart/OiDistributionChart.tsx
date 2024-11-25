@@ -357,7 +357,7 @@ const OiDistributionChart: React.FC<OiDistributionChartProps> = ({
         <CardContent>
           {/* OI Distribution Chart */}
           <div className="w-full h-[500px] bg-[#030816] p-0 rounded-xl">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0">
               <div>
                 <CardTitle className="text-[#FAFAFA] text-[16px] font-medium mb-2">
                   Options Open Interest Distribution
@@ -366,10 +366,10 @@ const OiDistributionChart: React.FC<OiDistributionChartProps> = ({
                   Real-time price chart with technical analysis tools
                 </CardDescription>
               </div>
-              <div>
+              <div className="w-full">
                 <div className="mb-4">
                   <Select value={selectedMonth} onValueChange={onMonthChange}>
-                    <SelectTrigger className="w-[180px]">
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select month" />
                     </SelectTrigger>
                     <SelectContent>
