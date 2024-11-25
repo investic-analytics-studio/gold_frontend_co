@@ -23,6 +23,7 @@ const GoldSentimentRatioChart: React.FC = () => {
   const [data, setData] = useState<SentimentRatioData[]>([]);
   const [timeframe, setTimeframe] = useState<'3M' | '6M'>('3M');
   const backendApiUrl = import.meta.env.VITE_BACKEND_API;
+  console.log('ratio', data);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -222,7 +223,7 @@ const GoldSentimentRatioChart: React.FC = () => {
                           style={{
                             color:
                               contentSentimentData.name === 'Sentiment Ratio'
-                                ? '#ff7f7f'
+                                ? '#2662D9'
                                 : 'white',
                           }}
                         >
@@ -232,7 +233,7 @@ const GoldSentimentRatioChart: React.FC = () => {
                           style={{
                             color:
                               contentSentimentData.name === 'Sentiment Ratio'
-                                ? '#ff7f7f'
+                                ? '#2662D9'
                                 : 'white',
                           }}
                         >
@@ -242,7 +243,7 @@ const GoldSentimentRatioChart: React.FC = () => {
                           style={{
                             color:
                               contentSentimentData.name === 'Sentiment Ratio'
-                                ? '#ff7f7f'
+                                ? '#2662D9'
                                 : 'white',
                           }}
                         >
@@ -283,9 +284,9 @@ const GoldSentimentRatioChart: React.FC = () => {
           <Brush
             dataKey="date"
             height={30}
-            stroke="#666"
-            travellerWidth={10}
-            fill="#1a1a1a"
+            stroke="#20293A"
+            travellerWidth={5}
+            fill="#040B1C"
             tickFormatter={(date: string) => {
               return new Date(date).toLocaleDateString('en-US', {
                 year: 'numeric',
