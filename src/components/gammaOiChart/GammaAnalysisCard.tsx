@@ -567,14 +567,14 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
                       <ListFilter className="h-4 w-4" />
                       Filter
                     </div>
-                    <Button
+                    {/* <Button
                       // onClick={handleResetAllFilters}
                       variant="outline"
                       className="font-normal text-[#209CFF] border-none hover:bg-[#172036] hover:text-[#209CFF] group"
                     >
                       <RotateCcw className="transition-transform duration-200 group-hover:-rotate-180" />
                       Default Filters
-                    </Button> 
+                    </Button>  */}
                   </DrawerTitle>
                 </DrawerHeader>
                 <div className="bg-[#030816] px-4">
