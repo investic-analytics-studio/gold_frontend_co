@@ -337,8 +337,8 @@ const OiDistributionChart: React.FC<OiDistributionChartProps> = ({
     if (active && payload && payload.length && label !== undefined) {
       const strikePrice = processedData[parseInt(label)].strike;
       return (
-        <div className="custom-tooltip bg-gray-800 p-4 border border-gray-600 rounded shadow-lg text-gray-200">
-          <p className="label font-bold">{`Strike: $${strikePrice.toFixed(
+        <div className="custom-tooltip bg-[#030816] p-4 border border-[#172036] rounded-md">
+          <p className="label font-medium pb-2">{`Strike: $${strikePrice.toFixed(
             2
           )}`}</p>
           {payload.map((entry, index) => (
@@ -367,15 +367,19 @@ const OiDistributionChart: React.FC<OiDistributionChartProps> = ({
                   Real-time price chart with technical analysis tools
                 </CardDescription>
               </div>
-              <div className="w-full">
+              <div className="w-full md:w-[180px]">
                 <div className="mb-4">
                   <Select value={selectedMonth} onValueChange={onMonthChange}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select month" />
+                    <SelectTrigger className="w-full border-[#20293A] text-[#A1A1AA] h-[40px]">
+                      <SelectValue placeholder="Select contract month" className="text-[14px]" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-[#0A1122] border-[#20293A]">
                       {sortedMonths.map((month) => (
-                        <SelectItem key={month} value={month}>
+                        <SelectItem 
+                          key={month} 
+                          value={month}
+                          className="text-[14px] text-[#FAFAFA] hover:bg-[#172036] focus:bg-[#172036] cursor-pointer"
+                        >
                           {month}
                         </SelectItem>
                       ))}
