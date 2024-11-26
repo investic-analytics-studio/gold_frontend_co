@@ -1,7 +1,6 @@
 // src/api/fetchHistoricalData.ts 
 import axios from "axios";
-import { TradingViewSymbol } from "@/types/tradingview";
-import { getApiUrl } from "@/utils/api";
+
 
 // Single symbol parameters interface
 interface HistoricalDataParams {

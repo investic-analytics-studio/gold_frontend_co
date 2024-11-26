@@ -153,8 +153,8 @@ export const fetchMultiHistoricalData = async ({
   symbols,
   interval = "60",
   bars = "50",
-  from,
-  to
+
+
 }: HistoricalDataParams): Promise<Record<string, PriceData[]>> => {
   if (!symbols.length) return {};
 

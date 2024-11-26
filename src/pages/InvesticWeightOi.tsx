@@ -68,15 +68,6 @@ const InvesticWeightOiPage: React.FC = () => {
         Investic Weight OI
       </div>
       <Card className="w-full h-auto bg-[#030816] border border-[#20293A] rounded-[12px]">
-        <div className="border-b border-[#20293A] p-3 pl-4 pr-2 text-[13px] text-[#A1A1AA] flex items-center justify-between h-[50px]">
-          <div className="flex items-center gap-2">
-            <div>
-              <ChartArea className="size-4" />
-            </div>
-            <div>Gamma AI</div>
-          </div>
-          <div></div>
-        </div>
         <CardContent className="p-0">
           <div className="w-full h-auto bg-[#030816] border-none p-0 rounded-xl">
             <GammaAnalysisCard 

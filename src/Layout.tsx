@@ -18,8 +18,6 @@ import { Link, Outlet, useRouter } from "@tanstack/react-router";
 import {
   ChartCandlestick,
   ChartLine,
-
-  ChartNoAxesCombined,
   ChevronRight
 } from "lucide-react";
 import React from "react";
