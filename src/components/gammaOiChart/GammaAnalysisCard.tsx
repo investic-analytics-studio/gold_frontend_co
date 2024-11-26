@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -9,16 +10,28 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import {
-  TrendingDown as StockDownIcon,
-  TrendingUp as StockUpIcon,
-  RotateCcw,
-  ListFilter,
   ChartArea,
-
+  ListFilter,
+  TrendingDown as StockDownIcon,
+  TrendingUp as StockUpIcon
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 
 import { Badge } from "@/components/ui/badge";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { SegmentedControl } from "@/components/ui/segmented-control";
+import ShimmerButton from "@/components/ui/shimmer-button";
 import { getCurrentGoldContractOption } from "@/hooks/useGammaOi";
 import { format } from "date-fns";
 import {
@@ -32,20 +45,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import ShimmerButton from "@/components/ui/shimmer-button";
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
-import { SegmentedControl } from "@/components/ui/segmented-control";
+import { createChart, LineStyle, UTCTimestamp, SeriesMarker } from 'lightweight-charts';
 
 interface GammaAnalysis {
   price: number;
@@ -68,6 +68,11 @@ interface GammaAnalysis {
 interface PriceData {
   datetime: string;
   price: number;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
 }
 
 interface GammaAnalysisCardProps {
@@ -78,9 +83,15 @@ interface GammaAnalysisCardProps {
 
 // Add this helper function at the top of the file, outside the component
 function formatChartData(priceData: PriceData[]) {
+  console.log('priceData =',priceData);
   return priceData.map((item) => ({
     timestamp: new Date(item.datetime).getTime(),
     price: item.price,
+    open: item.open,
+    high: item.high,
+    low: item.low,
+    close: item.close,
+    volume: item.volume,
     datetime: item.datetime,
   }));
 }
@@ -91,19 +102,10 @@ interface PositionVisibility {
   bearish: boolean;
 }
 
-// Update the filterDataFromTimestamp function
+// Remove or modify the filterDataFromTimestamp function since we don't want to filter/zoom
 function filterDataFromTimestamp(data: any[], timestamp: string) {
-  const selectedTime = new Date(timestamp).getTime();
-  const selectedIndex = data.findIndex(
-    (item) => new Date(item.datetime).getTime() >= selectedTime
-  );
-
-  if (selectedIndex === -1) return data;
-
-  // Always show 20 previous points
-  const startIndex = Math.max(0, selectedIndex - 20);
-
-  return data.slice(startIndex);
+  // Return all data instead of filtering
+  return data;
 }
 
 // Add this custom dot component at the top of the file
@@ -133,10 +135,52 @@ const CustomDot = ({ cx, cy, payload, selectedDataPoint }: any) => {
   );
 };
 
+// Update the adjustPriceWithDelta function to handle OHLC prices
+function adjustPriceWithDelta(
+  price: number,
+  delta: number,
+  isSpot: boolean
+) {
+  return isSpot ? price - delta : price;
+}
+
+// Add a new helper function to adjust OHLC data
+function adjustOHLCWithDelta(
+  data: {
+    open: number;
+    high: number;
+    low: number;
+    close: number;
+    price?: number;
+  },
+  delta: number,
+  isSpot: boolean
+) {
+  return {
+    open: adjustPriceWithDelta(data.open, delta, isSpot),
+    high: adjustPriceWithDelta(data.high, delta, isSpot),
+    low: adjustPriceWithDelta(data.low, delta, isSpot),
+    close: adjustPriceWithDelta(data.close, delta, isSpot),
+    price: data.price !== undefined ? adjustPriceWithDelta(data.price, delta, isSpot) : undefined
+  };
+}
+
+// Add these helper functions at the top of the file
+function getLocalTimezoneOffset(): number {
+  return new Date().getTimezoneOffset() * 60 * 1000; // Convert minutes to milliseconds
+}
+
+function convertToLocalTime(timestamp: number): number {
+  // For UTC+7 use this:
+  // return timestamp + (7 * 60 * 60 * 1000);
+  
+  // For local timezone use this:
+  return timestamp - getLocalTimezoneOffset();
+}
+
 const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
   gammaAnalysis: data,
   priceData,
-
 }) => {
   const [tradingRange, setTradingRange] = useState(10);
   const [selectedDataPoint, setSelectedDataPoint] = useState<string>("");
@@ -234,34 +278,273 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
 
   const currentContract = useMemo(() => getCurrentGoldContractOption(), []);
 
-  const adjustPriceWithDelta = (
-    price: number,
-    delta: number,
-    isSpot: boolean
-  ) => {
-    return isSpot ? price - delta : price;
-  };
-
+  // Update the adjustedChartData calculation
   const adjustedChartData = useMemo(() => {
-    return filteredChartData.map((point) => ({
-      ...point,
-      price: adjustPriceWithDelta(
-        point.price,
+    return filteredChartData.map((point) => {
+      const adjustedOHLC = adjustOHLCWithDelta(
+        {
+          open: point.open,
+          high: point.high,
+          low: point.low,
+          close: point.close,
+          price: point.price
+        },
         displayedAnalysis?.delta ?? 0,
         showSpotPrice
-      ),
-    }));
+      );
+
+      return {
+        ...point,
+        ...adjustedOHLC,
+        timestamp: new Date(point.datetime).getTime(),
+      };
+    });
   }, [filteredChartData, displayedAnalysis?.delta, showSpotPrice]);
+
+  const chartContainerRef = useRef<HTMLDivElement>(null);
+  const chartRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (!chartContainerRef.current) return;
+
+    const chart = createChart(chartContainerRef.current, {
+      layout: {
+        background: { color: '#030816' },
+        textColor: '#A1A1AA',
+      },
+      grid: {
+        vertLines: { color: '#20293A' },
+        horzLines: { color: '#20293A' },
+      },
+      width: chartContainerRef.current.clientWidth,
+      height: 400,
+      rightPriceScale: {
+        borderColor: '#20293A',
+        scaleMargins: {
+          top: 0.1,
+          bottom: 0.1,
+        },
+      },
+      timeScale: {
+        timeVisible: true,
+        secondsVisible: false,
+        borderColor: '#20293A',
+        fixLeftEdge: true,
+        fixRightEdge: true,
+        rightOffset: 100,
+        barSpacing: 36,
+        minBarSpacing: 16,
+        rightBarStaysOnScroll: true,
+        tickMarkFormatter: (time: number) => {
+          const date = new Date(time * 1000);
+          return date.toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false,
+            // timeZone: 'Asia/Bangkok'
+          });
+        },
+      },
+      localization: {
+        timeFormatter: (time: number) => {
+          const date = new Date(time * 1000);
+          return date.toLocaleString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+            // For UTC+7 use this:
+            // timeZone: 'Asia/Bangkok'
+            
+            // For local timezone, remove timeZone option
+          });
+        },
+      },
+      crosshair: {
+        mode: 1,
+        vertLine: {
+          color: '#20293A',
+          width: 1,
+          style: 3,
+          labelBackgroundColor: '#20293A',
+        },
+        horzLine: {
+          color: '#20293A',
+          width: 1,
+          style: 3,
+          labelBackgroundColor: '#20293A',
+        },
+      },
+    });
+
+    const candlestickSeries = chart.addCandlestickSeries({
+      upColor: '#10B981',
+      downColor: '#EF4444',
+      borderVisible: false,
+      wickUpColor: '#10B981',
+      wickDownColor: '#EF4444',
+      priceFormat: {
+        type: 'price',
+        precision: 2,
+        minMove: 0.01,
+      },
+    });
+
+    const markerSeries = chart.addLineSeries({
+      color: 'rgba(32, 156, 255, 0.5)',
+      lineWidth: 1,
+      lineStyle: LineStyle.Dashed,
+    });
+
+    const candleData = adjustedChartData.map(item => ({
+      time: Math.floor(convertToLocalTime(new Date(item.timestamp).getTime()) / 1000) as UTCTimestamp,
+      open: item.open,
+      high: item.high,
+      low: item.low,
+      close: item.close,
+    }));
+
+    candlestickSeries.setData(candleData);
+
+    if ((showPositionsSelected.bullish || showPositionsSelected.bearish) && displayedAnalysis) {
+      const analysisTimestamp = Math.floor(new Date(displayedAnalysis.created_at).getTime() / 1000) as UTCTimestamp;
+      
+      const markers = [{
+        time: analysisTimestamp,
+        position: 'aboveBar',
+        color: '#ffffff',
+        shape: 'arrowDown',
+        text: `Analysis ${format(new Date(displayedAnalysis.created_at), "HH:mm:ss")}`,
+      }];
+
+      candlestickSeries.setMarkers(markers as SeriesMarker<UTCTimestamp>[]);
+
+      // Optional: Add a price line at the analysis price level
+      // candlestickSeries.createPriceLine({
+      //   price: adjustPriceWithDelta(
+      //     displayedAnalysis.price,
+      //     displayedAnalysis.delta,
+      //     showSpotPrice
+      //   ),
+      //   color: '#ffffff',
+      //   lineWidth: 1,
+      //   lineStyle: LineStyle.Dashed,
+      //   axisLabelVisible: true,
+      //   title: `Analysis Price ${format(new Date(displayedAnalysis.created_at), "HH:mm:ss")}`,
+      // });
+    }
+
+    if (showPositionsSelected.bullish && displayedAnalysis) {
+      const bullishEntry = candlestickSeries.createPriceLine({
+        price: adjustPriceWithDelta(
+          displayedAnalysis.bullish_entry,
+          displayedAnalysis.delta,
+          showSpotPrice
+        ),
+        color: '#10B981',
+        lineWidth: 2,
+        lineStyle: LineStyle.Dashed,
+        axisLabelVisible: true,
+        title: 'Long Entry',
+      });
+
+      const bullishTp = candlestickSeries.createPriceLine({
+        price: adjustPriceWithDelta(
+          displayedAnalysis.bullish_tp,
+          displayedAnalysis.delta,
+          showSpotPrice
+        ),
+        color: '#10B981',
+        lineWidth: 2,
+        lineStyle: LineStyle.Dashed,
+        axisLabelVisible: true,
+        title: 'Take Profit',
+      });
+
+      const bullishSl = candlestickSeries.createPriceLine({
+        price: adjustPriceWithDelta(
+          displayedAnalysis.bullish_sl,
+          displayedAnalysis.delta,
+          showSpotPrice
+        ),
+        color: '#EF4444',
+        lineWidth: 2,
+        lineStyle: LineStyle.Dashed,
+        axisLabelVisible: true,
+        title: 'Stop Loss',
+      });
+    }
+
+    if (showPositionsSelected.bearish && displayedAnalysis) {
+      const bearishEntry = candlestickSeries.createPriceLine({
+        price: adjustPriceWithDelta(
+          displayedAnalysis.bearish_entry,
+          displayedAnalysis.delta,
+          showSpotPrice
+        ),
+        color: '#EF4444',
+        lineWidth: 2,
+        lineStyle: LineStyle.Dashed,
+        axisLabelVisible: true,
+        title: 'Short Entry',
+      });
+
+      const bearishTp = candlestickSeries.createPriceLine({
+        price: adjustPriceWithDelta(
+          displayedAnalysis.bearish_tp,
+          displayedAnalysis.delta,
+          showSpotPrice
+        ),
+        color: '#10B981',
+        lineWidth: 2,
+        lineStyle: LineStyle.Dashed,
+        axisLabelVisible: true,
+        title: 'Take Profit',
+      });
+
+      const bearishSl = candlestickSeries.createPriceLine({
+        price: adjustPriceWithDelta(
+          displayedAnalysis.bearish_sl,
+          displayedAnalysis.delta,
+          showSpotPrice
+        ),
+        color: '#EF4444',
+        lineWidth: 2,
+        lineStyle: LineStyle.Dashed,
+        axisLabelVisible: true,
+        title: 'Stop Loss',
+      });
+    }
+
+    chart.timeScale().fitContent();
+
+    const handleResize = () => {
+      if (chartContainerRef.current) {
+        chart.applyOptions({
+          width: chartContainerRef.current.clientWidth,
+        });
+        
+        chart.timeScale().scrollToPosition(5, false);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    chartRef.current = chart;
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      chart.remove();
+    };
+  }, [adjustedChartData, showPositionsSelected, displayedAnalysis, showSpotPrice]);
 
   return (
     <div className="space-y-4">
-      {/* Latest Analysis Summary */}
       <Card className="bg-[#030816] border-none rounded-[12px]">
         <div className="border-b border-[#20293A] p-3 pl-4 pr-2 text-[13px] text-[#A1A1AA] flex items-center justify-between h-[50px]">
           <div className="flex items-center gap-2">
             <div>
-            <ChartArea className="size-4" />
-
+              <ChartArea className="size-4" />
             </div>
             <div>Gamma AI</div>
           </div>
@@ -284,14 +567,14 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
                       <ListFilter className="h-4 w-4" />
                       Filter
                     </div>
-                    <Button
+                    {/* <Button
                       // onClick={handleResetAllFilters}
                       variant="outline"
                       className="font-normal text-[#209CFF] border-none hover:bg-[#172036] hover:text-[#209CFF] group"
                     >
                       <RotateCcw className="transition-transform duration-200 group-hover:-rotate-180" />
                       Default Filters
-                    </Button>
+                    </Button>  */}
                   </DrawerTitle>
                 </DrawerHeader>
                 <div className="bg-[#030816] px-4">
@@ -376,16 +659,15 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
                         Filter
                       </h4>
                     </div>
-                    <div>
+                    {/* <div>
                       <Button
-                        // onClick={handleResetAllFilters}
                         variant="outline"
                         className="font-normal text-[#209CFF] border-none hover:bg-[#172036] hover:text-[#209CFF] group"
                       >
                         <RotateCcw className="transition-transform duration-200 group-hover:-rotate-180" />
                         Default Filters
                       </Button>
-                    </div>
+                    </div> */}
                   </div>
                   <div className="mt-4">
                     <label className="text-[14px] font-normal text-[#A1A1AA]/70">
@@ -445,7 +727,6 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
         <CardHeader>
           <CardTitle className="text-[#FAFAFA]">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between w-full gap-4">
-              {/* Left side content */}
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
                   <div className="w-2 h-2 rounded-full bg-[#209CFF] animate-pulse" />
@@ -455,7 +736,6 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
                 </div>
               </div>
 
-              {/* Right side controls */}
               <div className="flex flex-col sm:flex-row gap-4">
                 <div className="flex flex-row sm:items-center gap-2 text-[14px] font-normal flex-wrap">
                   <span className="text-[#A1A1AA]">{currentContract}</span>
@@ -495,9 +775,7 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
         </CardHeader>
 
         <CardContent>
-          {/* Analysis Cards Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Price Section */}
             <div className="space-y-0 pt-3 px-0 rounded-lg bg-[#030816] border border-[#20293A]">
               <div className="flex justify-between items-center border-b border-[#20293A] pb-3 px-4">
                 <p className="text-[#A1A1AA] font-normal text-[14px]">
@@ -561,7 +839,6 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
                 </div>
               </div>
 
-              {/* Major Section */}
               <div className="pt-0 w-full border-t border-[#20293A] bg-[#0A1020]/30 px-4 h-auto">
                 <div className="w-[100%] py-1 h-full flex justify-center">
                   <span className="text-[12px] text-[#A1A1AA]">Major</span>
@@ -597,7 +874,6 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
                 </div>
               </div>
 
-              {/* Minor Section */}
               <div className="pt-0 w-full border-t border-[#20293A] bg-[#0A1020]/30 px-4 h-auto">
                 <div className="w-[100%] py-1 h-full flex justify-center">
                   <span className="text-[12px] text-[#A1A1AA]">Minor</span>
@@ -634,7 +910,6 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
               </div>
             </div>
 
-            {/* Bullish Scenario */}
             <div className="min-h-[350px] md:min-h-auto space-y-0 pt-3 rounded-lg bg-[#030816] border border-[#20293A] overflow-hidden">
               <div className="flex justify-between items-center border-b border-[#20293A] pb-3 px-4">
                 <p className="text-[#A1A1AA] font-normal text-[14px] flex items-center gap-2">
@@ -693,7 +968,6 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
               </div>
             </div>
 
-            {/* Bearish Scenario */}
             <div className="min-h-[350px] md:min-h-auto space-y-0 pt-3 rounded-lg bg-[#030816] border border-[#20293A] overflow-hidden">
               <div className="flex justify-between items-center border-b border-[#20293A] pb-3 px-4">
                 <p className="text-[#A1A1AA] font-normal text-[14px] flex items-center gap-2">
@@ -755,245 +1029,44 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
         </CardContent>
       </Card>
 
-      {/* Price Chart */}
       <div className="rounded-none border-t border-[#20293A]">
         <Card className="bg-[#030816] rounded-[12px] border-none">
           <CardHeader>
-            <CardTitle className="text-[#FAFAFA] text-[16px] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <span>Price Analysis</span>
+            <CardTitle className="text-[#FAFAFA] text-[16px]">
+              <div className="flex justify-between w-full">
+              <div className="flex flex-col sm:flex-row items-start gap-0 md:gap-4">
+                <div>
+                <span>Price Analysis</span>
+                </div>
+                <div>
+                {filteredData[0] && (
+                  <Badge
+                    variant="outline"
+                    className="text-xs text-[#209CFF] font-normal border-none bg-[#209CFF]/10"
+                  >
+                    Last updated:{" "}
+                    {format(new Date(filteredData[0].created_at), "HH:mm:ss")}
+                  </Badge>
+                )}
+                </div>
+              </div>
               <div className="flex flex-wrap items-center gap-4">
                 {selectedDataPoint && (
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => setSelectedDataPoint("")}
-                    className="text-xs bg-transparent text-[#A1A1AA] border-[#20293A] hover:bg-[#0A1122]"
+                    className="text-[12px] font-normal bg-transparent text-[#A1A1AA] border-[#20293A] hover:bg-[#0A1122] hover:text-[#FAFAFA]"
                   >
                     Reset Zoom
                   </Button>
                 )}
-                {filteredData[0] && (
-                  <Badge variant="outline" className="text-xs">
-                    Last updated:{" "}
-                    {format(new Date(filteredData[0].created_at), "HH:mm:ss")}
-                  </Badge>
-                )}
+              </div>
               </div>
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="h-[300px] sm:h-[400px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart
-                  data={adjustedChartData}
-                  margin={{ top: 5, right: 120, left: 20, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" stroke="#20293A" />
-                  <XAxis
-                    dataKey="timestamp"
-                    stroke="#A1A1AA"
-                    type="number"
-                    scale="time"
-                    domain={["auto", "auto"]}
-                    tickFormatter={(value) =>
-                      format(new Date(value), "yyyy-MM-dd HH:mm")
-                    }
-                  />
-                  <YAxis
-                    stroke="#A1A1AA"
-                    domain={calculateYAxisDomain(
-                      adjustedChartData,
-                      displayedAnalysis
-                    )}
-                    tickFormatter={(value) => value.toFixed(0)}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "#0A1122",
-                      border: "1px solid #20293A",
-                      borderRadius: "8px",
-                      padding: "8px",
-                    }}
-                    labelStyle={{
-                      color: "#A1A1AA",
-                    }}
-                    labelFormatter={(value) =>
-                      format(new Date(value), "yyyy-MM-dd HH:mm:ss")
-                    }
-                    formatter={(value: number, name: string) => [
-                      `$${value.toFixed(2)}`,
-                      name,
-                    ]}
-                  />
-                  <Legend />
-
-                  {/* Bullish Position Lines */}
-                  {showPositionsSelected.bullish && displayedAnalysis && (
-                    <>
-                      <ReferenceLine
-                        y={adjustPriceWithDelta(
-                          displayedAnalysis.bullish_entry,
-                          displayedAnalysis.delta,
-                          showSpotPrice
-                        )}
-                        stroke="#10B981"
-                        strokeDasharray="3 3"
-                        label={{
-                          value: `Long Entry ($${adjustPriceWithDelta(
-                            displayedAnalysis.bullish_entry,
-                            displayedAnalysis.delta,
-                            showSpotPrice
-                          ).toFixed(2)})`,
-                          position: "right",
-                          fill: "#10B981",
-                          fontSize: 12,
-                          offset: 5,
-                        }}
-                      />
-                      <ReferenceLine
-                        y={adjustPriceWithDelta(
-                          displayedAnalysis.bullish_tp,
-                          displayedAnalysis.delta,
-                          showSpotPrice
-                        )}
-                        stroke="#10B981"
-                        strokeDasharray="3 3"
-                        label={{
-                          value: `Take Profit ($${adjustPriceWithDelta(
-                            displayedAnalysis.bullish_tp,
-                            displayedAnalysis.delta,
-                            showSpotPrice
-                          ).toFixed(2)})`,
-                          position: "right",
-                          fill: "#10B981",
-                          fontSize: 12,
-                          offset: 5,
-                        }}
-                      />
-                      <ReferenceLine
-                        y={adjustPriceWithDelta(
-                          displayedAnalysis.bullish_sl,
-                          displayedAnalysis.delta,
-                          showSpotPrice
-                        )}
-                        stroke="#EF4444"
-                        strokeDasharray="3 3"
-                        label={{
-                          value: `Stop Loss ($${adjustPriceWithDelta(
-                            displayedAnalysis.bullish_sl,
-                            displayedAnalysis.delta,
-                            showSpotPrice
-                          ).toFixed(2)})`,
-                          position: "right",
-                          fill: "#EF4444",
-                          fontSize: 12,
-                          offset: 5,
-                        }}
-                      />
-                    </>
-                  )}
-
-                  {/* Bearish Position Lines */}
-                  {showPositionsSelected.bearish && displayedAnalysis && (
-                    <>
-                      <ReferenceLine
-                        y={adjustPriceWithDelta(
-                          displayedAnalysis.bearish_entry,
-                          displayedAnalysis.delta,
-                          showSpotPrice
-                        )}
-                        stroke="#EF4444"
-                        strokeDasharray="3 3"
-                        label={{
-                          value: `Short Entry ($${adjustPriceWithDelta(
-                            displayedAnalysis.bearish_entry,
-                            displayedAnalysis.delta,
-                            showSpotPrice
-                          ).toFixed(2)})`,
-                          position: "right",
-                          fill: "#EF4444",
-                          fontSize: 12,
-                          offset: 5,
-                        }}
-                      />
-                      <ReferenceLine
-                        y={adjustPriceWithDelta(
-                          displayedAnalysis.bearish_tp,
-                          displayedAnalysis.delta,
-                          showSpotPrice
-                        )}
-                        stroke="#10B981"
-                        strokeDasharray="3 3"
-                        label={{
-                          value: `Take Profit ($${adjustPriceWithDelta(
-                            displayedAnalysis.bearish_tp,
-                            displayedAnalysis.delta,
-                            showSpotPrice
-                          ).toFixed(2)})`,
-                          position: "right",
-                          fill: "#10B981",
-                          fontSize: 12,
-                          offset: 5,
-                        }}
-                      />
-                      <ReferenceLine
-                        y={adjustPriceWithDelta(
-                          displayedAnalysis.bearish_sl,
-                          displayedAnalysis.delta,
-                          showSpotPrice
-                        )}
-                        stroke="#EF4444"
-                        strokeDasharray="3 3"
-                        label={{
-                          value: `Stop Loss ($${adjustPriceWithDelta(
-                            displayedAnalysis.bearish_sl,
-                            displayedAnalysis.delta,
-                            showSpotPrice
-                          ).toFixed(2)})`,
-                          position: "right",
-                          fill: "#EF4444",
-                          fontSize: 12,
-                          offset: 5,
-                        }}
-                      />
-                    </>
-                  )}
-
-                  {selectedDataPoint && (
-                    <ReferenceLine
-                      x={new Date(selectedDataPoint).getTime()}
-                      stroke="#FFFFFF"
-                      strokeDasharray="3 3"
-                      label={{
-                        value: format(new Date(selectedDataPoint), "HH:mm:ss"),
-                        position: "top",
-                        fill: "#FFFFFF",
-                        fontSize: 12,
-                        offset: 5,
-                      }}
-                    />
-                  )}
-
-                  <Line
-                    type="linear"
-                    dataKey="price"
-                    data={adjustedChartData}
-                    stroke="#2563EB"
-                    strokeWidth={2}
-                    name={showSpotPrice ? "Spot Price" : "Futures Price"}
-                    animationDuration={300}
-                    connectNulls={true}
-                    isAnimationActive={false}
-                    dot={(props) => (
-                      <CustomDot
-                        {...props}
-                        selectedDataPoint={selectedDataPoint}
-                      />
-                    )}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
+            <div ref={chartContainerRef} className="h-[400px]" />
           </CardContent>
         </Card>
       </div>

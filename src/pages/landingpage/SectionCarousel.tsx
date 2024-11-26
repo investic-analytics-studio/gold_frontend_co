@@ -8,22 +8,22 @@ import { useIsMobile } from "@/hooks/use-mobile";
 
 const data = [
   {
-    title: "Sentiment Analysis",
+    title: "Net Sentiment",
     description:
-      "Understand Bitcoin sentiment to predict market trends. Visual insights help you anticipate peaks and declines for better trading decisions.",
-    image: "/assets/images/sentiment-analysis.png",
+      "Borem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.",
+    image: "/assets/images/net-sentiment.png",
   },
   {
-    title: "X Sentiment Analysis",
+    title: "Gamma AI",
     description:
-      "Track significant influencers on X to stay ahead of alt-coin movement, see in-depth details, and identify where trends or pumps are beginning, helping you seize opportunities early.",
-    image: "/assets/images/x-sentiment.png",
+      "Borem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.",
+    image: "/assets/images/price-analysis.png",
   },
   {
-    title: "Anomaly Detection",
+    title: "Investic Weighted Option OI",
     description:
-      "Spot irregular price movements & pattern, which happened in the past, with our AI-powered algorithm to detect and forecast anomaly detection and receive actionable trading signals.",
-    image: "/assets/images/anomaly-detection.png",
+      "Borem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.",
+    image: "/assets/images/investic-weighted-option-oi.png",
   },
 ];
 
@@ -122,7 +122,7 @@ const ImageCarousel: React.FC = () => {
     <div className={`text-white p-8 ${isMobile ? "w-[100%] mt-10" : "w-full mt-20"}`}>
       <h1 className={`${isMobile ? "text-[40px]" : "text-[46px]"} font-semibold text-[46px]`}>Our Features</h1>
       <p className={`${isMobile ? "text-[18px]" : "text-[20px]"} text-gray-400 mb-8 mt-2`}>
-      Luck can come and go, but a solid strategy and disciplined execution are what lead to consistent results . - JIM SIMONS
+      Borem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.
       </p>
 
       <div
