@@ -14,6 +14,7 @@ import {
   RotateCcw,
   ListFilter,
   ChartArea,
+
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
@@ -72,7 +73,7 @@ interface PriceData {
 interface GammaAnalysisCardProps {
   gammaAnalysis: GammaAnalysis[];
   priceData: PriceData[];
-  currentPrice: number;
+  currentPrice?: number;
 }
 
 // Add this helper function at the top of the file, outside the component
@@ -135,7 +136,7 @@ const CustomDot = ({ cx, cy, payload, selectedDataPoint }: any) => {
 const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
   gammaAnalysis: data,
   priceData,
-  currentPrice,
+
 }) => {
   const [tradingRange, setTradingRange] = useState(10);
   const [selectedDataPoint, setSelectedDataPoint] = useState<string>("");
@@ -259,7 +260,8 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
         <div className="border-b border-[#20293A] p-3 pl-4 pr-2 text-[13px] text-[#A1A1AA] flex items-center justify-between h-[50px]">
           <div className="flex items-center gap-2">
             <div>
-              <ChartArea className="size-4" />
+            <ChartArea className="size-4" />
+
             </div>
             <div>Gamma AI</div>
           </div>
