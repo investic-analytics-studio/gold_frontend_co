@@ -16,19 +16,94 @@ interface GoldSentimentAggregateDaily {
   negative: number;
   neutral: number;
   positive: number;
+  isFirstTickMonthlyLabel?: boolean;
 }
 
 const GoldSentimentChart: React.FC = () => {
   const [data, setData] = useState<GoldSentimentAggregateDaily[]>([]);
+  const backendApiUrl = import.meta.env.VITE_BACKEND_API;
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get<GoldSentimentAggregateDaily[]>(
-          'http://localhost:8080/gold-sentiment-aggregate-daily'
+          backendApiUrl + '/gold-sentiment-aggregate-daily'
         );
 
-        setData(response.data);
+        // Convert to Asia/Bangkok timezone
+        const dateTimeFormatter = new Intl.DateTimeFormat('en-US', {
+          timeZone: 'Asia/Bangkok',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+        });
+
+        // Converted Bangkok time zone
+        const convertedDateTime = response.data.map((item) => {
+          const utcDate = new Date(item.date);
+          const bangkokTime = dateTimeFormatter.format(utcDate);
+
+          // Convert to ISO format for the chart
+          const [datePart, timePart] = bangkokTime.split(', ');
+          const [month, day, year] = datePart.split('/');
+
+          // Remove the AM/PM part and convert to 24-hour format
+          const [time, timePeriod] = timePart.split(' ');
+          let [hours, minutes, seconds] = time.split(':');
+          if (timePeriod === 'PM' && hours !== '12') {
+            hours = String(Number(hours) + 12);
+          } else if (timePeriod === 'AM' && hours === '12') {
+            hours = '00';
+          }
+
+          // Create the date string in ISO format with Bangkok timezone
+          const formattedDate = `${year}-${month.padStart(
+            2,
+            '0'
+          )}-${day.padStart(2, '0')}T${hours}:${minutes}:${seconds}+07:00`;
+
+          return {
+            ...item,
+            date: formattedDate,
+          };
+        });
+
+        // Get today's date and 3 months ago
+        const today = new Date();
+        const threeMonthsAgo = new Date();
+        threeMonthsAgo.setMonth(today.getMonth() - 3);
+
+        // Filter data for the last 3 months
+        const getThreeMonthsData = convertedDateTime.filter((item) => {
+          const itemDate = new Date(item.date);
+          return itemDate >= threeMonthsAgo && itemDate <= today;
+        });
+
+        const getDateOnly = (dateString: string) => dateString.split('T')[0];
+
+        const formattedData = getThreeMonthsData.map((item, index, array) => {
+          const currentDate = getDateOnly(item.date);
+          const [year, month] = currentDate.split('-');
+
+          // Skip first 6 points to avoid labels on the left edge
+          const skipInitialLabels = index < 6;
+
+          // Find the first date for this month
+          const isFirstDateOfMonth =
+            !skipInitialLabels &&
+            array.findIndex((dateItem) => {
+              const [itemYear, itemMonth] = getDateOnly(dateItem.date).split(
+                '-'
+              );
+              return itemYear === year && itemMonth === month;
+            }) === index;
+
+          return { ...item, isFirstTickMonthlyLabel: isFirstDateOfMonth };
+        });
+        setData(formattedData);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -38,8 +113,10 @@ const GoldSentimentChart: React.FC = () => {
   }, []);
 
   return (
-    <div className='pb-0 pt-6 px-6' style={{ width: '100%', height: 400 }}>
-      <h2 className='text-[#FAFAFA] text-[16px] font-medium'>Sentiment Analysis (Gold)</h2>
+    <div className="pb-0 pt-6 px-6" style={{ width: '100%', height: 400 }}>
+      <h2 className="text-[#FAFAFA] text-[16px] font-medium">
+        Sentiment Analysis (Gold)
+      </h2>
       <div className="text-[#A1A1AA] text-[14px]">Lorem Ipsum</div>
       <ResponsiveContainer width="100%" height="100%" className="mt-8">
         <BarChart
@@ -49,21 +126,23 @@ const GoldSentimentChart: React.FC = () => {
           <CartesianGrid stroke="#121623" horizontal={true} vertical={false} />
           <XAxis
             dataKey="date"
-            tickFormatter={(date: string | number, index: number): string => {
-              const dataLength = data.length;
-              const middleIndex = Math.floor(dataLength / 2);
-              if (index === middleIndex) {
-                return new Date(date).getFullYear().toString();
+            tickFormatter={(date: string, index: number): string => {
+              const currentDate = new Date(date);
+              const options: Intl.DateTimeFormatOptions = {
+                month: 'short',
+                year: 'numeric',
+              };
+
+              const isFirstTickMonthlyLabel =
+                data[index]?.isFirstTickMonthlyLabel;
+              if (isFirstTickMonthlyLabel) {
+                return currentDate.toLocaleDateString('en-US', options);
               }
-              return ''; // hide other tick
+              return '';
             }}
+            interval={0}
+            stroke="#20293A"
             tick={{ fill: '#A1A1AA' }}
-            label={{
-              value: 'Date',
-              position: 'insideBottomRight',
-              offset: -5,
-              fill: '#A1A1AA',
-            }}
           />
           <YAxis
             tick={{ fill: '#A1A1AA' }}
@@ -101,11 +180,11 @@ const GoldSentimentChart: React.FC = () => {
                         style={{
                           color:
                             entry.dataKey === 'negative'
-                              ? 'red'
+                              ? '#F23645'
                               : entry.dataKey === 'neutral'
-                              ? 'yellow'
+                              ? '#E8C930'
                               : entry.dataKey === 'positive'
-                              ? 'green'
+                              ? '#2662D9'
                               : 'white',
                           margin: '4px 0',
                         }}

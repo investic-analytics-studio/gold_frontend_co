@@ -15,16 +15,15 @@ import {
 
 // API Response Type
 interface GoldSentimentAggregateHourly {
-  datetime: string; // ISO string from time.Time
+  date: string;
   negative: number;
   neutral: number;
   positive: number;
   net: number;
   gold_price: number | null;
-  created_at: string; // ISO string from time.Time
-  updated_at: string; // ISO string from time.Time
-  deleted_at: string | null; // ISO string from time.Time
-  rolling_net_hourly: number;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
 }
 
 // Chart Data Type
@@ -32,24 +31,101 @@ interface GoldSentimentAggregateDataPoint {
   date: string;
   netSentiment: number;
   goldPrice: number | null;
+  isFirstTickMonthlyLabel?: boolean;
 }
 
 const NetSentimentAndGoldPriceChart: React.FC = () => {
   const [data, setData] = useState<GoldSentimentAggregateDataPoint[]>([]);
+  const backendApiUrl = import.meta.env.VITE_BACKEND_API;
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get<GoldSentimentAggregateHourly[]>(
-          'http://localhost:8080/gold-sentiment-aggregate-hourly'
+          backendApiUrl + '/gold-sentiment-aggregate-daily'
         );
 
-        const formattedData = response.data
+        // Convert to Asia/Bangkok timezone
+        const dateTimeFormatter = new Intl.DateTimeFormat('en-US', {
+          timeZone: 'Asia/Bangkok',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+        });
+
+        // Converted Bangkok time zone
+        const convertedDateTime = response.data.map((item) => {
+          const utcDate = new Date(item.date);
+          const bangkokTime = dateTimeFormatter.format(utcDate);
+
+          // Convert to ISO format for the chart
+          const [datePart, timePart] = bangkokTime.split(', ');
+          const [month, day, year] = datePart.split('/');
+
+          // Remove the AM/PM part and convert to 24-hour format
+          const [time, timePeriod] = timePart.split(' ');
+          let [hours, minutes, seconds] = time.split(':');
+          if (timePeriod === 'PM' && hours !== '12') {
+            hours = String(Number(hours) + 12);
+          } else if (timePeriod === 'AM' && hours === '12') {
+            hours = '00';
+          }
+
+          // Create the date string in ISO format with Bangkok timezone
+          const formattedDate = `${year}-${month.padStart(
+            2,
+            '0'
+          )}-${day.padStart(2, '0')}T${hours}:${minutes}:${seconds}+07:00`;
+
+          return {
+            ...item,
+            date: formattedDate,
+          };
+        });
+
+        // Get today's date and 3 months ago
+        const today = new Date();
+        const threeMonthsAgo = new Date();
+        threeMonthsAgo.setMonth(today.getMonth() - 3);
+
+        // Filter data for the last 3 months
+        const getThreeMonthsData = convertedDateTime.filter((item) => {
+          const itemDate = new Date(item.date);
+          return itemDate >= threeMonthsAgo && itemDate <= today;
+        });
+
+        const getDateOnly = (dateString: string) => dateString.split('T')[0];
+
+        const monthlyLabels = getThreeMonthsData.map((item, index, array) => {
+          const currentDate = getDateOnly(item.date);
+          const [year, month] = currentDate.split('-');
+
+          // Skip first 6 points to avoid labels on the left edge
+          const skipInitialLabels = index < 6;
+
+          // Find the first date for this month
+          const isFirstDateOfMonth =
+            !skipInitialLabels &&
+            array.findIndex((dateItem) => {
+              const [itemYear, itemMonth] = getDateOnly(dateItem.date).split(
+                '-'
+              );
+              return itemYear === year && itemMonth === month;
+            }) === index;
+
+          return { ...item, isFirstTickMonthlyLabel: isFirstDateOfMonth };
+        });
+
+        const formattedData = monthlyLabels
           .filter((item) => item.gold_price !== null)
           .map((item) => ({
-            date: new Date(item.datetime).toISOString().substring(0, 10),
-            netSentiment: item.rolling_net_hourly,
+            date: item.date,
+            netSentiment: item.net,
             goldPrice: item.gold_price,
+            isFirstTickMonthlyLabel: item.isFirstTickMonthlyLabel,
           }));
 
         setData(formattedData);
@@ -61,8 +137,10 @@ const NetSentimentAndGoldPriceChart: React.FC = () => {
     fetchData();
   }, []);
   return (
-    <div className='pb-0 pt-10 px-6' style={{ width: '100%', height: 400 }}>
-      <h2 className='text-[#FAFAFA] text-[16px] font-medium'>Net Sentiment Analysis and Gold Price</h2>
+    <div className="pb-0 pt-10 px-6" style={{ width: '100%', height: 400 }}>
+      <h2 className="text-[#FAFAFA] text-[16px] font-medium">
+        Net Sentiment Analysis and Gold Price
+      </h2>
       <div className="text-[#A1A1AA] text-[14px]">24H Rolling (24)</div>
       <ResponsiveContainer width="100%" height="100%">
         <ComposedChart
@@ -72,12 +150,17 @@ const NetSentimentAndGoldPriceChart: React.FC = () => {
           <CartesianGrid stroke="#121623" horizontal={true} vertical={false} />
           <XAxis
             dataKey="date"
-            tickFormatter={(date: string | number, index: number): string => {
-              const dataLength = data.length;
-              const middleIndex = Math.floor(dataLength / 2);
+            tickFormatter={(date: string, index: number): string => {
+              const currentDate = new Date(date);
+              const options: Intl.DateTimeFormatOptions = {
+                month: 'short',
+                year: 'numeric',
+              };
 
-              if (index === middleIndex) {
-                return new Date(date).getFullYear().toString();
+              const isFirstTickMonthlyLabel =
+                data[index]?.isFirstTickMonthlyLabel;
+              if (isFirstTickMonthlyLabel) {
+                return currentDate.toLocaleDateString('en-US', options);
               }
               return '';
             }}
@@ -120,33 +203,110 @@ const NetSentimentAndGoldPriceChart: React.FC = () => {
               angle: -90,
               position: 'insideLeft',
               fill: '#A1A1AA',
-              dx: 70,
+              dx: 60,
             }}
           />
           <Tooltip
-            contentStyle={{
-              backgroundColor: '#060a16',
-              borderColor: '#444',
-              borderRadius: '5px',
+            content={({ payload: contentSentimentPrice, label }) => {
+              if (!contentSentimentPrice || !contentSentimentPrice.length)
+                return null;
+              const formattedLabel = new Date(label).toLocaleDateString(
+                'en-US',
+                {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                }
+              );
+
+              return (
+                <div
+                  style={{
+                    backgroundColor: '#060a16',
+                    padding: '10px',
+                    borderRadius: '5px',
+                    border: '1px solid #444',
+                    color: 'white',
+                  }}
+                >
+                  <div
+                    style={{
+                      fontSize: '14px',
+                      marginBottom: '5px',
+                      color: 'white',
+                    }}
+                  >
+                    {formattedLabel}
+                  </div>
+
+                  {contentSentimentPrice.map((contentSentimentPriceData) => (
+                    <div
+                      key={contentSentimentPriceData.name}
+                      style={{ marginBottom: '5px' }}
+                    >
+                      <div
+                        key={contentSentimentPriceData.name}
+                        style={{ marginBottom: '5px' }}
+                      >
+                        <span
+                          style={{
+                            color:
+                              contentSentimentPriceData.name === 'Net Sentiment'
+                                ? Number(contentSentimentPriceData.value) <= 0
+                                  ? '#F23645'
+                                  : '#2662D9'
+                                : 'white',
+                          }}
+                        >
+                          {contentSentimentPriceData.name}
+                        </span>{' '}
+                        <span
+                          style={{
+                            color:
+                              contentSentimentPriceData.name === 'Net Sentiment'
+                                ? Number(contentSentimentPriceData.value) <= 0
+                                  ? '#F23645'
+                                  : '#2662D9'
+                                : 'white',
+                          }}
+                        >
+                          :
+                        </span>{' '}
+                        <span
+                          style={{
+                            color:
+                              contentSentimentPriceData.name === 'Net Sentiment'
+                                ? Number(contentSentimentPriceData.value) <= 0
+                                  ? '#F23645'
+                                  : '#2662D9'
+                                : 'white',
+                          }}
+                        >
+                          {contentSentimentPriceData.name === 'GOLD Price'
+                            ? Number(
+                                contentSentimentPriceData.value
+                              ).toLocaleString('en-US', {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              })
+                            : contentSentimentPriceData.value}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              );
             }}
-            labelFormatter={(label: string | number) => {
-              const options: Intl.DateTimeFormatOptions = {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              };
-              return new Date(label).toLocaleDateString('en-US', options);
-            }}
-            formatter={(value: number, name: string) => {
-              if (name === 'GOLD Price') {
-                return [`$${value.toFixed(2)}`, 'Gold Price'];
-              }
-              return [value.toFixed(2), 'Net Sentiment'];
-            }}
-            labelStyle={{ color: 'white' }}
-            itemStyle={{ color: 'white' }}
           />
-          <Legend layout="horizontal" verticalAlign="top" align="center" />
+          <Legend
+            layout="horizontal"
+            verticalAlign="top"
+            align="center"
+            wrapperStyle={{
+              paddingBottom: '20px',
+              color: '#ffffff',
+            }}
+          />
 
           {/* Net Sentiment (Bar Chart) */}
           <Bar
