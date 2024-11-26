@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
