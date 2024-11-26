@@ -21,35 +21,84 @@ interface SentimentRatioData {
 
 const GoldSentimentRatioChart: React.FC = () => {
   const [data, setData] = useState<SentimentRatioData[]>([]);
+  const [timeframe, setTimeframe] = useState<'3M' | '6M'>('3M');
+  const backendApiUrl = import.meta.env.VITE_BACKEND_API;
+  console.log('ratio', data);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get<SentimentRatioData[]>(
-          'http://localhost:8080/gold-sentiment-ratio-graph-plot'
+          backendApiUrl + `/gold-sentiment-ratio-graph-plot/${timeframe}`
         );
 
-        const sortedData = response.data.sort((a, b) => {
+        // Convert to Asia/Bangkok timezone
+        const dateTimeFormatter = new Intl.DateTimeFormat('en-US', {
+          timeZone: 'Asia/Bangkok',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+        });
+
+        // Converted Bangkok time zone
+        const convertedDateTime = response.data.map((item) => {
+          const utcDate = new Date(item.date);
+          const bangkokTime = dateTimeFormatter.format(utcDate);
+
+          // Convert to ISO format for the chart
+          const [datePart, timePart] = bangkokTime.split(', ');
+          const [month, day, year] = datePart.split('/');
+
+          // Remove the AM/PM part and convert to 24-hour format
+          const [time, timePeriod] = timePart.split(' ');
+          let [hours, minutes, seconds] = time.split(':');
+          if (timePeriod === 'PM' && hours !== '12') {
+            hours = String(Number(hours) + 12);
+          } else if (timePeriod === 'AM' && hours === '12') {
+            hours = '00';
+          }
+
+          // Create the date string in ISO format with Bangkok timezone
+          const formattedDate = `${year}-${month.padStart(
+            2,
+            '0'
+          )}-${day.padStart(2, '0')}T${hours}:${minutes}:${seconds}+07:00`;
+
+          return {
+            ...item,
+            date: formattedDate,
+          };
+        });
+
+        const sortedData = convertedDateTime.sort((a, b) => {
           const previousDate = new Date(a.date).getTime();
           const nextDate = new Date(b.date).getTime();
           return previousDate - nextDate;
         });
 
+        const getDateOnly = (dateString: string) => dateString.split('T')[0];
+
         const formattedData = sortedData.map((item, index, array) => {
-          const currentDate = new Date(item.date);
-          const currentMonth = currentDate.getMonth();
-          const currentYear = currentDate.getFullYear();
+          const currentDate = getDateOnly(item.date);
+          const [year, month] = currentDate.split('-');
 
-          const isFirstTickMonthlyLabel =
-            currentDate.getDate() === 1 &&
-            array.findIndex(
-              (entry) =>
-                new Date(entry.date).getMonth() === currentMonth &&
-                new Date(entry.date).getFullYear() === currentYear &&
-                new Date(entry.date).getDate() === 1
-            ) === index;
+          // Skip first 20 points to avoid labels on the left edge
+          const skipInitialLabels = index < 20;
 
-          return { ...item, isFirstTickMonthlyLabel };
+          // Find the first date for this month
+          const isFirstDateOfMonth =
+            !skipInitialLabels &&
+            array.findIndex((dateItem) => {
+              const [itemYear, itemMonth] = getDateOnly(dateItem.date).split(
+                '-'
+              );
+              return itemYear === year && itemMonth === month;
+            }) === index;
+
+          return { ...item, isFirstTickMonthlyLabel: isFirstDateOfMonth };
         });
 
         setData(formattedData);
@@ -59,13 +108,35 @@ const GoldSentimentRatioChart: React.FC = () => {
     };
 
     fetchData();
-  }, []);
+  }, [timeframe]);
 
   return (
     <div style={{ width: '100%', height: '400px' }}>
+      <div className="flex flex-col items-end gap-2">
+        <h2>Timeframe</h2>
+        <div className="border border-[#172036] rounded-md p-1 hover:cursor-pointer">
+          <button
+            onClick={() => setTimeframe('3M')}
+            className={`${
+              timeframe === '3M' ? 'bg-[#172036] text-white' : ''
+            } px-5 py-2 rounded-md hover:text-white`}
+          >
+            3M
+          </button>
+          <button
+            onClick={() => setTimeframe('6M')}
+            className={`${
+              timeframe === '6M' ? 'bg-[#172036] text-white' : ''
+            } px-5 py-2 rounded-md  hover:text-white`}
+          >
+            6M
+          </button>
+        </div>
+      </div>
       <h2 style={{ color: 'white', padding: '20px', margin: 0 }}>
         Sentiment Ratio
       </h2>
+
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
           data={data}
@@ -76,7 +147,7 @@ const GoldSentimentRatioChart: React.FC = () => {
             bottom: 5,
           }}
         >
-          <CartesianGrid vertical={false} stroke="#444" />
+          <CartesianGrid vertical={false} stroke="#121623" />
           <XAxis
             dataKey="date"
             tickFormatter={(date: string, index: number): string => {
@@ -94,13 +165,14 @@ const GoldSentimentRatioChart: React.FC = () => {
               return '';
             }}
             interval={0}
-            stroke="#ffffff"
-            tick={{ fill: 'white' }}
+            stroke="#20293A"
+            tick={{ fill: '#A1A1AA' }}
           />
           <YAxis
             domain={['dataMin', 'dataMax']}
             ticks={[20, 30, 40, 50, 60]}
-            stroke="#ffffff"
+            stroke="#121623"
+            tick={{ fill: '#A1A1AA' }}
           />
           <Tooltip
             content={({ payload: contentSentimentRatio, label }) => {
@@ -112,6 +184,9 @@ const GoldSentimentRatioChart: React.FC = () => {
                   year: 'numeric',
                   month: 'long',
                   day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  hour12: false,
                 }
               );
 
@@ -148,7 +223,7 @@ const GoldSentimentRatioChart: React.FC = () => {
                           style={{
                             color:
                               contentSentimentData.name === 'Sentiment Ratio'
-                                ? '#ff7f7f'
+                                ? '#2662D9'
                                 : 'white',
                           }}
                         >
@@ -158,7 +233,7 @@ const GoldSentimentRatioChart: React.FC = () => {
                           style={{
                             color:
                               contentSentimentData.name === 'Sentiment Ratio'
-                                ? '#ff7f7f'
+                                ? '#2662D9'
                                 : 'white',
                           }}
                         >
@@ -168,13 +243,11 @@ const GoldSentimentRatioChart: React.FC = () => {
                           style={{
                             color:
                               contentSentimentData.name === 'Sentiment Ratio'
-                                ? '#ff7f7f'
+                                ? '#2662D9'
                                 : 'white',
                           }}
                         >
-                          {contentSentimentData.name === 'Upper Band'
-                            ? Number(contentSentimentData?.value).toFixed(2)
-                            : contentSentimentData?.value}
+                          {Number(contentSentimentData.value).toFixed(2)}
                         </span>
                       </div>
                     </div>
@@ -195,10 +268,10 @@ const GoldSentimentRatioChart: React.FC = () => {
           <Line
             type="monotone"
             dataKey="sentiment_ratio"
-            stroke="#ff7f7f"
+            stroke="#2662D9"
             dot={false}
             name="Sentiment Ratio"
-            strokeWidth={1.5}
+            strokeWidth={1}
           />
           <Line
             type="monotone"
@@ -206,16 +279,14 @@ const GoldSentimentRatioChart: React.FC = () => {
             stroke="#ffffff"
             dot={false}
             name="Upper Band"
-            strokeWidth={1.5}
+            strokeWidth={1}
           />
           <Brush
             dataKey="date"
             height={30}
-            stroke="#666"
-            startIndex={Math.floor(data.length / 2)}
-            endIndex={data.length - 1}
-            travellerWidth={10}
-            fill="#1a1a1a"
+            stroke="#20293A"
+            travellerWidth={5}
+            fill="#040B1C"
             tickFormatter={(date: string) => {
               return new Date(date).toLocaleDateString('en-US', {
                 year: 'numeric',

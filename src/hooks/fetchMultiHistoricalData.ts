@@ -15,10 +15,11 @@ interface HistoricalDataParams {
 
 interface PriceData {
   datetime: string;
-  close: number;
+  symbol: string;
+  open: number;
   high: number;
   low: number;
-  open: number;
+  close: number;
   volume: number;
 }
 
@@ -150,31 +151,32 @@ const PRIORITY_EXCHANGES = [
 
 export const fetchMultiHistoricalData = async ({
   symbols,
-  interval = "1D",
-  bars = "30",
-  from,
-  to
+  interval = "60",
+  bars = "50",
+
+
 }: HistoricalDataParams): Promise<Record<string, PriceData[]>> => {
   if (!symbols.length) return {};
 
   try {
-    const response = await axios.post(
-      getApiUrl(`/api/v2/tradingview/historical/multi`),
-      {
-        symbols,
-        interval: interval.toString(),
-        bars: bars.toString(),
-        from,
-        to
-      },
-      {
-        headers: {
-          "Content-Type": "application/json"
-        }
-      }
+    const results = await Promise.all(
+      symbols.map(async ({ symbol, exchange }) => {
+        const response = await axios.get(
+          getApiUrl(`/tradingview/historical?symbol=${symbol}&exchange=${exchange}&interval=${interval}&bars=${bars}`)
+        );
+        
+        return {
+          symbol,
+          data: response.data?.data || []
+        };
+      })
     );
 
-    return response.data?.data || {};
+    return results.reduce((acc, { symbol, data }) => {
+      acc[symbol] = data;
+      return acc;
+    }, {} as Record<string, PriceData[]>);
+
   } catch (error) {
     console.error("Error fetching multi historical data:", error);
     return {};
@@ -190,15 +192,13 @@ export const fetchMultiSymbolSearch = async (
     await Promise.all(
       tokens.map(async (token) => {
         try {
-          // Add USDT suffix for better matching
           const searchTerm = `${token.toUpperCase()}USDT`;
           const response = await axios.get(
-            getApiUrl(`/api/v2/tradingview/search?text=${searchTerm}&exchange=&start=0&limit=10`)
+            getApiUrl(`tradingview/search?text=${searchTerm}&exchange=&start=0&limit=50`)
           );
 
           const symbols = response.data?.data?.symbols || [];
           
-          // Find exact match first with priority exchanges
           for (const exchange of PRIORITY_EXCHANGES) {
             const exactMatch = symbols.find((s: TradingViewSymbol) => 
               s.source_id === exchange.source_id && 
@@ -207,19 +207,16 @@ export const fetchMultiSymbolSearch = async (
 
             if (exactMatch) {
               results[token] = exactMatch;
-              console.log(`Found exact match for ${token}:`, exactMatch);
               break;
             }
           }
 
-          // If no exact match found, try fuzzy match
           if (!results[token] && symbols.length > 0) {
             const fuzzyMatch = symbols.find((s: TradingViewSymbol) => 
               s.symbol.startsWith(token.toUpperCase())
             );
             if (fuzzyMatch) {
               results[token] = fuzzyMatch;
-              console.log(`Found fuzzy match for ${token}:`, fuzzyMatch);
             }
           }
         } catch (error) {
@@ -235,11 +232,7 @@ export const fetchMultiSymbolSearch = async (
   }
 };
 
-// Normalize token based on search results
-export const normalizeToken = (token: string): string => {
-  // Remove common suffixes and convert to uppercase
-  return token.replace(/USDT$|USD$|PERP$/, "").toUpperCase();
-};
+
 
 const multiHistoricalData = {
   fetchMultiHistoricalData,
