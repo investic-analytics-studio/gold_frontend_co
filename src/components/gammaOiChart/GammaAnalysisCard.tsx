@@ -9,16 +9,28 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import {
-  TrendingDown as StockDownIcon,
-  TrendingUp as StockUpIcon,
-  RotateCcw,
-  ListFilter,
   ChartArea,
-
+  ListFilter,
+  TrendingDown as StockDownIcon,
+  TrendingUp as StockUpIcon
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { SegmentedControl } from "@/components/ui/segmented-control";
+import ShimmerButton from "@/components/ui/shimmer-button";
 import { getCurrentGoldContractOption } from "@/hooks/useGammaOi";
 import { format } from "date-fns";
 import {
@@ -32,20 +44,6 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import ShimmerButton from "@/components/ui/shimmer-button";
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
-import { SegmentedControl } from "@/components/ui/segmented-control";
 
 interface GammaAnalysis {
   price: number;
@@ -136,7 +134,6 @@ const CustomDot = ({ cx, cy, payload, selectedDataPoint }: any) => {
 const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
   gammaAnalysis: data,
   priceData,
-
 }) => {
   const [tradingRange, setTradingRange] = useState(10);
   const [selectedDataPoint, setSelectedDataPoint] = useState<string>("");
@@ -260,8 +257,7 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
         <div className="border-b border-[#20293A] p-3 pl-4 pr-2 text-[13px] text-[#A1A1AA] flex items-center justify-between h-[50px]">
           <div className="flex items-center gap-2">
             <div>
-            <ChartArea className="size-4" />
-
+              <ChartArea className="size-4" />
             </div>
             <div>Gamma AI</div>
           </div>
@@ -284,14 +280,14 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
                       <ListFilter className="h-4 w-4" />
                       Filter
                     </div>
-                    <Button
+                    {/* <Button
                       // onClick={handleResetAllFilters}
                       variant="outline"
                       className="font-normal text-[#209CFF] border-none hover:bg-[#172036] hover:text-[#209CFF] group"
                     >
                       <RotateCcw className="transition-transform duration-200 group-hover:-rotate-180" />
                       Default Filters
-                    </Button>
+                    </Button> */}
                   </DrawerTitle>
                 </DrawerHeader>
                 <div className="bg-[#030816] px-4">
@@ -376,7 +372,7 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
                         Filter
                       </h4>
                     </div>
-                    <div>
+                    {/* <div>
                       <Button
                         // onClick={handleResetAllFilters}
                         variant="outline"
@@ -385,7 +381,7 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
                         <RotateCcw className="transition-transform duration-200 group-hover:-rotate-180" />
                         Default Filters
                       </Button>
-                    </div>
+                    </div> */}
                   </div>
                   <div className="mt-4">
                     <label className="text-[14px] font-normal text-[#A1A1AA]/70">
@@ -759,25 +755,36 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
       <div className="rounded-none border-t border-[#20293A]">
         <Card className="bg-[#030816] rounded-[12px] border-none">
           <CardHeader>
-            <CardTitle className="text-[#FAFAFA] text-[16px] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <span>Price Analysis</span>
+            <CardTitle className="text-[#FAFAFA] text-[16px]">
+              <div className="flex justify-between w-full">
+              <div className="flex flex-col sm:flex-row items-start gap-0 md:gap-4">
+                <div>
+                <span>Price Analysis</span>
+                </div>
+                <div>
+                {filteredData[0] && (
+                  <Badge
+                    variant="outline"
+                    className="text-xs text-[#209CFF] font-normal border-none bg-[#209CFF]/10"
+                  >
+                    Last updated:{" "}
+                    {format(new Date(filteredData[0].created_at), "HH:mm:ss")}
+                  </Badge>
+                )}
+                </div>
+              </div>
               <div className="flex flex-wrap items-center gap-4">
                 {selectedDataPoint && (
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => setSelectedDataPoint("")}
-                    className="text-xs bg-transparent text-[#A1A1AA] border-[#20293A] hover:bg-[#0A1122]"
+                    className="text-[12px] font-normal bg-transparent text-[#A1A1AA] border-[#20293A] hover:bg-[#0A1122] hover:text-[#FAFAFA]"
                   >
                     Reset Zoom
                   </Button>
                 )}
-                {filteredData[0] && (
-                  <Badge variant="outline" className="text-xs">
-                    Last updated:{" "}
-                    {format(new Date(filteredData[0].created_at), "HH:mm:ss")}
-                  </Badge>
-                )}
+              </div>
               </div>
             </CardTitle>
           </CardHeader>

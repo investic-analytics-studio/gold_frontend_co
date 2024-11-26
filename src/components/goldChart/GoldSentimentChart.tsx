@@ -117,7 +117,7 @@ const GoldSentimentChart: React.FC = () => {
       <h2 className="text-[#FAFAFA] text-[16px] font-medium">
         Sentiment Analysis (Gold)
       </h2>
-      <div className="text-[#A1A1AA] text-[14px]">Lorem Ipsum</div>
+      {/* <div className="text-[#A1A1AA] text-[14px]">Lorem Ipsum</div> */}
       <ResponsiveContainer width="100%" height="100%" className="mt-8">
         <BarChart
           data={data}
