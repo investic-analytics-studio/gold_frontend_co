@@ -18,8 +18,8 @@ const TextScroll: React.FC = () => {
             Who's <span className="text-[#209CFF]">INVESTIC</span>
           </h2>
           <p className="text-lg text-[#A1A1AA] text-center md:text-left leading-relaxed max-w-2xl">
-            Crypto Investic offers advanced tools for crypto traders, providing 
-            deep insights into Crypto market trends. Use our data-driven approach 
+            Gold Investic offers advanced tools for gold traders, providing 
+            deep insights into Gold market trends. Use our data-driven approach 
             to refine your trading strategy and gain a competitive edge.
           </p>
         </div>
