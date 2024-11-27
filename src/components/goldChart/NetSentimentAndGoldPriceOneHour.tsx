@@ -261,7 +261,7 @@ const NetSentimentAndGoldPriceOneHour: React.FC = () => {
                             style={{
                               color:
                                 contentSentimentPriceHourData.name ===
-                                'Net Sentiment 1H Rolling'
+                                'Net Sentiment 1H'
                                   ? '#2662D9'
                                   : 'white',
                             }}
@@ -272,7 +272,7 @@ const NetSentimentAndGoldPriceOneHour: React.FC = () => {
                             style={{
                               color:
                                 contentSentimentPriceHourData.name ===
-                                'Net Sentiment 1H Rolling'
+                                'Net Sentiment 1H'
                                   ? '#2662D9'
                                   : 'white',
                             }}
@@ -283,7 +283,7 @@ const NetSentimentAndGoldPriceOneHour: React.FC = () => {
                             style={{
                               color:
                                 contentSentimentPriceHourData.name ===
-                                'Net Sentiment 1H Rolling'
+                                'Net Sentiment 1H'
                                   ? '#2662D9'
                                   : 'white',
                             }}
