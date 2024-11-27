@@ -143,7 +143,7 @@ const NetSentimentAndGoldPriceOneHour: React.FC = () => {
       <h2 className="text-[#FAFAFA] text-[16px] font-medium">
         Net Sentiment Analysis and GOLD Price
       </h2>
-      <div className="text-[#A1A1AA] text-[14px]">1H Rolling (24)</div>
+      {/* <div className="text-[#A1A1AA] text-[14px]">1H Rolling (24)</div> */}
       <ResponsiveContainer width="100%" height="100%">
         <ComposedChart
           width={800}
@@ -323,7 +323,7 @@ const NetSentimentAndGoldPriceOneHour: React.FC = () => {
             dataKey="netSentiment"
             stroke="#2662D9"
             strokeWidth={2}
-            name="Net Sentiment 1H Rolling"
+            name="Net Sentiment 1H"
             dot={false}
           />
 
