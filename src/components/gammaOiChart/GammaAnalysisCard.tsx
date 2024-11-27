@@ -313,13 +313,13 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
         textColor: '#A1A1AA',
       },
       grid: {
-        vertLines: { color: '#20293A' },
-        horzLines: { color: '#20293A' },
+        vertLines: { color: '#121623' },
+        horzLines: { color: '#121623' },
       },
       width: chartContainerRef.current.clientWidth,
       height: 400,
       rightPriceScale: {
-        borderColor: '#20293A',
+        borderColor: '#121623',
         scaleMargins: {
           top: 0.1,
           bottom: 0.1,
@@ -328,7 +328,7 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
       timeScale: {
         timeVisible: true,
         secondsVisible: false,
-        borderColor: '#20293A',
+        borderColor: '#121623',
         fixLeftEdge: true,
         fixRightEdge: true,
         rightOffset: 100,
@@ -363,25 +363,25 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
       crosshair: {
         mode: 1,
         vertLine: {
-          color: '#20293A',
+          color: '#209CFF',
           width: 1,
           style: 3,
-          labelBackgroundColor: '#20293A',
+          labelBackgroundColor: '#209CFF',
         },
         horzLine: {
-          color: '#20293A',
+          color: '#209CFF',
           width: 1,
           style: 3,
-          labelBackgroundColor: '#20293A',
+          labelBackgroundColor: '#209CFF',
         },
       },
     });
 
     const candlestickSeries = chart.addCandlestickSeries({
-      upColor: '#10B981',
+      upColor: '#089981',
       downColor: '#EF4444',
       borderVisible: false,
-      wickUpColor: '#10B981',
+      wickUpColor: '#089981',
       wickDownColor: '#EF4444',
       priceFormat: {
         type: 'price',
@@ -913,7 +913,7 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
             <div className="min-h-[350px] md:min-h-auto space-y-0 pt-3 rounded-lg bg-[#030816] border border-[#20293A] overflow-hidden">
               <div className="flex justify-between items-center border-b border-[#20293A] pb-3 px-4">
                 <p className="text-[#A1A1AA] font-normal text-[14px] flex items-center gap-2">
-                  <span className="text-green-500">
+                  <span className="text-[#089981]">
                     <StockUpIcon size={16} />
                   </span>{" "}
                   Bullish Scenario
@@ -923,7 +923,7 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
                   <Switch
                     checked={showPositionsSelected.bullish}
                     onCheckedChange={toggleBullishPosition}
-                    className="data-[state=checked]:bg-[#209CFF]"
+                    className="data-[state=checked]:bg-[#089981]"
                   />
                 </div>
               </div>
@@ -945,7 +945,7 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
               <div className="grid grid-cols-2 h-[50%]">
                 <div className="flex flex-col justify-center items-center border-r border-[#20293A]">
                   <div className="text-[12px] text-[#A1A1AA]">Target</div>
-                  <div className="text-[20px] font-semibold text-green-500">
+                  <div className="text-[20px] font-semibold text-[#089981]">
                     $
                     {adjustPriceWithDelta(
                       displayedAnalysis?.bullish_tp ?? 0,
@@ -956,7 +956,7 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
                 </div>
                 <div className="flex flex-col justify-center items-center">
                   <div className="text-[12px] text-[#A1A1AA]">Stop Loss</div>
-                  <div className="text-[20px] font-semibold text-red-500">
+                  <div className="text-[20px] font-semibold text-[#F23645]">
                     $
                     {adjustPriceWithDelta(
                       displayedAnalysis?.bullish_sl ?? 0,
@@ -971,7 +971,7 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
             <div className="min-h-[350px] md:min-h-auto space-y-0 pt-3 rounded-lg bg-[#030816] border border-[#20293A] overflow-hidden">
               <div className="flex justify-between items-center border-b border-[#20293A] pb-3 px-4">
                 <p className="text-[#A1A1AA] font-normal text-[14px] flex items-center gap-2">
-                  <span className="text-red-500">
+                  <span className="text-[#F23645]">
                     <StockDownIcon size={16} />
                   </span>{" "}
                   Bearish Scenario
@@ -981,7 +981,7 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
                   <Switch
                     checked={showPositionsSelected.bearish}
                     onCheckedChange={toggleBearishPosition}
-                    className="data-[state=checked]:bg-red-500"
+                    className="data-[state=checked]:bg-[#F23645]"
                   />
                 </div>
               </div>
@@ -1003,7 +1003,7 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
               <div className="grid grid-cols-2 h-[50%]">
                 <div className="flex flex-col justify-center items-center border-r border-[#20293A]">
                   <div className="text-[12px] text-[#A1A1AA]">Target</div>
-                  <div className="text-[20px] font-semibold text-green-500">
+                  <div className="text-[20px] font-semibold text-[#089981]">
                     $
                     {adjustPriceWithDelta(
                       displayedAnalysis?.bearish_tp ?? 0,
@@ -1014,7 +1014,7 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
                 </div>
                 <div className="flex flex-col justify-center items-center">
                   <div className="text-[12px] text-[#A1A1AA]">Stop Loss</div>
-                  <div className="text-[20px] font-semibold text-red-500">
+                  <div className="text-[20px] font-semibold text-[#F23645]">
                     $
                     {adjustPriceWithDelta(
                       displayedAnalysis?.bearish_sl ?? 0,

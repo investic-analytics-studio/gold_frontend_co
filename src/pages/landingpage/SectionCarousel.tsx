@@ -10,19 +10,19 @@ const data = [
   {
     title: "Net Sentiment",
     description:
-      "Borem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.",
+      "Daily gold sentiment analysis powered by AI. We gather real-time news worldwide to provide a clear overview: positive sentiment indicates bullish factors for gold, while negative sentiment highlights bearish influences.",
     image: "/assets/images/net-sentiment.png",
   },
   {
     title: "Gamma AI",
     description:
-      "Borem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.",
+      "Pinpoint precise entry and exit points with AI-powered insights. We analyze Gold CME options open interest to identify the levels where market makers conduct Gamma hedging, providing optimal buy and sell targets.",
     image: "/assets/images/price-analysis.png",
   },
   {
     title: "Investic Weighted Option OI",
     description:
-      "Borem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.",
+      "CME Options Open Interest, weighted across the latest three options series, ensures that key levels are significant. Use these high-interest OI levels as support and resistance zones, aligned with the Gamma hedging strategies of market makers.",
     image: "/assets/images/investic-weighted-option-oi.png",
   },
 ];
@@ -122,7 +122,7 @@ const ImageCarousel: React.FC = () => {
     <div className={`text-white p-8 ${isMobile ? "w-[100%] mt-10" : "w-full mt-20"}`}>
       <h1 className={`${isMobile ? "text-[40px]" : "text-[46px]"} font-semibold text-[46px]`}>Our Features</h1>
       <p className={`${isMobile ? "text-[18px]" : "text-[20px]"} text-gray-400 mb-8 mt-2`}>
-      Borem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.
+        Discover the ultimate gold analysis toolkit, giving you the power to track major players and stay ahead in the market.
       </p>
 
       <div
