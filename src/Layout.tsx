@@ -13,7 +13,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
-import { IconBrandDiscordFilled, IconBrandX } from "@tabler/icons-react";
 import { Link, Outlet, useRouter } from "@tanstack/react-router";
 import {
   ChartCandlestick,
@@ -24,7 +23,6 @@ import React from "react";
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarGroup,
   SidebarGroupLabel,
   SidebarHeader,
@@ -34,7 +32,7 @@ import {
   SidebarMenuItem,
   SidebarProvider,
   SidebarRail,
-  SidebarTrigger,
+  SidebarTrigger
 } from "./components/ui/sidebar";
 
 const sidebarItems = [
@@ -144,7 +142,7 @@ const SidebarFooterComponent = () => (
       </SidebarMenuItem>
     </SidebarMenu>
   </SidebarFooter> */}
-  <SidebarFooter className="pb-6 lg:pb-1">
+  {/* <SidebarFooter className="pb-6 lg:pb-1">
   <SidebarGroupLabel className="text-[#FAFAFA] mb-1 lg:mb-0 w-full flex items-center justify-between px-2 py-8 lg:py-6 rounded-none border-t border-[#20293A] ">                    
   
     <div className="text-[#FAFAFA]/70 text-[12px] font-light">Follow us</div>
@@ -168,7 +166,7 @@ const SidebarFooterComponent = () => (
     </div>
 
   </SidebarGroupLabel>
-  </SidebarFooter>
+  </SidebarFooter> */}
   </>
 );
 

@@ -141,7 +141,7 @@ const NetSentimentAndGoldPriceChart: React.FC = () => {
       <h2 className="text-[#FAFAFA] text-[16px] font-medium">
         Net Sentiment Analysis and Gold Price
       </h2>
-      <div className="text-[#A1A1AA] text-[14px]">24H Rolling (24)</div>
+      {/* <div className="text-[#A1A1AA] text-[14px]">24H Rolling (24)</div> */}
       <ResponsiveContainer width="100%" height="100%">
         <ComposedChart
           data={data}

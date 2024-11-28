@@ -11,10 +11,6 @@ import ImageCarousel from "./SectionCarousel";
 // import ReviewCard from "./ReviewCard";
 import GradualSpacing from "@/components/ui/gradual-spacing";
 import { useIsMobile } from "@/hooks/use-mobile";
-import {
-  IconBrandDiscordFilled,
-  IconBrandX
-} from "@tabler/icons-react";
 import AboutInvestic from "./AboutInvestic";
 import TextScroll from "./TextScroll";
 
@@ -184,7 +180,7 @@ const HomePage: React.FC = () => {
               : "border-[#20293A] text-[16px]"
           }`}
         >
-          <div className="py-10 lg:py-12 flex items-center justify-center gap-4">
+          {/* <div className="py-10 lg:py-12 flex items-center justify-center gap-4">
             <div className="flex gap-5 lg:gap-4">
               <a
                 href="https://discord.gg/jUsBJFkmDS"
@@ -203,8 +199,8 @@ const HomePage: React.FC = () => {
                 <IconBrandX className="w-7 h-7 lg:w-6 lg:h-6" />
               </a>
             </div>
-          </div>
-          <div>
+          </div> */}
+          <div className="pt-4">
             <p className="text-[#A1A1AA]/70">
               Copyright &copy; 2024 Investic Analytics Studio. All rights
               reserved.
