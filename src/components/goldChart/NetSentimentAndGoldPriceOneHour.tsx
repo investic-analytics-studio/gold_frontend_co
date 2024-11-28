@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import {
   ComposedChart,
@@ -10,133 +9,140 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
+import { useQuery } from '@tanstack/react-query';
 
-// API Response Type
 interface GoldSentimentAggregateHourly {
   datetime: string;
   negative: number;
   neutral: number;
   positive: number;
   net: number;
-  gold_price?: number | null;
+  gold_price: number | null;
   created_at: string;
   updated_at: string;
   deleted_at?: string | null;
   rolling_net_hourly: number;
-}
-
-// Chart Data Type
-interface NetSentimentAndGoldPriceOneHourData {
-  date: string;
-  netSentiment: number;
-  goldPrice: number | null | undefined;
   isFirstTickMonthlyLabel?: boolean;
 }
 
+// Fetch function
+const fetchNetSentimentAndGoldPriceHourlyData = async (
+  backendApiUrl: string
+): Promise<GoldSentimentAggregateHourly[]> => {
+  const response = await axios.get(
+    `${backendApiUrl}/gold-sentiment-aggregate-hourly`
+  );
+
+  // Convert to Asia/Bangkok timezone
+  const dateTimeFormatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Bangkok',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  });
+
+  // Converted Bangkok time zone
+  const convertedDateTime = response.data.map(
+    (item: GoldSentimentAggregateHourly) => {
+      const utcDate = new Date(item.datetime);
+      const bangkokTime = dateTimeFormatter.format(utcDate);
+
+      // Convert to ISO format for the chart
+      const [datePart, timePart] = bangkokTime.split(', ');
+      const [month, day, year] = datePart.split('/');
+
+      // Remove the AM/PM part and convert to 24-hour format
+      const [time, timePeriod] = timePart.split(' ');
+      let [hours, minutes, seconds] = time.split(':');
+      if (timePeriod === 'PM' && hours !== '12') {
+        hours = String(Number(hours) + 12);
+      } else if (timePeriod === 'AM' && hours === '12') {
+        hours = '00';
+      }
+
+      // Create the datetime string in ISO format with Bangkok timezone
+      const formattedDate = `${year}-${month.padStart(2, '0')}-${day.padStart(
+        2,
+        '0'
+      )}T${hours}:${minutes}:${seconds}+07:00`;
+
+      return {
+        ...item,
+        datetime: formattedDate,
+      };
+    }
+  );
+
+  // Get today's date and 3 months ago
+  const today = new Date();
+  const threeMonthsAgo = new Date();
+  threeMonthsAgo.setMonth(today.getMonth() - 3);
+
+  // Filter data for the last 3 months
+  const getThreeMonthsData = convertedDateTime.filter(
+    (convertedDateTimeItem: GoldSentimentAggregateHourly) => {
+      const itemDate = new Date(convertedDateTimeItem.datetime);
+      return itemDate >= threeMonthsAgo && itemDate <= today;
+    }
+  );
+
+  const getDateOnly = (dateString: string) => dateString.split('T')[0];
+
+  const monthlyLabels = getThreeMonthsData.map(
+    (
+      threeMonthsDataItem: GoldSentimentAggregateHourly,
+      threeMonthsDataIndex: number,
+      threeMonthsDataArray: GoldSentimentAggregateHourly[]
+    ) => {
+      const currentDate = getDateOnly(threeMonthsDataItem.datetime);
+      const [year, month] = currentDate.split('-');
+
+      // Skip first 20 points to avoid labels on the left edge
+      const skipInitialLabels = threeMonthsDataIndex < 20;
+
+      // Find the first datetime for this month
+      const isFirstDateOfMonth =
+        !skipInitialLabels &&
+        threeMonthsDataArray.findIndex((dateItem) => {
+          const [itemYear, itemMonth] = getDateOnly(dateItem.datetime).split(
+            '-'
+          );
+          return itemYear === year && itemMonth === month;
+        }) === threeMonthsDataIndex;
+
+      return {
+        ...threeMonthsDataItem,
+        isFirstTickMonthlyLabel: isFirstDateOfMonth,
+      };
+    }
+  );
+
+  return monthlyLabels.filter(
+    (item: GoldSentimentAggregateHourly) =>
+      item.gold_price !== null && item.gold_price !== undefined
+  );
+};
+
 const NetSentimentAndGoldPriceOneHour: React.FC = () => {
-  const [data, setData] = useState<NetSentimentAndGoldPriceOneHourData[]>([]);
   const backendApiUrl = import.meta.env.VITE_BACKEND_API;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get<GoldSentimentAggregateHourly[]>(
-          backendApiUrl + '/gold-sentiment-aggregate-hourly'
-        );
+  // Use React Query to fetch data
+  const {
+    data: NetsentimentHourlyData,
+    isLoading,
+    error,
+  } = useQuery<GoldSentimentAggregateHourly[], Error>({
+    queryKey: ['net-sentiment-gold-price-hourly'],
+    queryFn: () => fetchNetSentimentAndGoldPriceHourlyData(backendApiUrl),
+    staleTime: 10 * 60 * 1000, // 10 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
+  });
 
-        // Convert to Asia/Bangkok timezone
-        const dateTimeFormatter = new Intl.DateTimeFormat('en-US', {
-          timeZone: 'Asia/Bangkok',
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit',
-        });
-
-        // Converted Bangkok time zone
-        const convertedDateTime = response.data.map((item) => {
-          const utcDate = new Date(item.datetime);
-          const bangkokTime = dateTimeFormatter.format(utcDate);
-
-          // Convert to ISO format for the chart
-          const [datePart, timePart] = bangkokTime.split(', ');
-          const [month, day, year] = datePart.split('/');
-
-          // Remove the AM/PM part and convert to 24-hour format
-          const [time, timePeriod] = timePart.split(' ');
-          let [hours, minutes, seconds] = time.split(':');
-          if (timePeriod === 'PM' && hours !== '12') {
-            hours = String(Number(hours) + 12);
-          } else if (timePeriod === 'AM' && hours === '12') {
-            hours = '00';
-          }
-
-          // Create the date string in ISO format with Bangkok timezone
-          const formattedDate = `${year}-${month.padStart(
-            2,
-            '0'
-          )}-${day.padStart(2, '0')}T${hours}:${minutes}:${seconds}+07:00`;
-
-          return {
-            ...item,
-            date: formattedDate,
-          };
-        });
-
-        // Get today's date and 3 months ago
-        const today = new Date();
-        const threeMonthsAgo = new Date();
-        threeMonthsAgo.setMonth(today.getMonth() - 3);
-
-        // Filter data for the last 3 months
-        const getThreeMonthsData = convertedDateTime.filter((item) => {
-          const itemDate = new Date(item.date);
-          return itemDate >= threeMonthsAgo && itemDate <= today;
-        });
-
-        const getDateOnly = (dateString: string) => dateString.split('T')[0];
-
-        const monthlyLabels = getThreeMonthsData.map((item, index, array) => {
-          const currentDate = getDateOnly(item.date);
-          const [year, month] = currentDate.split('-');
-
-          // Skip first 20 points to avoid labels on the left edge
-          const skipInitialLabels = index < 20;
-
-          // Find the first date for this month
-          const isFirstDateOfMonth =
-            !skipInitialLabels &&
-            array.findIndex((dateItem) => {
-              const [itemYear, itemMonth] = getDateOnly(dateItem.date).split(
-                '-'
-              );
-              return itemYear === year && itemMonth === month;
-            }) === index;
-
-          return { ...item, isFirstTickMonthlyLabel: isFirstDateOfMonth };
-        });
-
-        const formattedData = monthlyLabels
-          .filter(
-            (item) => item.gold_price !== null && item.gold_price !== undefined
-          )
-          .map((item) => ({
-            date: item.date,
-            netSentiment: item.rolling_net_hourly,
-            goldPrice: item.gold_price,
-            isFirstTickMonthlyLabel: item.isFirstTickMonthlyLabel,
-          }));
-
-        setData(formattedData);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-
-    fetchData();
-  }, []);
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error loading data</div>;
 
   return (
     <div className="pb-0 pt-10 px-6" style={{ width: '100%', height: 400 }}>
@@ -148,21 +154,22 @@ const NetSentimentAndGoldPriceOneHour: React.FC = () => {
         <ComposedChart
           width={800}
           height={500}
-          data={data}
+          data={NetsentimentHourlyData}
           margin={{ top: 50, right: 30, bottom: 30, left: 30 }}
         >
           <CartesianGrid stroke="#121623" vertical={false} />
           <XAxis
-            dataKey="date"
-            tickFormatter={(date: string, index: number): string => {
-              const currentDate = new Date(date);
+            dataKey="datetime"
+            tickFormatter={(datetime: string, index: number): string => {
+              const currentDate = new Date(datetime);
               const options: Intl.DateTimeFormatOptions = {
                 month: 'short',
                 year: 'numeric',
               };
 
               const isFirstTickMonthlyLabel =
-                data[index]?.isFirstTickMonthlyLabel;
+                NetsentimentHourlyData &&
+                NetsentimentHourlyData[index]?.isFirstTickMonthlyLabel;
               if (isFirstTickMonthlyLabel) {
                 return currentDate.toLocaleDateString('en-US', options);
               }
@@ -320,7 +327,7 @@ const NetSentimentAndGoldPriceOneHour: React.FC = () => {
           <Line
             yAxisId="left"
             type="monotone"
-            dataKey="netSentiment"
+            dataKey="rolling_net_hourly"
             stroke="#2662D9"
             strokeWidth={2}
             name="Net Sentiment 1H"
@@ -331,7 +338,7 @@ const NetSentimentAndGoldPriceOneHour: React.FC = () => {
           <Line
             yAxisId="right"
             type="monotone"
-            dataKey="goldPrice"
+            dataKey="gold_price"
             stroke="#FFFFFF"
             strokeWidth={1}
             name="GOLD Price 1H"
