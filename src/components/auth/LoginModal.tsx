@@ -72,7 +72,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
               variant="ghost"
               size="icon"
               onClick={onClose}
-              className="absolute right-4 top-4 h-8 w-8 rounded-md border border-[#FFFFFF]/40 hover:bg-[#FFFFFF] text-[#FFFFFF] hover:text-[#209CFF]"
+              className="absolute right-4 top-4 h-8 w-8 rounded-md border border-[#FFFFFF]/40 hover:bg-[#FFFFFF] text-[#FFFFFF] hover:text-primary"
             >
               <X className="h-4 w-4" />
             </Button>
@@ -92,7 +92,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                       <div className="space-y-2">
                         <label
                           htmlFor="email"
-                          className="text-sm font-normal text-[#191E25]/80"
+                          className="text-sm font-normal text-secondary/80"
                         >
                           Username
                         </label>
@@ -103,7 +103,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                           name="email"
                           value={input["email"]}
                           onChange={handleChangeInput}
-                          className="bg-transparent border-[#A1A1AA]/30 text-[#191E25] placeholder:text-[#A1A1AA]"
+                          className="bg-transparent border-[#A1A1AA]/30 text-secondary placeholder:text-[#A1A1AA]"
                           required
                         />
                       </div>
@@ -111,7 +111,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                       <div className="space-y-2">
                         <label
                           htmlFor="password"
-                          className="text-sm font-normal text-[#191E25]/80"
+                          className="text-sm font-normal text-secondary/80"
                         >
                           Password
                         </label>
@@ -122,7 +122,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                           name="password"
                           value={input["password"]}
                           onChange={handleChangeInput}
-                          className="bg-transparent border-[#A1A1AA]/30 text-[#191E25] placeholder:text-[#A1A1AA]"
+                          className="bg-transparent border-[#A1A1AA]/30 text-secondary placeholder:text-[#A1A1AA]"
                           required
                         />
                       </div>
@@ -130,15 +130,15 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                         <label className="flex items-center space-x-2">
                           <input
                             type="checkbox"
-                            className="form-checkbox h-4 w-4 text-[#209CFF] border-[#20293A]/20 rounded"
+                            className="form-checkbox h-4 w-4 text-primary border-[#20293A]/20 rounded"
                           />
-                          <span className="text-[14px] font-light text-[#191E25]/60">
+                          <span className="text-[14px] font-light text-secondary/60">
                             Remember me
                           </span>
                         </label>
                         {/* <button
                           type="button"
-                          className="text-[14px] font-light text-[#7D879F] hover:text-[#209CFF]"
+                          className="text-[14px] font-light text-[#7D879F] hover:text-primary"
                         >
                           Forgot password?
                         </button> */}
@@ -147,7 +147,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
                   <div className="pt-4 w-full">
                     <Button
                       type="submit"
-                      className="w-full h-[50px] bg-[#209CFF] hover:bg-[#209CFF]/80 text-[#FFFFFF]"
+                      className="w-full h-[50px] bg-primary hover:bg-primary/80 text-[#FFFFFF]"
                     >
                       Login
                     </Button>

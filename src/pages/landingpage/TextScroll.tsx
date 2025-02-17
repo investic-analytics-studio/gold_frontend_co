@@ -7,7 +7,7 @@ const TextScroll: React.FC = () => {
       <VelocityScroll
         text={`With Gold Investic, let data-driven insights lead your next move and enhance your trading success.`}
         default_velocity={1}
-        className="font-display text-center text-[40px] md:text-[60px] lg:text-[72px] font-semibold tracking-[-0.02em] text-[#209CFF]/85 drop-shadow-sm dark:text-white md:leading-[5rem] lg:leading-[5.5rem]"
+        className="font-display text-center text-[40px] md:text-[60px] lg:text-[72px] font-semibold tracking-[-0.02em] text-primary/85 drop-shadow-sm dark:text-white md:leading-[5rem] lg:leading-[5.5rem]"
       />
     </div>
   );

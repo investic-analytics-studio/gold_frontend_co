@@ -124,7 +124,7 @@ export function Autocomplete({
                   className={cn(
                     "cursor-pointer transition-colors duration-200",
                     "hover:bg-[#172036] hover:text-white",
-                    value === option.value && "text-[#209CFF]",
+                    value === option.value && "text-primary",
                     isHovered === option.value && "text-white"
                   )}
                 >

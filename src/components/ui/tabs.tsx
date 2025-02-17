@@ -32,7 +32,7 @@ const TabsTrigger = React.forwardRef<
       // Default state with hover
       "text-[#535B6A] data-[state=inactive]:hover:text-white border-b-2 border-transparent",
       // Active state without hover
-      "data-[state=active]:text-[#209CFF] data-[state=active]:border-[#209CFF] data-[state=active]:font-medium data-[state=active]:hover:text-[#209CFF] data-[state=active]:pointer-events-none data-[state=active]:cursor-default",
+      "data-[state=active]:text-primary data-[state=active]:border-primary data-[state=active]:font-medium data-[state=active]:hover:text-primary data-[state=active]:pointer-events-none data-[state=active]:cursor-default",
       className
     )}
     {...props}

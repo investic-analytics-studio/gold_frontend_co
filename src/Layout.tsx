@@ -115,7 +115,7 @@ const SidebarHeaderComponent = () => (
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <SidebarMenu className="rounded-md hover:bg-[#209CFF]/10 cursor-pointer">
+                <SidebarMenu className="rounded-md hover:bg-primary/10 cursor-pointer">
                   <SidebarMenuItem>
                     <div className="flex items-center justify-between w-full px-2 py-2">
                       <div className="flex items-center gap-2">
@@ -197,7 +197,7 @@ const SidebarFooterComponent = () => {
               >
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarImage src={defaultAvatar} alt={authUserData?.name} />
-                  <AvatarFallback className="rounded-lg bg-[#209CFF] text-white">
+                  <AvatarFallback className="rounded-lg bg-primary text-white">
                     {authUserData?.name[0]
                       ? authUserData?.name[0].toUpperCase()
                       : ""}
@@ -363,14 +363,14 @@ export default function Layout() {
                                           className={cn(
                                             "opacity-100 group-hover/collapsible:opacity-100 h-4 w-4 flex-shrink-0",
                                             isActive
-                                              ? "text-[#209CFF] opacity-100"
+                                              ? "text-primary opacity-100"
                                               : "text-[#A1A1AA]"
                                           )}
                                         />
                                         <span
                                           className={cn(
                                             "text-[#A1A1AA] text-[14px] hover:text-none",
-                                            isActive ? "text-[#209CFF]" : ""
+                                            isActive ? "text-primary" : ""
                                           )}
                                         >
                                           {item.label}
@@ -442,14 +442,14 @@ export default function Layout() {
                                             className={cn(
                                               "opacity-100 group-hover/collapsible:opacity-100 h-4 w-4 flex-shrink-0",
                                               isActive
-                                                ? "text-[#209CFF] opacity-100"
+                                                ? "text-primary opacity-100"
                                                 : "text-[#A1A1AA]"
                                             )}
                                           />
                                           <span
                                             className={cn(
                                               "text-[#A1A1AA] hover:text-none",
-                                              isActive ? "text-[#209CFF]" : ""
+                                              isActive ? "text-primary" : ""
                                             )}
                                           >
                                             {item.label}
@@ -521,21 +521,21 @@ export default function Layout() {
                                           className={cn(
                                             "opacity-100 group-hover/collapsible:opacity-100 h-4 w-4 flex-shrink-0",
                                             isActive
-                                              ? "text-[#209CFF] opacity-100"
+                                              ? "text-primary opacity-100"
                                               : "text-[#A1A1AA]"
                                           )}
                                         />
                                         <span
                                           className={cn(
                                             "text-[#A1A1AA] text-[14px] hover:text-none",
-                                            isActive ? "text-[#209CFF]" : ""
+                                            isActive ? "text-primary" : ""
                                           )}
                                         >
                                           {item.label}
                                         </span>
                                       </div>
                                       <div>
-                                        <span className="text-[#209CFF] text-[12px] font-medium bg-[#209CFF]/20 px-2 py-1 rounded-md">
+                                        <span className="text-primary text-[12px] font-medium bg-primary/20 px-2 py-1 rounded-md">
                                           Soon
                                         </span>
                                       </div>
@@ -550,7 +550,7 @@ export default function Layout() {
                                           </h4>
                                         </div>
                                         <div>
-                                          <span className="text-[#209CFF] text-[12px] font-medium bg-[#209CFF]/20 px-2 py-1 rounded-md">
+                                          <span className="text-primary text-[12px] font-medium bg-primary/20 px-2 py-1 rounded-md">
                                             Soon
                                           </span>
                                         </div>
@@ -570,7 +570,7 @@ export default function Layout() {
                                           • Real-time market data
                                         </li>
                                       </ul>
-                                      <div className="text-[12px] text-[#209CFF] pt-2">
+                                      <div className="text-[12px] text-primary pt-2">
                                         We're working hard to bring you these
                                         features soon!
                                       </div>
@@ -596,21 +596,21 @@ export default function Layout() {
                                             className={cn(
                                               "opacity-100 group-hover/collapsible:opacity-100 h-4 w-4 flex-shrink-0",
                                               isActive
-                                                ? "text-[#209CFF] opacity-100"
+                                                ? "text-primary opacity-100"
                                                 : "text-[#A1A1AA]"
                                             )}
                                           />
                                           <span
                                             className={cn(
                                               "text-[#A1A1AA] hover:text-none",
-                                              isActive ? "text-[#209CFF]" : ""
+                                              isActive ? "text-primary" : ""
                                             )}
                                           >
                                             {item.label}
                                           </span>
                                         </div>
                                         <div>
-                                          <span className="text-[#209CFF] text-[12px] font-medium bg-[#209CFF]/20 px-2 py-1 rounded-md">
+                                          <span className="text-primary text-[12px] font-medium bg-primary/20 px-2 py-1 rounded-md">
                                             Soon
                                           </span>
                                         </div>
@@ -631,7 +631,7 @@ export default function Layout() {
                                           </h4>
                                         </div>
                                         <div>
-                                          <span className="text-[#209CFF] text-[12px] font-medium bg-[#209CFF]/20 px-2 py-1 rounded-md">
+                                          <span className="text-primary text-[12px] font-medium bg-primary/20 px-2 py-1 rounded-md">
                                             Soon
                                           </span>
                                         </div>
@@ -651,7 +651,7 @@ export default function Layout() {
                                           • Customizable dashboards
                                         </li>
                                       </ul>
-                                      <div className="text-[12px] text-[#209CFF] pt-2">
+                                      <div className="text-[12px] text-primary pt-2">
                                         We're working hard to bring you these
                                         features soon!
                                       </div>
@@ -675,21 +675,21 @@ export default function Layout() {
                                     className={cn(
                                       "opacity-100 group-hover/collapsible:opacity-100 h-4 w-4 flex-shrink-0",
                                       isActive
-                                        ? "text-[#209CFF] opacity-100"
+                                        ? "text-primary opacity-100"
                                         : "text-[#A1A1AA]"
                                     )}
                                   />
                                   <span
                                     className={cn(
                                       "text-[#A1A1AA] hover:text-none",
-                                      isActive ? "text-[#209CFF]" : ""
+                                      isActive ? "text-primary" : ""
                                     )}
                                   >
                                     {item.label}
                                   </span>
                                 </div>
                                 {(isSoon || isLockPage) && (
-                                  <span className="text-[#209CFF] text-[12px] font-medium bg-[#209CFF]/20 px-2 py-1 rounded-md">
+                                  <span className="text-primary text-[12px] font-medium bg-primary/20 px-2 py-1 rounded-md">
                                     Soon
                                   </span>
                                 )}

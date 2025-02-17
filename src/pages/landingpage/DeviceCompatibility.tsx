@@ -7,7 +7,7 @@ const DeviceCompatibility: React.FC = () => {
   const isMobile = useIsMobile();
   return (
     <div
-      className={`text-[#191E25] mb-0 ${
+      className={`text-secondary mb-0 ${
         isMobile ? "mt-10  p-4" : "mt-10  p-8"
       } 3xl:px-[250px]`}
     >
@@ -21,7 +21,7 @@ const DeviceCompatibility: React.FC = () => {
       <p
         className={`${
           isMobile ? "text-[18px] mt-4" : "text-[20px] mt-6"
-        } text-[#191E25]/50 mb-8 mt-2 text-center max-w-[800px] mx-auto`}
+        } text-secondary/50 mb-8 mt-2 text-center max-w-[800px] mx-auto`}
       >
         Access powerful market insights and analysis tools from any device, with
         comprehensive market analysis. Available on desktop, tablet and mobile.
@@ -38,12 +38,12 @@ const DeviceCompatibility: React.FC = () => {
               }`}
             >
               <div className="flex items-center mb-4">
-                <MonitorCheck className="w-[92px] h-[92px] text-[#209CFF] mr-4 mb-6" />
+                <MonitorCheck className="w-[92px] h-[92px] text-primary mr-4 mb-6" />
               </div>
-              <h2 className="text-2xl font-semibold text-[#191E25] text-[30px]">
+              <h2 className="text-2xl font-semibold text-secondary text-[30px]">
                 Desktop Experience
               </h2>
-              <p className="text-[#191E25]/50 text-[18px] mt-4">
+              <p className="text-secondary/50 text-[18px] mt-4">
                 Get the full power of our analytics on your desktop. With a
                 larger screen, you'll have access to detailed charts,
                 comprehensive market analysis, and advanced trading insights all
@@ -62,12 +62,12 @@ const DeviceCompatibility: React.FC = () => {
               }`}
             >
               <div className="flex items-center mb-4">
-                <TabletSmartphone className="w-[92px] h-[92px] text-[#209CFF] mr-4 mb-6" />
+                <TabletSmartphone className="w-[92px] h-[92px] text-primary mr-4 mb-6" />
               </div>
-              <h2 className="text-2xl font-semibold text-[#191E25] text-[30px]">
+              <h2 className="text-2xl font-semibold text-secondary text-[30px]">
                 Mobile & Tablet Ready
               </h2>
-              <p className="text-[#191E25]/50 text-[18px] mt-4">
+              <p className="text-secondary/50 text-[18px] mt-4">
                 Stay fully connected to analysis anytime, anywhere. Our
                 responsive design ensures you get the same powerful insights and
                 analysis tools, perfectly optimized for your tablet and mobile device.

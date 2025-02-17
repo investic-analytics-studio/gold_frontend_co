@@ -51,24 +51,24 @@ const HomePage: React.FC = () => {
         >
           <div className="hidden md:block lg:hidden">
             <GradualSpacing
-              className="font-display text-center font-extrabold tracking-tight text-[#191E25] md:leading-[8rem] mt-[50px] text-[80px]"
+              className="font-display text-center font-extrabold tracking-tight text-secondary md:leading-[8rem] mt-[50px] text-[80px]"
               text="Gold Studio"
             />
           </div>
           {isMobile ? (
             <div className="block md:hidden lg:hidden flex flex-col items-center">
               <GradualSpacing
-                className="font-display text-center font-bold tracking-tight text-[#191E25] mt-[50px] text-[75px] lg:text-[80px] leading-[85px] lg:leading-[80px]"
+                className="font-display text-center font-bold tracking-tight text-secondary mt-[50px] text-[75px] lg:text-[80px] leading-[85px] lg:leading-[80px]"
                 text="Gold"
               />
               <GradualSpacing
-                className="font-display text-center font-bold tracking-tight text-[#191E25] text-[75px] lg:text-[80px] leading-[85px] lg:leading-[80px]"
+                className="font-display text-center font-bold tracking-tight text-secondary text-[75px] lg:text-[80px] leading-[85px] lg:leading-[80px]"
                 text="Studio"
               />
             </div>
           ) : (
             <GradualSpacing
-              className="font-display text-center font-bold tracking-tight text-[#191E25] md:leading-[8rem] mt-[50px] text-[160px]"
+              className="font-display text-center font-bold tracking-tight text-secondary md:leading-[8rem] mt-[50px] text-[160px]"
               text="Gold Studio"
             />
           )}
@@ -78,7 +78,7 @@ const HomePage: React.FC = () => {
               isMobile
                 ? "text-[20px] mt-[10px] mb-[40px] leading-relaxed tracking-wide"
                 : "text-[30px] mt-[40px] mb-[60px] leading-relaxed tracking-normal"
-            } text-[#191E25]/50`}
+            } text-secondary/50`}
           >
             Your one-stop solution for gold analytics.
           </p>
@@ -90,7 +90,7 @@ const HomePage: React.FC = () => {
             >
               <div className={isMobile ? "mb-0" : "mb-0"}>
                 <Button
-                  className={`bg-[#209CFF] rounded-[15px] ${
+                  className={`bg-primary rounded-[15px] ${
                     isMobile
                       ? "w-full md:w-[320px] h-[66px] text-[16px]"
                       : "w-[220px] h-[66px] text-[20px]"
@@ -104,11 +104,11 @@ const HomePage: React.FC = () => {
 
               {/* <div>
                 <Button
-                  className={`bg-transparent border-2 border-[#209CFF] rounded-[15px] ${
+                  className={`bg-transparent border-2 border-primary rounded-[15px] ${
                     isMobile 
                       ? "w-full h-[50px] text-[16px]" 
                       : "w-[240px] h-[66px] text-[20px]"
-                  } text-[#209CFF]`}
+                  } text-primary`}
                   asChild
                   size="lg"
                 >
@@ -121,7 +121,7 @@ const HomePage: React.FC = () => {
                 isMobile
                   ? "flex-col mb-8 text-[14px]"
                   : "flex-row mb-14 text-[14px]"
-              } gap-[10px] justify-center font-light text-[#191E25]/50`}
+              } gap-[10px] justify-center font-light text-secondary/50`}
             >
               {" "}
               Corporate Version
@@ -198,7 +198,7 @@ const HomePage: React.FC = () => {
             </div>
           </div> */}
           <div className="pt-4">
-            <p className="text-[#191E25]/40">
+            <p className="text-secondary/40">
               Copyright &copy; 2024 Investic Analytics Studio. All rights
               reserved.
             </p>
