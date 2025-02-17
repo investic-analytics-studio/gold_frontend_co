@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import ShineBorder from "@/components/ui/shine-border";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import React from "react";
