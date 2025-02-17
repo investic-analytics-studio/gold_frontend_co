@@ -67,7 +67,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
           </div> */}
 
           {/* Right Side - Login Form */}
-          <div className="relative flex flex-col h-full bg-[url('./assets/images/bg-login.jpg')] pt-10 md:pt-0">
+          <div className="relative flex flex-col h-full bg-[url('./assets/images/bg-login.png')] pt-10 md:pt-0">
             <Button
               variant="ghost"
               size="icon"
@@ -81,7 +81,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose }) => {
               <div className="w-full max-w-md border border-[#E0E3EB] bg-[#F4F5F7] rounded-[20px] p-[40px] xl:p-[60px]">
                   <div className="flex justify-center mb-8">
                     <img
-                      src="./assets/images/logo-investic-dark.svg"
+                      src="./assets/images/new-gold-logo.png"
                       alt="logo"
                       className="w-[40px] h-auto"
                     />

@@ -60,17 +60,17 @@ const HomePage: React.FC = () => {
           {isMobile ? (
             <div className="block md:hidden lg:hidden flex flex-col items-center">
               <GradualSpacing
-                className="font-display text-center font-extrabold tracking-tight text-[#191E25] mt-[50px] text-[75px] lg:text-[80px] leading-[85px] lg:leading-[80px]"
+                className="font-display text-center font-bold tracking-tight text-[#191E25] mt-[50px] text-[75px] lg:text-[80px] leading-[85px] lg:leading-[80px]"
                 text="Gold"
               />
               <GradualSpacing
-                className="font-display text-center font-extrabold tracking-tight text-[#191E25] text-[75px] lg:text-[80px] leading-[85px] lg:leading-[80px]"
+                className="font-display text-center font-bold tracking-tight text-[#191E25] text-[75px] lg:text-[80px] leading-[85px] lg:leading-[80px]"
                 text="Studio"
               />
             </div>
           ) : (
             <GradualSpacing
-              className="font-display text-center font-extrabold tracking-tight text-[#191E25] md:leading-[8rem] mt-[50px] text-[160px]"
+              className="font-display text-center font-bold tracking-tight text-[#191E25] md:leading-[8rem] mt-[50px] text-[160px]"
               text="Gold Studio"
             />
           )}
@@ -200,7 +200,7 @@ const HomePage: React.FC = () => {
             </div>
           </div> */}
           <div className="pt-4">
-            <p className="text-[#A1A1AA]/70">
+            <p className="text-[#191E25]/40">
               Copyright &copy; 2024 Investic Analytics Studio. All rights
               reserved.
             </p>

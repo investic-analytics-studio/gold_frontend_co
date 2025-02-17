@@ -120,7 +120,7 @@ const ImageCarousel: React.FC = () => {
 
   return (
     <div className={`text-white p-8 ${isMobile ? "w-[100%] mt-10" : "w-full mt-20"}`}>
-      <h1 className={`${isMobile ? "text-[40px]" : "text-[46px]"} font-bold text-[46px] text-[#191E25]`}>Our Features</h1>
+      <h1 className={`${isMobile ? "text-[40px]" : "text-[46px]"} font-semibold text-[46px] text-[#191E25]`}>Our Features</h1>
       <p className={`${isMobile ? "text-[18px]" : "text-[20px]"} text-gray-400 mb-8 mt-2`}>
         Discover the ultimate gold analysis toolkit, giving you the power to track major players and stay ahead in the market.
       </p>
@@ -149,7 +149,7 @@ const ImageCarousel: React.FC = () => {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <h1 className="text-[#191E25] font-bold text-[24px]">
+                  <h1 className="text-[#191E25] font-semibold text-[24px]">
                     {item.title}
                   </h1>
                   <p className="text-gray-400 mt-2 mb-2">{item.description}</p>

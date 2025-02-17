@@ -52,7 +52,7 @@ const DeviceCompatibility: React.FC = () => {
             </div>
 
             {/* Divider */}
-            <div className="lg:hidden h-px bg-[#20293A] mx-0"></div>
+            <div className="lg:hidden h-px bg-[#E0E3EB] mx-0"></div>
 
             <div
               className={`${
