@@ -41,9 +41,7 @@ const HomePage: React.FC = () => {
 
       {/* Existing content */}
       <div
-        className={`relative z-10 w-full max-w-7xl px-4 ${
-          isMobile ? "pt-[50px]" : "pt-[100px]"
-        }`}
+        className="relative z-10 w-full max-w-7xl px-4 h-[calc(100vh-120px)] xl:h-[calc(100vh-200px)] pt-[130px] xl-[150px]"
       >
         <motion.div
           initial={{ opacity: 0, y: -50 }}
