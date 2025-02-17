@@ -13,7 +13,7 @@ import {
   ChartArea,
   ListFilter,
   TrendingDown as StockDownIcon,
-  TrendingUp as StockUpIcon
+  TrendingUp as StockUpIcon,
 } from "lucide-react";
 import { useEffect, useMemo, useState, useRef } from "react";
 
@@ -45,7 +45,16 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { createChart, LineStyle, UTCTimestamp, SeriesMarker } from 'lightweight-charts';
+import {
+  createChart,
+  LineStyle,
+  UTCTimestamp,
+  SeriesMarker,
+} from "lightweight-charts";
+import {
+  GammaOiCurrentAnalysisTooltips,
+  GammaOiPriceAnalysisTooltips,
+} from "../tooltips/GammaOiDesc";
 
 interface GammaAnalysis {
   price: number;
@@ -83,7 +92,7 @@ interface GammaAnalysisCardProps {
 
 // Add this helper function at the top of the file, outside the component
 function formatChartData(priceData: PriceData[]) {
-  console.log('priceData =',priceData);
+  // console.log('priceData =',priceData);
   return priceData.map((item) => ({
     timestamp: new Date(item.datetime).getTime(),
     price: item.price,
@@ -136,11 +145,7 @@ const CustomDot = ({ cx, cy, payload, selectedDataPoint }: any) => {
 };
 
 // Update the adjustPriceWithDelta function to handle OHLC prices
-function adjustPriceWithDelta(
-  price: number,
-  delta: number,
-  isSpot: boolean
-) {
+function adjustPriceWithDelta(price: number, delta: number, isSpot: boolean) {
   return isSpot ? price - delta : price;
 }
 
@@ -161,7 +166,10 @@ function adjustOHLCWithDelta(
     high: adjustPriceWithDelta(data.high, delta, isSpot),
     low: adjustPriceWithDelta(data.low, delta, isSpot),
     close: adjustPriceWithDelta(data.close, delta, isSpot),
-    price: data.price !== undefined ? adjustPriceWithDelta(data.price, delta, isSpot) : undefined
+    price:
+      data.price !== undefined
+        ? adjustPriceWithDelta(data.price, delta, isSpot)
+        : undefined,
   };
 }
 
@@ -173,7 +181,7 @@ function getLocalTimezoneOffset(): number {
 function convertToLocalTime(timestamp: number): number {
   // For UTC+7 use this:
   // return timestamp + (7 * 60 * 60 * 1000);
-  
+
   // For local timezone use this:
   return timestamp - getLocalTimezoneOffset();
 }
@@ -193,7 +201,7 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
 
   // Filter data based on trading range
   const filteredData = useMemo(() => {
-    console.log(priceData);
+    // console.log(priceData);
     return data.filter((item) => item.trading_range === tradingRange);
   }, [data, tradingRange]);
 
@@ -287,7 +295,7 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
           high: point.high,
           low: point.low,
           close: point.close,
-          price: point.price
+          price: point.price,
         },
         displayedAnalysis?.delta ?? 0,
         showSpotPrice
@@ -309,17 +317,17 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
 
     const chart = createChart(chartContainerRef.current, {
       layout: {
-        background: { color: '#030816' },
-        textColor: '#A1A1AA',
+        background: { color: "#030816" },
+        textColor: "#A1A1AA",
       },
       grid: {
-        vertLines: { color: '#121623' },
-        horzLines: { color: '#121623' },
+        vertLines: { color: "#121623" },
+        horzLines: { color: "#121623" },
       },
       width: chartContainerRef.current.clientWidth,
       height: 400,
       rightPriceScale: {
-        borderColor: '#121623',
+        borderColor: "#121623",
         scaleMargins: {
           top: 0.1,
           bottom: 0.1,
@@ -328,7 +336,7 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
       timeScale: {
         timeVisible: true,
         secondsVisible: false,
-        borderColor: '#121623',
+        borderColor: "#121623",
         fixLeftEdge: true,
         fixRightEdge: true,
         rightOffset: 100,
@@ -337,9 +345,9 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
         rightBarStaysOnScroll: true,
         tickMarkFormatter: (time: number) => {
           const date = new Date(time * 1000);
-          return date.toLocaleTimeString('en-US', {
-            hour: '2-digit',
-            minute: '2-digit',
+          return date.toLocaleTimeString("en-US", {
+            hour: "2-digit",
+            minute: "2-digit",
             hour12: false,
             // timeZone: 'Asia/Bangkok'
           });
@@ -348,14 +356,14 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
       localization: {
         timeFormatter: (time: number) => {
           const date = new Date(time * 1000);
-          return date.toLocaleString('en-US', {
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
+          return date.toLocaleString("en-US", {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
             hour12: false,
             // For UTC+7 use this:
             // timeZone: 'Asia/Bangkok'
-            
+
             // For local timezone, remove timeZone option
           });
         },
@@ -363,41 +371,43 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
       crosshair: {
         mode: 1,
         vertLine: {
-          color: '#209CFF',
+          color: "#209CFF",
           width: 1,
           style: 3,
-          labelBackgroundColor: '#209CFF',
+          labelBackgroundColor: "#209CFF",
         },
         horzLine: {
-          color: '#209CFF',
+          color: "#209CFF",
           width: 1,
           style: 3,
-          labelBackgroundColor: '#209CFF',
+          labelBackgroundColor: "#209CFF",
         },
       },
     });
 
     const candlestickSeries = chart.addCandlestickSeries({
-      upColor: '#089981',
-      downColor: '#EF4444',
+      upColor: "#089981",
+      downColor: "#EF4444",
       borderVisible: false,
-      wickUpColor: '#089981',
-      wickDownColor: '#EF4444',
+      wickUpColor: "#089981",
+      wickDownColor: "#EF4444",
       priceFormat: {
-        type: 'price',
+        type: "price",
         precision: 2,
         minMove: 0.01,
       },
     });
 
     const markerSeries = chart.addLineSeries({
-      color: 'rgba(32, 156, 255, 0.5)',
+      color: "rgba(32, 156, 255, 0.5)",
       lineWidth: 1,
       lineStyle: LineStyle.Dashed,
     });
 
-    const candleData = adjustedChartData.map(item => ({
-      time: Math.floor(convertToLocalTime(new Date(item.timestamp).getTime()) / 1000) as UTCTimestamp,
+    const candleData = adjustedChartData.map((item) => ({
+      time: Math.floor(
+        convertToLocalTime(new Date(item.timestamp).getTime()) / 1000
+      ) as UTCTimestamp,
       open: item.open,
       high: item.high,
       low: item.low,
@@ -406,16 +416,26 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
 
     candlestickSeries.setData(candleData);
 
-    if ((showPositionsSelected.bullish || showPositionsSelected.bearish) && displayedAnalysis) {
-      const analysisTimestamp = Math.floor(new Date(displayedAnalysis.created_at).getTime() / 1000) as UTCTimestamp;
-      
-      const markers = [{
-        time: analysisTimestamp,
-        position: 'aboveBar',
-        color: '#ffffff',
-        shape: 'arrowDown',
-        text: `Analysis ${format(new Date(displayedAnalysis.created_at), "HH:mm:ss")}`,
-      }];
+    if (
+      (showPositionsSelected.bullish || showPositionsSelected.bearish) &&
+      displayedAnalysis
+    ) {
+      const analysisTimestamp = Math.floor(
+        new Date(displayedAnalysis.created_at).getTime() / 1000
+      ) as UTCTimestamp;
+
+      const markers = [
+        {
+          time: analysisTimestamp,
+          position: "aboveBar",
+          color: "#ffffff",
+          shape: "arrowDown",
+          text: `Analysis ${format(
+            new Date(displayedAnalysis.created_at),
+            "HH:mm:ss"
+          )}`,
+        },
+      ];
 
       candlestickSeries.setMarkers(markers as SeriesMarker<UTCTimestamp>[]);
 
@@ -441,11 +461,11 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
           displayedAnalysis.delta,
           showSpotPrice
         ),
-        color: '#10B981',
+        color: "#10B981",
         lineWidth: 2,
         lineStyle: LineStyle.Dashed,
         axisLabelVisible: true,
-        title: 'Long Entry',
+        title: "Long Entry",
       });
 
       const bullishTp = candlestickSeries.createPriceLine({
@@ -454,11 +474,11 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
           displayedAnalysis.delta,
           showSpotPrice
         ),
-        color: '#10B981',
+        color: "#10B981",
         lineWidth: 2,
         lineStyle: LineStyle.Dashed,
         axisLabelVisible: true,
-        title: 'Take Profit',
+        title: "Take Profit",
       });
 
       const bullishSl = candlestickSeries.createPriceLine({
@@ -467,11 +487,11 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
           displayedAnalysis.delta,
           showSpotPrice
         ),
-        color: '#EF4444',
+        color: "#EF4444",
         lineWidth: 2,
         lineStyle: LineStyle.Dashed,
         axisLabelVisible: true,
-        title: 'Stop Loss',
+        title: "Stop Loss",
       });
     }
 
@@ -482,11 +502,11 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
           displayedAnalysis.delta,
           showSpotPrice
         ),
-        color: '#EF4444',
+        color: "#EF4444",
         lineWidth: 2,
         lineStyle: LineStyle.Dashed,
         axisLabelVisible: true,
-        title: 'Short Entry',
+        title: "Short Entry",
       });
 
       const bearishTp = candlestickSeries.createPriceLine({
@@ -495,11 +515,11 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
           displayedAnalysis.delta,
           showSpotPrice
         ),
-        color: '#10B981',
+        color: "#10B981",
         lineWidth: 2,
         lineStyle: LineStyle.Dashed,
         axisLabelVisible: true,
-        title: 'Take Profit',
+        title: "Take Profit",
       });
 
       const bearishSl = candlestickSeries.createPriceLine({
@@ -508,11 +528,11 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
           displayedAnalysis.delta,
           showSpotPrice
         ),
-        color: '#EF4444',
+        color: "#EF4444",
         lineWidth: 2,
         lineStyle: LineStyle.Dashed,
         axisLabelVisible: true,
-        title: 'Stop Loss',
+        title: "Stop Loss",
       });
     }
 
@@ -523,20 +543,25 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
         chart.applyOptions({
           width: chartContainerRef.current.clientWidth,
         });
-        
+
         chart.timeScale().scrollToPosition(5, false);
       }
     };
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     chartRef.current = chart;
 
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
       chart.remove();
     };
-  }, [adjustedChartData, showPositionsSelected, displayedAnalysis, showSpotPrice]);
+  }, [
+    adjustedChartData,
+    showPositionsSelected,
+    displayedAnalysis,
+    showSpotPrice,
+  ]);
 
   return (
     <div className="space-y-4">
@@ -733,6 +758,9 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
                   <div className="font-medium text-[16px] text-[#FAFAFA]">
                     Current Analysis
                   </div>
+                  {import.meta.env.VITE_TOOLTIPS === "true" && (
+                    <GammaOiCurrentAnalysisTooltips />
+                  )}
                 </div>
               </div>
 
@@ -1034,34 +1062,42 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
           <CardHeader>
             <CardTitle className="text-[#FAFAFA] text-[16px]">
               <div className="flex justify-between w-full">
-              <div className="flex flex-col sm:flex-row items-start gap-0 md:gap-4">
-                <div>
-                <span>Price Analysis</span>
+                <div className="flex flex-col sm:flex-row items-start gap-0 md:gap-4 items-center">
+                  <div>
+                    <span>Price Analysis</span>
+                  </div>
+                  <div>
+                    {filteredData[0] && (
+                      <Badge
+                        variant="outline"
+                        className="text-xs text-[#209CFF] font-normal border-none bg-[#209CFF]/10"
+                      >
+                        Last updated:{" "}
+                        {format(
+                          new Date(filteredData[0].created_at),
+                          "HH:mm:ss"
+                        )}
+                      </Badge>
+                    )}
+                  </div>
+                  <div>
+                    {import.meta.env.VITE_TOOLTIPS === "true" && (
+                      <GammaOiPriceAnalysisTooltips />
+                    )}
+                  </div>
                 </div>
-                <div>
-                {filteredData[0] && (
-                  <Badge
-                    variant="outline"
-                    className="text-xs text-[#209CFF] font-normal border-none bg-[#209CFF]/10"
-                  >
-                    Last updated:{" "}
-                    {format(new Date(filteredData[0].created_at), "HH:mm:ss")}
-                  </Badge>
-                )}
+                <div className="flex flex-wrap items-center gap-4">
+                  {selectedDataPoint && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setSelectedDataPoint("")}
+                      className="text-[12px] font-normal bg-transparent text-[#A1A1AA] border-[#20293A] hover:bg-[#0A1122] hover:text-[#FAFAFA]"
+                    >
+                      Reset Zoom
+                    </Button>
+                  )}
                 </div>
-              </div>
-              <div className="flex flex-wrap items-center gap-4">
-                {selectedDataPoint && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setSelectedDataPoint("")}
-                    className="text-[12px] font-normal bg-transparent text-[#A1A1AA] border-[#20293A] hover:bg-[#0A1122] hover:text-[#FAFAFA]"
-                  >
-                    Reset Zoom
-                  </Button>
-                )}
-              </div>
               </div>
             </CardTitle>
           </CardHeader>

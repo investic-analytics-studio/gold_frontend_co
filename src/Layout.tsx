@@ -1,10 +1,10 @@
-import {
-  Collapsible,
-  CollapsibleTrigger
-} from "@/components/ui/collapsible";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Collapsible, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   DropdownMenu,
-  DropdownMenuTrigger
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
   Tooltip,
@@ -15,14 +15,18 @@ import {
 import { cn } from "@/lib/utils";
 import { Link, Outlet, useRouter } from "@tanstack/react-router";
 import {
+  ChartBarIncreasing,
   ChartCandlestick,
   ChartLine,
-  ChevronRight
+  ChevronRight,
+  ChevronsUpDown,
+  LogOut,
 } from "lucide-react";
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupLabel,
   SidebarHeader,
@@ -32,19 +36,55 @@ import {
   SidebarMenuItem,
   SidebarProvider,
   SidebarRail,
-  SidebarTrigger
+  SidebarTrigger,
 } from "./components/ui/sidebar";
+import { useAuthContext } from "./context/authContext";
+import { removeAccessToken } from "@/utils/localStorage";
+import { signOut } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { useInitialPageContext } from "./context/initialPageContext";
+import { MESSENGER_URL } from "./lib/constants";
+// import LockModal from "./components/LockModal";
+import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const sidebarItems = [
-  { icon: ChartLine, label: "Net Sentiment", href: "/gold" },
+  {
+    icon: ChartLine,
+    label: "Net Sentiment",
+    href: "/gold",
+    needSubscribe: false,
+    initialPageShowName: "net_sentiment_page",
+    lockPage: import.meta.env.VITE_IS_LOCK_NET_SENTIMENT === "true",
+  },
   // { icon: ChartNoAxesColumnIncreasing, label: "Gamma OI", href: "/gold/gamma-oi" },
-  { icon: ChartCandlestick, label: "Investic Weight OI", href: "/gold/investic-weight-oi" },
+  {
+    icon: ChartBarIncreasing,
+    label: "Retail Sentiment",
+    href: "/gold/retail-sentiment",
+    needSubscribe: true,
+    initialPageShowName: "retail_sentiment_page",
+    lockPage: import.meta.env.VITE_IS_LOCK_RETAIL_SENTIMENT === "true",
+  },
+  {
+    icon: ChartCandlestick,
+    label: "Investic Weight OI",
+    href: "/gold/investic-weight-oi",
+    needSubscribe: true,
+    initialPageShowName: "weight_oi_page",
+    lockPage: import.meta.env.VITE_IS_LOCK_WEIGHTED_OI === "true",
+  },
   // { icon: ChartNoAxesCombined, label: "Trend and Momentum", href: "/gold/trend-and-momentum" },
 ];
 
 // const userData = {
-//   name: "App Beta",
-//   email: "New Version",
+//   name: "Name",
+//   email: "Email",
 //   avatar: "/placeholder.svg?height=32&width=32",
 // };
 
@@ -69,106 +109,131 @@ const themeStyle = `
 
 const SidebarHeaderComponent = () => (
   <SidebarHeader>
-    <SidebarMenu>
-      <SidebarMenuItem>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <SidebarMenuButton
-              size="lg"
-              className="data-[state=open]:bg-[var(--sidebar-hover)] data-[state=open]:text-white pointer-events-none"
-            >
-              <img
-                src="/logo-investic-light.svg"
-                alt="Logo"
-                className="h-6 w-6 flex-shrink-0"
-              />
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold text-white">
-                Gold Studio
-                </span>
-                <span className="truncate text-xs text-gray-400">
-                  Investic Analytics Studio
-                </span>
-              </div>
-              {/* <ChevronsUpDown className="ml-auto text-gray-400" /> */}
-            </SidebarMenuButton>
-          </DropdownMenuTrigger>
-        </DropdownMenu>
-      </SidebarMenuItem>
-    </SidebarMenu>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Link to="/" className="w-full">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <SidebarMenu className="rounded-md hover:bg-[#209CFF]/10 cursor-pointer">
+                  <SidebarMenuItem>
+                    <div className="flex items-center justify-between w-full px-2 py-2">
+                      <div className="flex items-center gap-2">
+                        <img
+                          src="/logo-investic-light.svg"
+                          alt="Logo"
+                          className="h-6 w-6 flex-shrink-0"
+                        />
+                        <div className="grid flex-1 text-left text-sm leading-tight">
+                          <span className="truncate font-semibold text-white">
+                            Gold Studio
+                          </span>
+                          <span className="truncate text-xs text-gray-400">
+                            Investic Analytics Studio
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </SidebarMenuItem>
+                </SidebarMenu>
+              </TooltipTrigger>
+              <TooltipContent
+                side="bottom"
+                align="end"
+                sideOffset={4}
+                className="bg-[#172036] text-white text-xs border-none"
+              >
+                <p>Go to home page</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </Link>
+      </DropdownMenuTrigger>
+    </DropdownMenu>
   </SidebarHeader>
 );
 
-const SidebarFooterComponent = () => (
-  <>
-  {/* <SidebarFooter>
-    <SidebarMenu>
-      <SidebarMenuItem>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <SidebarMenuButton
-              size="lg"
-              className="data-[state=open]:bg-[var(--sidebar-hover)] data-[state=open]:text-white pointer-events-none"
-            >
-              <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage src={userData.avatar} alt={userData.name} />
-                <AvatarFallback className="rounded-lg bg-[#209CFF] text-white">
-                  B
-                </AvatarFallback>
-              </Avatar>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold text-white">
-                  {userData.name}
-                </span>
-                <span className="truncate text-xs text-gray-400">
-                  {userData.email}
-                </span>
-              </div>
-              <ChevronsUpDown className="ml-auto size-4 text-gray-400" />
-            </SidebarMenuButton>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg bg-[#030816] text-white border border-[#20293A]"
-            side="bottom"
-            align="end"
-            sideOffset={4}
-          >
-            <DropdownMenuItem className="hover:bg-[var(--sidebar-hover)]">
-              <LogOut className="mr-2 h-4 w-4" />
-              Log out
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </SidebarMenuItem>
-    </SidebarMenu>
-  </SidebarFooter> */}
-  {/* <SidebarFooter className="pb-6 lg:pb-1">
-  <SidebarGroupLabel className="text-[#FAFAFA] mb-1 lg:mb-0 w-full flex items-center justify-between px-2 py-8 lg:py-6 rounded-none border-t border-[#20293A] ">                    
-  
-    <div className="text-[#FAFAFA]/70 text-[12px] font-light">Follow us</div>
-    <div className="flex gap-3 lg:gap-0">
-      <a
-        href="https://discord.gg/jUsBJFkmDS"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-[#A1A1AA]/70 hover:text-[#FFFFFF] border border-[#20293A] lg:border-none transition-colors duration-200 hover:bg-[#172036] rounded-full lg:rounded-md p-2"
-      >
-        <IconBrandDiscordFilled className="w-5 h-5 lg:w-4 lg:h-4" />
-      </a>
-      <a
-        href="https://x.com/INVESTIC_Crypto"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-[#A1A1AA]/70 hover:text-[#FFFFFF] border border-[#20293A] lg:border-none transition-colors duration-200 hover:bg-[#172036] rounded-full lg:rounded-md p-2"
-      >
-        <IconBrandX className="w-5 h-5 lg:w-4 lg:h-4" />
-      </a>
-    </div>
+const SidebarFooterComponent = () => {
+  const { authUserData, setAuthUserData } = useAuthContext();
+  const router = useRouter();
+  const { toast } = useToast();
+  const defaultAvatar = "/placeholder.svg?height=32&width=32";
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      removeAccessToken();
+      setAuthUserData({
+        uid: "",
+        gold_status: false,
+        name: "",
+        email: "",
+      });
+      router.navigate({ to: "/" });
 
-  </SidebarGroupLabel>
-  </SidebarFooter> */}
-  </>
-);
+      toast({
+        title: "Logged out successfully",
+        description: "You have been logged out of your account",
+        variant: "default",
+      });
+    } catch (error) {
+      console.error("Error logging out:", error);
+      toast({
+        title: "Error logging out",
+        description: "There was a problem logging out",
+        variant: "destructive",
+      });
+    }
+  };
+
+  return (
+    <SidebarFooter>
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <SidebarMenuButton
+                size="lg"
+                className="data-[state=open]:bg-[var(--sidebar-hover)] data-[state=open]:text-white"
+              >
+                <Avatar className="h-8 w-8 rounded-lg">
+                  <AvatarImage src={defaultAvatar} alt={authUserData?.name} />
+                  <AvatarFallback className="rounded-lg bg-[#209CFF] text-white">
+                    {authUserData?.name[0]
+                      ? authUserData?.name[0].toUpperCase()
+                      : ""}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-semibold text-white">
+                    {authUserData?.name}
+                  </span>
+                  <span className="truncate text-xs text-gray-400">
+                    {authUserData?.email}
+                  </span>
+                </div>
+                <ChevronsUpDown className="ml-auto size-4 text-gray-400" />
+              </SidebarMenuButton>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg bg-[#030816] text-white border border-[#20293A]"
+              side="top"
+              align="end"
+              sideOffset={4}
+            >
+              <DropdownMenuItem
+                onClick={handleLogout}
+                className="cursor-pointer text-[#F23645]"
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                Log out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    </SidebarFooter>
+  );
+};
 
 const Breadcrumb = () => {
   const router = useRouter();
@@ -230,18 +295,36 @@ const Breadcrumb = () => {
 
 export default function Layout() {
   const router = useRouter();
-  const [activePath, setActivePath] = React.useState(router.state.location.pathname);
+  const [activePath, setActivePath] = React.useState(
+    router.state.location.pathname
+  );
+  const { authUserData } = useAuthContext();
+  const isGoldSubscribed = authUserData.gold_status;
+  // const [showLockModal, setShowLockModal] = React.useState(false);
+
+  // useEffect(() => {
+  //   if (!isGoldSubscribed) {
+  //     setShowLockModal(true);
+  //   } else {
+  //     setShowLockModal(false);
+  //   }
+  // }, [isGoldSubscribed]);
+
+  const isMobile = useIsMobile();
+  const isSmallScreen = isMobile;
 
   // Update active menu when route changes
-  React.useEffect(() => {
+  useEffect(() => {
     const handleRouteChange = () => {
       setActivePath(router.state.location.pathname);
     };
 
     // Subscribe to router changes
-    const unsubscribe = router.subscribe('onBeforeLoad', handleRouteChange);
+    const unsubscribe = router.subscribe("onBeforeLoad", handleRouteChange);
     return unsubscribe;
   }, [router]);
+
+  const { initialShowPageStatus } = useInitialPageContext();
 
   return (
     <>
@@ -255,50 +338,370 @@ export default function Layout() {
             <SidebarHeaderComponent />
             <SidebarContent>
               <SidebarGroup>
-                <SidebarGroupLabel className="text-[#FAFAFA] mb-2">
+                <SidebarGroupLabel className="text-[#FAFAFA] mb-2 ml-1">
                   Gold
                 </SidebarGroupLabel>
                 <SidebarMenu>
                   {sidebarItems.map((item) => {
-                    const isActive = activePath === item.href || 
-                                   (activePath.startsWith(item.href) && item.href !== "/gold");
-                    
+                    const isActive = activePath === item.href;
+                    const isDisabled = item.needSubscribe && !isGoldSubscribed;
+                    const isSoon = item.href === "/gold/test";
+                    const isInitialPageShow =
+                      initialShowPageStatus[item.initialPageShowName];
+                    const isLockPage = item.lockPage;
                     return (
-                      <Collapsible
-                        key={item.label}
-                        asChild
-                        defaultOpen={isActive}
-                        className="group/collapsible"
-                      >
-                        <SidebarMenuItem>
-                          <CollapsibleTrigger asChild>
-                            <Link to={item.href}>
+                      <Collapsible key={item.href}>
+                        <CollapsibleTrigger className="w-full">
+                          {isDisabled && !isSoon && isInitialPageShow ? (
+                            <>
+                              {isSmallScreen ? (
+                                <Drawer>
+                                  <DrawerTrigger asChild>
+                                    <div className="z-10 flex items-center justify-between w-full p-2 py-3 hover:bg-[#172036]/70 rounded-lg">
+                                      <div className="flex items-center gap-2 min-w-fit ml-2">
+                                        <item.icon
+                                          className={cn(
+                                            "opacity-100 group-hover/collapsible:opacity-100 h-4 w-4 flex-shrink-0",
+                                            isActive
+                                              ? "text-[#209CFF] opacity-100"
+                                              : "text-[#A1A1AA]"
+                                          )}
+                                        />
+                                        <span
+                                          className={cn(
+                                            "text-[#A1A1AA] text-[14px] hover:text-none",
+                                            isActive ? "text-[#209CFF]" : ""
+                                          )}
+                                        >
+                                          {item.label}
+                                        </span>
+                                      </div>
+                                      <div>
+                                        <span className="text-[#FFC31F] text-[12px] font-medium bg-[#FFC31F]/20 px-2 py-1 rounded-md">
+                                          Pro
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </DrawerTrigger>
+                                  <DrawerContent className="h-[35%] bg-[#030816] border-t border-[#20293A] p-4">
+                                    <div className="space-y-4">
+                                      <div className="flex items-center gap-4">
+                                        <div>
+                                          <h4 className="font-medium text-[16px] text-white">
+                                            {item.label}
+                                          </h4>
+                                        </div>
+                                        <div>
+                                          <span className="text-[#FFC31F] text-[12px] font-medium bg-[#FFC31F]/20 px-2 py-1 rounded-md">
+                                            Pro
+                                          </span>
+                                        </div>
+                                      </div>
+                                      <p className="text-[14px] text-[#A1A1AA]">
+                                        Get access to premium features
+                                        including:
+                                      </p>
+                                      <ul className="space-y-2 text-[14px] text-[#A1A1AA] pb-2">
+                                        <li className="flex items-center gap-2">
+                                          • {item.label}
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                          • Advanced analytics
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                          • Real-time market data
+                                        </li>
+                                      </ul>
+                                      <button
+                                        className="w-full h-[50px] bg-[#FFC31F] hover:bg-[#FFC31F]/90 text-[#0A1020] rounded-lg py-2 text-[14px] font-medium"
+                                        onClick={() =>
+                                          window.open(MESSENGER_URL, "_blank")
+                                        }
+                                      >
+                                        Upgrade Now
+                                      </button>
+                                    </div>
+                                  </DrawerContent>
+                                </Drawer>
+                              ) : (
+                                <Popover>
+                                  <PopoverTrigger asChild>
+                                    <div
+                                      className={cn("w-full", "cursor-pointer")}
+                                    >
+                                      <SidebarMenuButton
+                                        size="lg"
+                                        className={cn(
+                                          "w-full justify-between",
+                                          isActive &&
+                                            "bg-[var(--sidebar-hover)] text-white"
+                                        )}
+                                      >
+                                        <div className="flex items-center gap-2 min-w-fit ml-2">
+                                          <item.icon
+                                            className={cn(
+                                              "opacity-100 group-hover/collapsible:opacity-100 h-4 w-4 flex-shrink-0",
+                                              isActive
+                                                ? "text-[#209CFF] opacity-100"
+                                                : "text-[#A1A1AA]"
+                                            )}
+                                          />
+                                          <span
+                                            className={cn(
+                                              "text-[#A1A1AA] hover:text-none",
+                                              isActive ? "text-[#209CFF]" : ""
+                                            )}
+                                          >
+                                            {item.label}
+                                          </span>
+                                        </div>
+                                        <div>
+                                          <span className="text-[#FFC31F] text-[12px] font-medium bg-[#FFC31F]/20 px-2 py-1 rounded-md">
+                                            Pro
+                                          </span>
+                                        </div>
+                                      </SidebarMenuButton>
+                                    </div>
+                                  </PopoverTrigger>
+                                  <PopoverContent
+                                    className="w-80 bg-[#0A1020] border border-[#20293A] p-4 rounded-lg"
+                                    side="right"
+                                    align="start"
+                                    sideOffset={20}
+                                  >
+                                    <div className="space-y-4">
+                                      <div className="flex items-center justify-between">
+                                        <div>
+                                          <h4 className="font-medium text-[16px] text-white">
+                                            {item.label}
+                                          </h4>
+                                        </div>
+                                        <div>
+                                          <span className="text-[#FFC31F] text-[12px] font-medium bg-[#FFC31F]/20 px-2 py-1 rounded-md">
+                                            Pro
+                                          </span>
+                                        </div>
+                                      </div>
+                                      <p className="text-[14px] text-[#A1A1AA]">
+                                        Get access to premium features
+                                        including:
+                                      </p>
+                                      <ul className="space-y-2 text-[14px] text-[#A1A1AA]">
+                                        <li className="flex items-center gap-2">
+                                          • {item.label}
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                          • Advanced analytics
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                          • Real-time market data
+                                        </li>
+                                      </ul>
+                                      <button
+                                        className="w-full bg-[#FFC31F] hover:bg-[#FFC31F]/90 text-[#0A1020] rounded-lg py-2 text-[14px] font-medium"
+                                        onClick={() =>
+                                          window.open(MESSENGER_URL, "_blank")
+                                        }
+                                      >
+                                        Upgrade Now
+                                      </button>
+                                    </div>
+                                  </PopoverContent>
+                                </Popover>
+                              )}
+                            </>
+                          ) : isSoon || !isInitialPageShow || isLockPage ? (
+                            <>
+                              {isSmallScreen ? (
+                                <Drawer>
+                                  <DrawerTrigger asChild>
+                                    <div className="z-10 flex items-center justify-between w-full p-2 py-3 hover:bg-[#172036]/70 rounded-lg">
+                                      <div className="flex items-center gap-2 min-w-fit ml-2">
+                                        <item.icon
+                                          className={cn(
+                                            "opacity-100 group-hover/collapsible:opacity-100 h-4 w-4 flex-shrink-0",
+                                            isActive
+                                              ? "text-[#209CFF] opacity-100"
+                                              : "text-[#A1A1AA]"
+                                          )}
+                                        />
+                                        <span
+                                          className={cn(
+                                            "text-[#A1A1AA] text-[14px] hover:text-none",
+                                            isActive ? "text-[#209CFF]" : ""
+                                          )}
+                                        >
+                                          {item.label}
+                                        </span>
+                                      </div>
+                                      <div>
+                                        <span className="text-[#209CFF] text-[12px] font-medium bg-[#209CFF]/20 px-2 py-1 rounded-md">
+                                          Soon
+                                        </span>
+                                      </div>
+                                    </div>
+                                  </DrawerTrigger>
+                                  <DrawerContent className="h-[35%] bg-[#030816] border-t border-[#20293A] p-4">
+                                    <div className="space-y-4">
+                                      <div className="flex items-center gap-4">
+                                        <div>
+                                          <h4 className="font-medium text-[16px] text-white">
+                                            {item.label}
+                                          </h4>
+                                        </div>
+                                        <div>
+                                          <span className="text-[#209CFF] text-[12px] font-medium bg-[#209CFF]/20 px-2 py-1 rounded-md">
+                                            Soon
+                                          </span>
+                                        </div>
+                                      </div>
+                                      <p className="text-[14px] text-[#A1A1AA]">
+                                        Get access to premium features
+                                        including:
+                                      </p>
+                                      <ul className="space-y-2 text-[14px] text-[#A1A1AA] pb-2">
+                                        <li className="flex items-center gap-2">
+                                          • {item.label}
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                          • Advanced analytics
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                          • Real-time market data
+                                        </li>
+                                      </ul>
+                                      <div className="text-[12px] text-[#209CFF] pt-2">
+                                        We're working hard to bring you these
+                                        features soon!
+                                      </div>
+                                    </div>
+                                  </DrawerContent>
+                                </Drawer>
+                              ) : (
+                                <Popover>
+                                  <PopoverTrigger asChild>
+                                    <div
+                                      className={cn("w-full", "cursor-pointer")}
+                                    >
+                                      <SidebarMenuButton
+                                        size="lg"
+                                        className={cn(
+                                          "w-full justify-between",
+                                          isActive &&
+                                            "bg-[var(--sidebar-hover)] text-white"
+                                        )}
+                                      >
+                                        <div className="flex items-center gap-2 min-w-fit ml-2">
+                                          <item.icon
+                                            className={cn(
+                                              "opacity-100 group-hover/collapsible:opacity-100 h-4 w-4 flex-shrink-0",
+                                              isActive
+                                                ? "text-[#209CFF] opacity-100"
+                                                : "text-[#A1A1AA]"
+                                            )}
+                                          />
+                                          <span
+                                            className={cn(
+                                              "text-[#A1A1AA] hover:text-none",
+                                              isActive ? "text-[#209CFF]" : ""
+                                            )}
+                                          >
+                                            {item.label}
+                                          </span>
+                                        </div>
+                                        <div>
+                                          <span className="text-[#209CFF] text-[12px] font-medium bg-[#209CFF]/20 px-2 py-1 rounded-md">
+                                            Soon
+                                          </span>
+                                        </div>
+                                      </SidebarMenuButton>
+                                    </div>
+                                  </PopoverTrigger>
+                                  <PopoverContent
+                                    className="w-80 bg-[#0A1020] border border-[#20293A] p-4 rounded-lg"
+                                    side="right"
+                                    align="start"
+                                    sideOffset={20}
+                                  >
+                                    <div className="space-y-4">
+                                      <div className="flex items-center justify-between">
+                                        <div>
+                                          <h4 className="font-medium text-[16px] text-white">
+                                            {item.label}
+                                          </h4>
+                                        </div>
+                                        <div>
+                                          <span className="text-[#209CFF] text-[12px] font-medium bg-[#209CFF]/20 px-2 py-1 rounded-md">
+                                            Soon
+                                          </span>
+                                        </div>
+                                      </div>
+                                      <p className="text-[14px] text-[#A1A1AA]">
+                                        This feature is currently under
+                                        development. Stay tuned for:
+                                      </p>
+                                      <ul className="space-y-2 text-[14px] text-[#A1A1AA]">
+                                        <li className="flex items-center gap-2">
+                                          • Advanced {item.label} analytics
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                          • Real-time market insights
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                          • Customizable dashboards
+                                        </li>
+                                      </ul>
+                                      <div className="text-[12px] text-[#209CFF] pt-2">
+                                        We're working hard to bring you these
+                                        features soon!
+                                      </div>
+                                    </div>
+                                  </PopoverContent>
+                                </Popover>
+                              )}
+                            </>
+                          ) : (
+                            <Link to={item.href} className="w-full">
                               <SidebarMenuButton
-                                tooltip={{
-                                  children: item.label,
-                                  side: "right",
-                                  align: "center",
-                                  sideOffset: 8,
-                                  className: "bg-[#172036] text-white border-[#20293A]"
-                                }}
+                                size="lg"
                                 className={cn(
-                                  "flex items-center px-3 py-4 rounded-md group h-[40px]",
-                                  isActive 
-                                    ? "bg-[#172036] relative before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:h-[15px] before:w-[2px] before:bg-[#209CFF]"
-                                    : "text-[#A1A1AA] hover:bg-[#172036]/60 hover:text-white"
+                                  "w-full justify-between",
+                                  isActive &&
+                                    "bg-[var(--sidebar-hover)] text-white"
                                 )}
                               >
-                                <item.icon 
-                                  className={cn(
-                                    "opacity-100 group-hover/collapsible:opacity-100",
-                                    isActive ? "text-[#209CFF] opacity-100" : "text-[#A1A1AA]"
-                                  )} 
-                                />
-                                <span className={cn("text-[#A1A1AA] hover:text-none", isActive ? "text-[#209CFF]" : "")}>{item.label}</span>
+                                <div className="flex items-center gap-2 min-w-fit ml-2">
+                                  <item.icon
+                                    className={cn(
+                                      "opacity-100 group-hover/collapsible:opacity-100 h-4 w-4 flex-shrink-0",
+                                      isActive
+                                        ? "text-[#209CFF] opacity-100"
+                                        : "text-[#A1A1AA]"
+                                    )}
+                                  />
+                                  <span
+                                    className={cn(
+                                      "text-[#A1A1AA] hover:text-none",
+                                      isActive ? "text-[#209CFF]" : ""
+                                    )}
+                                  >
+                                    {item.label}
+                                  </span>
+                                </div>
+                                {(isSoon || isLockPage) && (
+                                  <span className="text-[#209CFF] text-[12px] font-medium bg-[#209CFF]/20 px-2 py-1 rounded-md">
+                                    Soon
+                                  </span>
+                                )}
+                                {item.needSubscribe && (
+                                  <span className="text-[#FFC31F] text-[12px] font-medium bg-[#FFC31F]/20 px-2 py-1 rounded-md">
+                                    Pro
+                                  </span>
+                                )}
                               </SidebarMenuButton>
                             </Link>
-                          </CollapsibleTrigger>
-                        </SidebarMenuItem>
+                          )}
+                        </CollapsibleTrigger>
                       </Collapsible>
                     );
                   })}
@@ -356,6 +759,7 @@ export default function Layout() {
           </SidebarInset>
         </div>
       </SidebarProvider>
+      {/* {showLockModal && <LockModal isOpen={showLockModal} />} */}
     </>
   );
 }

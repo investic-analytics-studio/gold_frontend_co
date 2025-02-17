@@ -1,32 +1,31 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App'
-import './index.css'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { ampli } from './ampli';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App";
+import "./index.css";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { ampli } from "./ampli";
+import { Toaster } from "./components/ui/toaster";
 
 ampli.load({
   environment:
-      import.meta.env.VITE_ENVIRONMENT == "production"
-          ? "production"
-          : "staging",
+    import.meta.env.VITE_ENVIRONMENT == "production" ? "production" : "staging",
   client: {
-      apiKey: import.meta.env.VITE_AMPLITUDE_API_KEY,
-      configuration: {
-          defaultTracking: true
-      }
+    apiKey: import.meta.env.VITE_AMPLITUDE_API_KEY,
+    configuration: {
+      defaultTracking: true,
+    },
   },
-}) 
+});
 
+const queryClient = new QueryClient();
 
-const queryClient = new QueryClient()
-
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <App />
+      <Toaster />
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
-  </React.StrictMode>,
-)
+  </React.StrictMode>
+);

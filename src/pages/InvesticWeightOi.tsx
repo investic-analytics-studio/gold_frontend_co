@@ -12,17 +12,16 @@ import {
 } from "@/components/ui/breadcrumb";
 import { ChartArea } from "lucide-react";
 import React, { useState, useEffect } from "react";
-import {
-  Card,
-  CardContent
-} from "../components/ui/card";
+import { Card, CardContent } from "../components/ui/card";
 
 const InvesticWeightOiPage: React.FC = () => {
   // State for selected month
+
   const [selectedMonth, setSelectedMonth] = useState("");
 
   // Get available months separately
-  const { data: availableMonths = [], isLoading: isMonthsLoading } = useAvailableMonths();
+  const { data: availableMonths = [], isLoading: isMonthsLoading } =
+    useAvailableMonths();
 
   // Set initial month when availableMonths loads
   useEffect(() => {
@@ -33,9 +32,9 @@ const InvesticWeightOiPage: React.FC = () => {
 
   // Fetch gamma analysis data
   const gammaAnalysis = useGammaAnalysis();
-  
+
   // Fetch gamma OI data only when we have a selected month
-  const gammaOi = useGammaOi(selectedMonth, "60");
+  const gammaOi = useGammaOi(selectedMonth, "60", "GC1!", "COMEX");
 
   // Loading state
   if (isMonthsLoading || gammaAnalysis.isLoading || gammaOi.loading) {
@@ -45,6 +44,16 @@ const InvesticWeightOiPage: React.FC = () => {
   // Error state
   if (gammaAnalysis.error || gammaOi.error) {
     return <div>Error loading data</div>;
+  }
+
+  const lockPage = import.meta.env.VITE_IS_LOCK_WEIGHTED_OI === "true";
+
+  if (lockPage) {
+    return (
+      <div className="bg-[#030816] text-white min-h-screen sm:p-0 lg:p-4">
+        Coming soon
+      </div>
+    );
   }
 
   return (
@@ -70,11 +79,11 @@ const InvesticWeightOiPage: React.FC = () => {
       <Card className="w-full h-auto bg-[#030816] border border-[#20293A] rounded-[12px]">
         <CardContent className="p-0">
           <div className="w-full h-auto bg-[#030816] border-none p-0 rounded-xl">
-            <GammaAnalysisCard 
-              gammaAnalysis={gammaAnalysis.data || []} 
-              priceData={gammaOi.priceData.map(item => ({
+            <GammaAnalysisCard
+              gammaAnalysis={gammaAnalysis.data || []}
+              priceData={gammaOi.priceData.map((item) => ({
                 ...item,
-                price: item.close
+                price: item.close,
               }))}
               currentPrice={gammaOi.currentPrice}
             />
@@ -94,13 +103,13 @@ const InvesticWeightOiPage: React.FC = () => {
         </div>
         <CardContent className="p-0">
           <div className="w-full h-auto bg-[#030816] border-no p-0 rounded-xl">
-              <OiDistributionChart 
-                oiData={gammaOi.oiData}
-                currentPrice={gammaOi.currentPrice}
-                availableMonths={availableMonths}
-                selectedMonth={selectedMonth}
-                onMonthChange={setSelectedMonth}
-              />
+            <OiDistributionChart
+              oiData={gammaOi.oiData}
+              currentPrice={gammaOi.currentPrice}
+              availableMonths={availableMonths}
+              selectedMonth={selectedMonth}
+              onMonthChange={setSelectedMonth}
+            />
           </div>
         </CardContent>
       </Card>

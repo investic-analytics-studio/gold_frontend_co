@@ -26,7 +26,7 @@ const SegmentedControl = React.forwardRef<HTMLDivElement, SegmentedControlProps>
             key={segment.value}
             onClick={() => onChange(segment.value)}
             className={cn(
-              "px-6 py-2 rounded-lg text-sm h-[40px] transition-all duration-200",
+              "px-6 py-2 w-full rounded-lg text-sm h-[40px] transition-all duration-200",
               "text-[#535B6A] hover:bg-[#172036]",
               value === segment.value && "bg-[#172036] text-white font-medium"
             )}

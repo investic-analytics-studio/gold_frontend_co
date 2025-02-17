@@ -75,4 +75,6 @@ export const TIMEFRAME_OPTIONS = [
 
 export const ALL_EXCHANGES = "ALL_EXCHANGES";
 
-export const FIFTEEN_MINUTES = 1000 * 60 * 15; 
+export const FIFTEEN_MINUTES = 1000 * 60 * 15;
+
+export const MESSENGER_URL = "https://m.me/gold.analytics";

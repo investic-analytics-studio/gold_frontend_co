@@ -10,6 +10,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { useQuery } from '@tanstack/react-query';
+import { NetSentimentAnalysisTooltips } from '../tooltips/NetSentimentDesc';
 
 interface GoldSentimentAggregateDaily {
   date: string;
@@ -27,56 +28,13 @@ const fetchGoldSentimentdailyData = async (
     `${backendApiUrl}/gold-sentiment-aggregate-daily`
   );
 
-  // Convert to Asia/Bangkok timezone
-  const dateTimeFormatter = new Intl.DateTimeFormat('en-US', {
-    timeZone: 'Asia/Bangkok',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-  });
-
-  // Converted Bangkok time zone
-  const convertedDateTime = response.data.map(
-    (goldSentimenItem: GoldSentimentAggregateDaily) => {
-      const utcDate = new Date(goldSentimenItem.date);
-      const bangkokTime = dateTimeFormatter.format(utcDate);
-
-      // Convert to ISO format for the chart
-      const [datePart, timePart] = bangkokTime.split(', ');
-      const [month, day, year] = datePart.split('/');
-
-      // Remove the AM/PM part and convert to 24-hour format
-      const [time, timePeriod] = timePart.split(' ');
-      let [hours, minutes, seconds] = time.split(':');
-      if (timePeriod === 'PM' && hours !== '12') {
-        hours = String(Number(hours) + 12);
-      } else if (timePeriod === 'AM' && hours === '12') {
-        hours = '00';
-      }
-
-      // Create the date string in ISO format with Bangkok timezone
-      const formattedDate = `${year}-${month.padStart(2, '0')}-${day.padStart(
-        2,
-        '0'
-      )}T${hours}:${minutes}:${seconds}+07:00`;
-
-      return {
-        ...goldSentimenItem,
-        date: formattedDate,
-      };
-    }
-  );
-
   // Get today's date and 3 months ago
   const today = new Date();
   const threeMonthsAgo = new Date();
   threeMonthsAgo.setMonth(today.getMonth() - 3);
 
   // Filter data for the last 3 months
-  const getThreeMonthsData = convertedDateTime.filter(
+  const getThreeMonthsData = response.data.filter(
     (convertedDateTimeItem: GoldSentimentAggregateDaily) => {
       const itemDate = new Date(convertedDateTimeItem.date);
       return itemDate >= threeMonthsAgo && itemDate <= today;
@@ -133,9 +91,15 @@ const GoldSentimentChart: React.FC = () => {
 
   return (
     <div className="pb-0 pt-6 px-6" style={{ width: '100%', height: 400 }}>
-      <h2 className="text-[#FAFAFA] text-[16px] font-medium">
-        Sentiment Analysis (Gold)
-      </h2>
+      <div className="flex items-center gap-2">
+        <h2 className="text-[#FAFAFA] text-[16px] font-medium">
+          Sentiment Analysis (Total)
+        </h2>
+        {import.meta.env.VITE_TOOLTIPS === 'true' && (
+          <NetSentimentAnalysisTooltips />
+        )}
+      </div>
+
       {/* <div className="text-[#A1A1AA] text-[14px]">Lorem Ipsum</div> */}
       <ResponsiveContainer width="100%" height="100%" className="mt-8">
         <BarChart

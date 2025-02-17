@@ -13,6 +13,7 @@ import {
 import axios from 'axios';
 import { SegmentedControl } from '@/components/ui/segmented-control';
 import { useQuery } from '@tanstack/react-query';
+import { SentimentRatioTooltips } from '../tooltips/RetailSentimentDesc';
 
 interface SentimentRatioData {
   date: string;
@@ -30,50 +31,7 @@ const fetchGoldSentimentRatioData = async (
     `${backendApiUrl}/gold-sentiment-ratio-graph-plot/${timeframe}`
   );
 
-  // Convert to Asia/Bangkok timezone
-  const dateTimeFormatter = new Intl.DateTimeFormat('en-US', {
-    timeZone: 'Asia/Bangkok',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-  });
-
-  // Converted Bangkok time zone
-  const convertedDateTime = response.data.map(
-    (goldSentimentRatioItem: SentimentRatioData) => {
-      const utcDate = new Date(goldSentimentRatioItem.date);
-      const bangkokTime = dateTimeFormatter.format(utcDate);
-
-      // Convert to ISO format for the chart
-      const [datePart, timePart] = bangkokTime.split(', ');
-      const [month, day, year] = datePart.split('/');
-
-      // Remove the AM/PM part and convert to 24-hour format
-      const [time, timePeriod] = timePart.split(' ');
-      let [hours, minutes, seconds] = time.split(':');
-      if (timePeriod === 'PM' && hours !== '12') {
-        hours = String(Number(hours) + 12);
-      } else if (timePeriod === 'AM' && hours === '12') {
-        hours = '00';
-      }
-
-      // Create the date string in ISO format with Bangkok timezone
-      const formattedDate = `${year}-${month.padStart(2, '0')}-${day.padStart(
-        2,
-        '0'
-      )}T${hours}:${minutes}:${seconds}+07:00`;
-
-      return {
-        ...goldSentimentRatioItem,
-        date: formattedDate,
-      };
-    }
-  );
-
-  const sortedData = convertedDateTime.sort(
+  const sortedData = response.data.sort(
     (a: SentimentRatioData, b: SentimentRatioData) => {
       const previousDate = new Date(a.date).getTime();
       const nextDate = new Date(b.date).getTime();
@@ -131,8 +89,11 @@ const GoldSentimentRatioChart: React.FC = () => {
     <div style={{ width: '100%', height: '400px' }}>
       <div className="flex flex-col items-end gap-2"></div>
       <div className="flex items-center justify-between px-6 pt-6">
-        <div>
+        <div className="flex items-center gap-2">
           <h2>Sentiment Ratio</h2>
+          {import.meta.env.VITE_TOOLTIPS === 'true' && (
+            <SentimentRatioTooltips />
+          )}
         </div>
         <div>
           <SegmentedControl

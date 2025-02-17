@@ -1,13 +1,16 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import path from 'path'
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import path from "path";
 
 export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
-      'charting_library': path.resolve(__dirname, './public/static/charting_library')
+      "@": path.resolve(__dirname, "./src"),
+      charting_library: path.resolve(
+        __dirname,
+        "./public/static/charting_library"
+      ),
     },
   },
   server: {
@@ -20,13 +23,16 @@ export default defineConfig({
     // }
   },
   build: {
-    outDir: 'dist',
-    assetsDir: 'assets',
+    outDir: "dist",
+    assetsDir: "assets",
     rollupOptions: {
       input: {
-        main: path.resolve(__dirname, 'index.html'),
-      }
-    }
+        main: path.resolve(__dirname, "index.html"),
+      },
+    },
   },
-  publicDir: 'public'
-})
+  publicDir: "public",
+  optimizeDeps: {
+    exclude: ["chunk-I27VFMWF"], // Add the problematic dependency here
+  },
+});

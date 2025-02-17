@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { useMemo } from "react";
+import React, { useMemo } from 'react';
 import {
   Bar,
   BarChart,
@@ -12,19 +12,20 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-} from "recharts";
-import { Card, CardContent, CardDescription, CardTitle } from "../ui/card";
+} from 'recharts';
+import { Card, CardContent, CardDescription, CardTitle } from '../ui/card';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../ui/select";
+} from '../ui/select';
+import { OiDistributionTooltips } from '../tooltips/GammaOiDesc';
 // Add these type definitions
 interface GoldOptionContract {
-  "Contract Month": string;
-  "Product Code": string;
+  'Contract Month': string;
+  'Product Code': string;
   Settlement: string;
 }
 
@@ -71,139 +72,139 @@ const OiDistributionChart: React.FC<OiDistributionChartProps> = ({
   // Add the gold options calendar constant
   const goldOptCalendarConstant: GoldOptionContract[] = [
     {
-      "Contract Month": "May 2024 Gold Option",
-      "Product Code": "OGK24",
-      Settlement: "2024-04-25",
+      'Contract Month': 'May 2024 Gold Option',
+      'Product Code': 'OGK24',
+      Settlement: '2024-04-25',
     },
     {
-      "Contract Month": "June 2024 Gold Option",
-      "Product Code": "OGM24",
-      Settlement: "2024-05-28",
+      'Contract Month': 'June 2024 Gold Option',
+      'Product Code': 'OGM24',
+      Settlement: '2024-05-28',
     },
     {
-      "Contract Month": "July 2024 Gold Option",
-      "Product Code": "OGN24",
-      Settlement: "2024-06-25",
+      'Contract Month': 'July 2024 Gold Option',
+      'Product Code': 'OGN24',
+      Settlement: '2024-06-25',
     },
     {
-      "Contract Month": "August 2024 Gold Option",
-      "Product Code": "OGQ24",
-      Settlement: "2024-07-25",
+      'Contract Month': 'August 2024 Gold Option',
+      'Product Code': 'OGQ24',
+      Settlement: '2024-07-25',
     },
     {
-      "Contract Month": "September 2024 Gold Option",
-      "Product Code": "OGU24",
-      Settlement: "2024-08-27",
+      'Contract Month': 'September 2024 Gold Option',
+      'Product Code': 'OGU24',
+      Settlement: '2024-08-27',
     },
     {
-      "Contract Month": "October 2024 Gold Option",
-      "Product Code": "OGV24",
-      Settlement: "2024-09-25",
+      'Contract Month': 'October 2024 Gold Option',
+      'Product Code': 'OGV24',
+      Settlement: '2024-09-25',
     },
     {
-      "Contract Month": "November 2024 Gold Option",
-      "Product Code": "OGX24",
-      Settlement: "2024-10-28",
+      'Contract Month': 'November 2024 Gold Option',
+      'Product Code': 'OGX24',
+      Settlement: '2024-10-28',
     },
     {
-      "Contract Month": "December 2024 Gold Option",
-      "Product Code": "OGZ24",
-      Settlement: "2024-11-25",
+      'Contract Month': 'December 2024 Gold Option',
+      'Product Code': 'OGZ24',
+      Settlement: '2024-11-25',
     },
     {
-      "Contract Month": "January 2025 Gold Option",
-      "Product Code": "OGF25",
-      Settlement: "2024-12-26",
+      'Contract Month': 'January 2025 Gold Option',
+      'Product Code': 'OGF25',
+      Settlement: '2024-12-26',
     },
     {
-      "Contract Month": "February 2025 Gold Option",
-      "Product Code": "OGG25",
-      Settlement: "2025-01-28",
+      'Contract Month': 'February 2025 Gold Option',
+      'Product Code': 'OGG25',
+      Settlement: '2025-01-28',
     },
     {
-      "Contract Month": "March 2025 Gold Option",
-      "Product Code": "OGH25",
-      Settlement: "2025-02-25",
+      'Contract Month': 'March 2025 Gold Option',
+      'Product Code': 'OGH25',
+      Settlement: '2025-02-25',
     },
     {
-      "Contract Month": "April 2025 Gold Option",
-      "Product Code": "OGJ25",
-      Settlement: "2025-03-26",
+      'Contract Month': 'April 2025 Gold Option',
+      'Product Code': 'OGJ25',
+      Settlement: '2025-03-26',
     },
     {
-      "Contract Month": "May 2025 Gold Option",
-      "Product Code": "OGK25",
-      Settlement: "2025-04-24",
+      'Contract Month': 'May 2025 Gold Option',
+      'Product Code': 'OGK25',
+      Settlement: '2025-04-24',
     },
     {
-      "Contract Month": "June 2025 Gold Option",
-      "Product Code": "OGM25",
-      Settlement: "2025-05-27",
+      'Contract Month': 'June 2025 Gold Option',
+      'Product Code': 'OGM25',
+      Settlement: '2025-05-27',
     },
     {
-      "Contract Month": "July 2025 Gold Option",
-      "Product Code": "OGN25",
-      Settlement: "2025-06-25",
+      'Contract Month': 'July 2025 Gold Option',
+      'Product Code': 'OGN25',
+      Settlement: '2025-06-25',
     },
     {
-      "Contract Month": "August 2025 Gold Option",
-      "Product Code": "OGQ25",
-      Settlement: "2025-07-28",
+      'Contract Month': 'August 2025 Gold Option',
+      'Product Code': 'OGQ25',
+      Settlement: '2025-07-28',
     },
     {
-      "Contract Month": "September 2025 Gold Option",
-      "Product Code": "OGU25",
-      Settlement: "2025-08-26",
+      'Contract Month': 'September 2025 Gold Option',
+      'Product Code': 'OGU25',
+      Settlement: '2025-08-26',
     },
     {
-      "Contract Month": "October 2025 Gold Option",
-      "Product Code": "OGV25",
-      Settlement: "2025-09-25",
+      'Contract Month': 'October 2025 Gold Option',
+      'Product Code': 'OGV25',
+      Settlement: '2025-09-25',
     },
     {
-      "Contract Month": "December 2025 Gold Option",
-      "Product Code": "OGZ25",
-      Settlement: "2025-11-24",
+      'Contract Month': 'December 2025 Gold Option',
+      'Product Code': 'OGZ25',
+      Settlement: '2025-11-24',
     },
     {
-      "Contract Month": "June 2026 Gold Option",
-      "Product Code": "OGM26",
-      Settlement: "2026-05-26",
+      'Contract Month': 'June 2026 Gold Option',
+      'Product Code': 'OGM26',
+      Settlement: '2026-05-26',
     },
     {
-      "Contract Month": "December 2026 Gold Option",
-      "Product Code": "OGZ26",
-      Settlement: "2026-11-24",
+      'Contract Month': 'December 2026 Gold Option',
+      'Product Code': 'OGZ26',
+      Settlement: '2026-11-24',
     },
     {
-      "Contract Month": "June 2027 Gold Option",
-      "Product Code": "OGM27",
-      Settlement: "2027-05-25",
+      'Contract Month': 'June 2027 Gold Option',
+      'Product Code': 'OGM27',
+      Settlement: '2027-05-25',
     },
     {
-      "Contract Month": "December 2027 Gold Option",
-      "Product Code": "OGZ27",
-      Settlement: "2027-11-23",
+      'Contract Month': 'December 2027 Gold Option',
+      'Product Code': 'OGZ27',
+      Settlement: '2027-11-23',
     },
     {
-      "Contract Month": "June 2028 Gold Option",
-      "Product Code": "OGM28",
-      Settlement: "2028-05-25",
+      'Contract Month': 'June 2028 Gold Option',
+      'Product Code': 'OGM28',
+      Settlement: '2028-05-25',
     },
     {
-      "Contract Month": "December 2028 Gold Option",
-      "Product Code": "OGZ28",
-      Settlement: "2028-11-27",
+      'Contract Month': 'December 2028 Gold Option',
+      'Product Code': 'OGZ28',
+      Settlement: '2028-11-27',
     },
     {
-      "Contract Month": "June 2029 Gold Option",
-      "Product Code": "OGM29",
-      Settlement: "2029-05-24",
+      'Contract Month': 'June 2029 Gold Option',
+      'Product Code': 'OGM29',
+      Settlement: '2029-05-24',
     },
     {
-      "Contract Month": "December 2029 Gold Option",
-      "Product Code": "OGZ29",
-      Settlement: "2029-11-27",
+      'Contract Month': 'December 2029 Gold Option',
+      'Product Code': 'OGZ29',
+      Settlement: '2029-11-27',
     },
   ];
 
@@ -222,20 +223,20 @@ const OiDistributionChart: React.FC<OiDistributionChartProps> = ({
     }
 
     // Extract month and year from contract month string
-    const match = currentContract["Contract Month"].match(/(\w+)\s+(\d{4})/);
+    const match = currentContract['Contract Month'].match(/(\w+)\s+(\d{4})/);
     if (!match) {
       return getCurrentYearMonth(); // Fallback to current month if parsing fails
     }
 
     const [_, month, year] = match;
-    return `${year}-${month.padStart(2, "0")}`;
+    return `${year}-${month.padStart(2, '0')}`;
   };
 
   // Modify your existing getCurrentYearMonth function to be a fallback
   const getCurrentYearMonth = () => {
     const date = new Date();
     const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
     return `${year}-${month}`;
   };
 
@@ -294,13 +295,13 @@ const OiDistributionChart: React.FC<OiDistributionChartProps> = ({
           (i: ProcessedDataItem) => i.strike === item.strike
         );
         if (existingItem) {
-          existingItem[item.type.toLowerCase() as "calls" | "puts"] =
+          existingItem[item.type.toLowerCase() as 'calls' | 'puts'] =
             item.atclose_weighted;
         } else {
           acc.push({
             strike: item.strike,
-            calls: item.type === "Calls" ? item.atclose_weighted : 0,
-            puts: item.type === "Puts" ? item.atclose_weighted : 0,
+            calls: item.type === 'Calls' ? item.atclose_weighted : 0,
+            puts: item.type === 'Puts' ? item.atclose_weighted : 0,
             index: 0, // This will be updated in the map
           });
         }
@@ -361,7 +362,12 @@ const OiDistributionChart: React.FC<OiDistributionChartProps> = ({
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0">
               <div>
                 <CardTitle className="text-[#FAFAFA] text-[16px] font-medium mb-2">
-                  Options Open Interest Distribution
+                  <div className="flex items-center gap-2">
+                    Options Open Interest Distribution
+                    {import.meta.env.VITE_TOOLTIPS === 'true' && (
+                      <OiDistributionTooltips />
+                    )}
+                  </div>
                 </CardTitle>
                 <CardDescription className="text-[#A1A1AA] text-[14px]">
                   Real-time price chart with technical analysis tools
@@ -371,12 +377,15 @@ const OiDistributionChart: React.FC<OiDistributionChartProps> = ({
                 <div className="mb-4">
                   <Select value={selectedMonth} onValueChange={onMonthChange}>
                     <SelectTrigger className="w-full border-[#20293A] text-[#A1A1AA] h-[40px]">
-                      <SelectValue placeholder="Select contract month" className="text-[14px]" />
+                      <SelectValue
+                        placeholder="Select contract month"
+                        className="text-[14px]"
+                      />
                     </SelectTrigger>
                     <SelectContent className="bg-[#0A1122] border-[#20293A]">
                       {sortedMonths.map((month) => (
-                        <SelectItem 
-                          key={month} 
+                        <SelectItem
+                          key={month}
                           value={month}
                           className="text-[14px] text-[#FAFAFA] hover:bg-[#172036] focus:bg-[#172036] cursor-pointer"
                         >
@@ -402,17 +411,17 @@ const OiDistributionChart: React.FC<OiDistributionChartProps> = ({
                 <XAxis
                   dataKey="index"
                   type="number"
-                  domain={["dataMin", "dataMax"]}
+                  domain={['dataMin', 'dataMax']}
                   tickFormatter={(index) =>
                     processedData[index]?.strike.toFixed(0)
                   }
                   stroke="#20293A"
-                  tick={{ fill: "#A1A1AA" }}
+                  tick={{ fill: '#A1A1AA' }}
                 />
                 <YAxis
                   tickFormatter={(value) => value.toLocaleString()}
                   stroke="#121623"
-                  tick={{ fill: "#A1A1AA" }}
+                  tick={{ fill: '#A1A1AA' }}
                 />
                 <Tooltip content={<CustomTooltip />} />
                 <Legend />

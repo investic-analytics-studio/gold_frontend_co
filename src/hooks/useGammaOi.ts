@@ -39,9 +39,9 @@ interface HistoricalDataTradingview {
   };
 }
 
-const fetchHistoricalData = async (timeframe: string) => {
+const fetchHistoricalData = async (symbol: string, timeframe: string, exchange: string) => {
   const response = await axios.get<HistoricalDataTradingview>(
-    getApiUrl(`tradingview/historical?symbol=XAUUSD&exchange=OANDA&interval=${timeframe}&bars=200`)
+    getApiUrl(`tradingview/historical?symbol=${symbol}&exchange=${exchange}&interval=${timeframe}&bars=200`)
   );
   return response.data;
 };
@@ -70,10 +70,15 @@ export function useAvailableMonths() {
   });
 }
 
-export const useGammaOi = (selectedMonth: string, timeframe: string = "60"): UseGammaOiResult => {
+export const useGammaOi = (
+  selectedMonth: string, 
+  timeframe: string = "60", 
+  symbol: string = "GC1!", 
+  exchange: string = "COMEX"
+): UseGammaOiResult => {
   const priceQuery = useQuery({
     queryKey: ['historical', timeframe],
-    queryFn: () => fetchHistoricalData(timeframe),
+    queryFn: () => fetchHistoricalData(symbol, timeframe, exchange),
     staleTime: 5 * 60 * 1000,
     refetchInterval: 5 * 60 * 1000,
     refetchOnWindowFocus: false,

@@ -16,7 +16,6 @@ import TextScroll from "./TextScroll";
 
 const HomePage: React.FC = () => {
   const isMobile = useIsMobile();
-
   return (
     <div
       style={{
