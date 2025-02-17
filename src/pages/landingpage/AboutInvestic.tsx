@@ -14,10 +14,10 @@ const TextScroll: React.FC = () => {
           <div className="absolute right-0 w-1/4 h-full bg-gradient-to-l from-transparent to-[#E0E3EB]" />
         </div>
         <div className="flex flex-col md:flex-row items-center md:items-start md:justify-evenly space-y-4 md:space-y-0 md:space-x-8">
-          <h2 className="text-[40px] lg:text-[30px] font-semibold lg:font-medium text-[#191E25] shrink-0">
-            Who's <span className="text-[#209CFF]">INVESTIC</span>
+          <h2 className="text-[40px] lg:text-[30px] font-semibold lg:font-medium text-secondary shrink-0">
+            Who's <span className="text-primary">INVESTIC</span>
           </h2>
-          <p className="text-lg text-[#191E25]/50 font-medium text-center md:text-left leading-relaxed max-w-2xl">
+          <p className="text-lg text-secondary/50 font-medium text-center md:text-left leading-relaxed max-w-2xl">
             Gold Investic offers advanced tools for gold traders, providing 
             deep insights into Gold market trends. Use our data-driven approach 
             to refine your trading strategy and gain a competitive edge.

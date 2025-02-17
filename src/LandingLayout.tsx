@@ -64,14 +64,14 @@ const LandingLayout = () => {
             />
             {authUserData.uid ? (
               <DropdownMenu>
-                <DropdownMenuTrigger className="cursor-pointer data-[state=open]:bg-[#209CFF]/20 hover:bg-[#209CFF]/20 p-1 rounded-full transition-all duration-300 ease-in-out">
+                <DropdownMenuTrigger className="cursor-pointer data-[state=open]:bg-primary/20 hover:bg-primary/20 p-1 rounded-full transition-all duration-300 ease-in-out">
                   <Avatar>
                     <AvatarImage
                       src="/assets/images/user.svg"
                       className="w-[40px] h-[40px] rounded-full"
                       alt="User avatar"
                     />
-                    <AvatarFallback className="bg-[#209CFF] text-white">
+                    <AvatarFallback className="bg-primary text-white">
                       {authUserData?.name[0]
                         ? authUserData?.name[0].toUpperCase()
                         : ""}
@@ -79,14 +79,14 @@ const LandingLayout = () => {
                   </Avatar>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
-                  className="w-full p-1 rounded-lg bg-[#0A1020] text-white border border-[#20293A]"
+                  className="w-full p-1 rounded-lg bg-[#FFFFFF] text-white border border-[#E0E3EB] shadow-sm"
                   side="bottom"
                   align="center"
                   sideOffset={6}
                 >
                   <DropdownMenuItem
                     onClick={handleLogout}
-                    className="cursor-pointer py-2 px-4 rounded-md text-[#F23645] hover:bg-[#172036] flex items-center justify-start"
+                    className="cursor-pointer py-2 px-4 rounded-md text-[#F23645] hover:bg-[#F4F5F7] flex items-center justify-start"
                   >
                     <LogOut className="mr-2 h-4 w-4" />
                     Log out
@@ -97,7 +97,7 @@ const LandingLayout = () => {
               <Button
                 onClick={() => setIsLoginModalOpen(true)}
                 variant="outline"
-                className="bg-transparent font-normal border-[2px] border-[#209CFF] rounded-[10px] w-[120px] h-[44px] text-[18px] text-[#209CFF] hover:bg-[#209CFF] hover:text-white"
+                className="bg-transparent font-normal border-[2px] border-primary rounded-[10px] w-[120px] h-[44px] text-[18px] text-primary hover:bg-primary hover:text-white"
               >
                 Login
               </Button>

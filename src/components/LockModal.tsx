@@ -53,7 +53,7 @@ const LockModal = ({ isOpen }: LockModalProps) => {
           </div>
           <div className="mt-6">
             <Button
-              className="w-full h-[50px] rounded-lg bg-[#209CFF] hover:bg-[#209CFF]/80 text-white font-normal"
+              className="w-full h-[50px] rounded-lg bg-primary hover:bg-primary/80 text-white font-normal"
               onClick={() =>
                 window.open("https://m.me/gold.analytics", "_blank")
               }

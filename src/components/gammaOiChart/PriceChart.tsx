@@ -55,7 +55,7 @@ const PriceChart: React.FC<PriceChartProps> = ({
             <div className="text-[#FAFAFA] text-[16px] font-medium">
               {symbol} Price Chart
             </div>
-            <div className="text-[#209CFF] text-[14px] font-normal border-none bg-[#209CFF]/10 rounded-[6px] px-2 py-1">
+            <div className="text-primary text-[14px] font-normal border-none bg-primary/10 rounded-[6px] px-2 py-1">
               {symbol}: ${currentPrice.toFixed(2)}
             </div>
           </div>
