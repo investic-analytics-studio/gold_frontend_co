@@ -54,11 +54,11 @@ const LandingLayout = () => {
 
   return (
     <div>
-      <div style={{ backgroundColor: "#040813" }} className="min-h-screen">
-        <header className="shadow-sm sticky top-0 z-50 bg-[#040813]">
+      <div style={{ backgroundColor: "#FFFFFF" }} className="min-h-screen">
+        <header className="sticky top-0 z-50 bg-[#FFFFFF]">
           <div className="max-w-12xl mx-4 py-4 sm:px-12 md:px-0 lg:px-12 flex justify-between items-center">
             <img
-              src="/assets/images/logo-investic-light.svg"
+              src="/assets/images/logo-investic-dark.svg"
               alt="logo"
               className="w-[40px] h-auto"
             />
@@ -97,7 +97,7 @@ const LandingLayout = () => {
               <Button
                 onClick={() => setIsLoginModalOpen(true)}
                 variant="outline"
-                className="bg-transparent border border-[#209CFF] rounded-[10px] w-[120px] h-[44px] text-[18px] text-[#209CFF] hover:bg-[#209CFF] hover:text-white"
+                className="bg-transparent font-bold border-[2px] border-[#209CFF] rounded-[10px] w-[120px] h-[44px] text-[18px] text-[#209CFF] hover:bg-[#209CFF] hover:text-white"
               >
                 Login
               </Button>
