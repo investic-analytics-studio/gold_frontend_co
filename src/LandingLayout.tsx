@@ -79,14 +79,14 @@ const LandingLayout = () => {
                   </Avatar>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
-                  className="w-full p-1 rounded-lg bg-[#0A1020] text-white border border-[#20293A]"
+                  className="w-full p-1 rounded-lg bg-[#FFFFFF] text-white border border-[#E0E3EB] shadow-sm"
                   side="bottom"
                   align="center"
                   sideOffset={6}
                 >
                   <DropdownMenuItem
                     onClick={handleLogout}
-                    className="cursor-pointer py-2 px-4 rounded-md text-[#F23645] hover:bg-[#172036] flex items-center justify-start"
+                    className="cursor-pointer py-2 px-4 rounded-md text-[#F23645] hover:bg-[#F4F5F7] flex items-center justify-start"
                   >
                     <LogOut className="mr-2 h-4 w-4" />
                     Log out
