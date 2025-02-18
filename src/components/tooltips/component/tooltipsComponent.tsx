@@ -1,5 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
 import {
   Tooltip,
   TooltipContent,
@@ -135,16 +141,13 @@ const Tooltips: React.FC<TooltipsProps> = ({
           <DrawerContent className="z-50 w-full h-[80vh] bg-[#0A1020] border border-[#20293A] rounded-lg">
             <DrawerHeader>
               <DrawerTitle className="text-[#FAFAFA] flex items-center justify-between">
-                  {title}
+                {title}
               </DrawerTitle>
             </DrawerHeader>
             <div className="grid gap-4 px-4 pt-4 pb-4 font-normal overflow-y-scroll scrollbar-track-transparent custom-scrollbar">
               <div className="space-y-2">
-                
                 {content && (
-                  <p className="text-sm text-[#FFFFFF]/85 pb-2">
-                    {content}
-                  </p>
+                  <p className="text-sm text-[#FFFFFF]/85 pb-2">{content}</p>
                 )}
                 {image && (
                   <img
