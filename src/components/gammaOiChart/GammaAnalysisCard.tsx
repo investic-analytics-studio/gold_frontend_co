@@ -858,7 +858,7 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
                             ? "default"
                             : "destructive"
                         }
-                        className="text-[20px] font-semibold text-[#FAFAFA] py-0"
+                        className="text-[20px] bg-transparent font-semibold text-[#FAFAFA] py-0"
                       >
                         {displayedAnalysis.delta.toFixed(2)}
                       </Badge>
