@@ -34,6 +34,7 @@ const LandingLayout = () => {
         gold_status: false,
         name: "",
         email: "",
+        is_corporate: false,
       });
       router.navigate({ to: "/" });
 
