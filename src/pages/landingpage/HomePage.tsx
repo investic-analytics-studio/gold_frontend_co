@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import ShineBorder from "@/components/ui/shine-border";
 import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import React from "react";
@@ -19,7 +18,7 @@ const HomePage: React.FC = () => {
   return (
     <div
       style={{
-        backgroundColor: "#040813",
+        backgroundColor: "#FFFFFF",
         position: "relative",
         overflow: "hidden",
       }}
@@ -33,17 +32,15 @@ const HomePage: React.FC = () => {
           duration={3}
           repeatDelay={1}
           className={cn(
-            "[mask-image:radial-gradient(1000px_circle_at_center,white,transparent)]",
-            "inset-x-0 inset-y-0 h-full w-full"
+            "[mask-image:radial-gradient(500px_circle_at_center,white,transparent)]",
+            "inset-x-0 inset-y-[-30%] h-[200%] skew-y-12"
           )}
         />
       </div>
 
       {/* Existing content */}
       <div
-        className={`relative z-10 w-full max-w-7xl px-4 ${
-          isMobile ? "pt-[50px]" : "pt-[100px]"
-        }`}
+        className="relative z-10 w-full max-w-7xl px-4 h-[calc(100vh-120px)] xl:h-[calc(100vh-200px)] pt-[130px] xl-[150px]"
       >
         <motion.div
           initial={{ opacity: 0, y: -50 }}
@@ -53,24 +50,24 @@ const HomePage: React.FC = () => {
         >
           <div className="hidden md:block lg:hidden">
             <GradualSpacing
-              className="font-display text-center font-bold tracking-tight text-white md:leading-[8rem] mt-[50px] text-[80px]"
+              className="font-display text-center font-extrabold tracking-tight text-secondary md:leading-[8rem] mt-[50px] text-[80px]"
               text="Gold Studio"
             />
           </div>
           {isMobile ? (
             <div className="block md:hidden lg:hidden flex flex-col items-center">
               <GradualSpacing
-                className="font-display text-center font-bold tracking-tight text-white mt-[50px] text-[75px] lg:text-[80px] leading-[85px] lg:leading-[80px]"
+                className="font-display text-center font-bold tracking-tight text-secondary mt-[50px] text-[75px] lg:text-[80px] leading-[85px] lg:leading-[80px]"
                 text="Gold"
               />
               <GradualSpacing
-                className="font-display text-center font-bold tracking-tight text-white text-[75px] lg:text-[80px] leading-[85px] lg:leading-[80px]"
+                className="font-display text-center font-bold tracking-tight text-secondary text-[75px] lg:text-[80px] leading-[85px] lg:leading-[80px]"
                 text="Studio"
               />
             </div>
           ) : (
             <GradualSpacing
-              className="font-display text-center font-bold tracking-tight text-white md:leading-[8rem] mt-[50px] text-[160px]"
+              className="font-display text-center font-bold tracking-tight text-secondary md:leading-[8rem] mt-[50px] text-[160px]"
               text="Gold Studio"
             />
           )}
@@ -79,10 +76,10 @@ const HomePage: React.FC = () => {
             className={`${
               isMobile
                 ? "text-[20px] mt-[10px] mb-[40px] leading-relaxed tracking-wide"
-                : "text-[30px] mt-[60px] mb-[60px] leading-relaxed tracking-normal"
-            } text-[#A1A1AA]`}
+                : "text-[30px] mt-[40px] mb-[60px] leading-relaxed tracking-normal"
+            } text-secondary/50`}
           >
-            Your one-stop solution for gold analytics
+            Your one-stop solution for gold analytics.
           </p>
           <motion.div>
             <div
@@ -92,11 +89,11 @@ const HomePage: React.FC = () => {
             >
               <div className={isMobile ? "mb-0" : "mb-0"}>
                 <Button
-                  className={`bg-[#209CFF] rounded-[15px] ${
+                  className={`bg-primary rounded-[15px] ${
                     isMobile
                       ? "w-full md:w-[320px] h-[66px] text-[16px]"
                       : "w-[220px] h-[66px] text-[20px]"
-                  } text-[#000000]`}
+                  } text-[#FFFFFF]`}
                   asChild
                   size="lg"
                 >
@@ -106,11 +103,11 @@ const HomePage: React.FC = () => {
 
               {/* <div>
                 <Button
-                  className={`bg-transparent border-2 border-[#209CFF] rounded-[15px] ${
+                  className={`bg-transparent border-2 border-primary rounded-[15px] ${
                     isMobile 
                       ? "w-full h-[50px] text-[16px]" 
                       : "w-[240px] h-[66px] text-[20px]"
-                  } text-[#209CFF]`}
+                  } text-primary`}
                   asChild
                   size="lg"
                 >
@@ -123,14 +120,14 @@ const HomePage: React.FC = () => {
                 isMobile
                   ? "flex-col mb-8 text-[14px]"
                   : "flex-row mb-14 text-[14px]"
-              } gap-[10px] justify-center font-light text-[#A1A1AA] opacity-50`}
+              } gap-[10px] justify-center font-light text-secondary/50`}
             >
               {" "}
-              Beta Version
+              Corporate Version
             </p>
           </motion.div>
 
-          <motion.div className="mt-4 w-full rounded-lg flex items-center justify-center">
+          {/* <motion.div className="mt-4 w-full rounded-lg flex items-center justify-center">
             <ShineBorder
               className="relative flex h-auto w-full flex-col items-center justify-center overflow-hidden rounded-lg border border-[#20293A] md:shadow-xl bg-[#040916]"
               color={["#209CFF"]}
@@ -145,7 +142,7 @@ const HomePage: React.FC = () => {
                 }}
               />
             </ShineBorder>
-          </motion.div>
+          </motion.div> */}
         </motion.div>
       </div>
 
@@ -175,8 +172,8 @@ const HomePage: React.FC = () => {
           transition={{ duration: 0.5, delay: 0.4 }}
           className={`w-full pb-4 mt-0 text-center text-gray-400 border-t ${
             isMobile
-              ? "border-[#20293A] text-[12px]"
-              : "border-[#20293A] text-[16px]"
+              ? "border-[#E0E3EB]/50 text-[12px]"
+              : "border-[#E0E3EB]/50 text-[16px]"
           }`}
         >
           {/* <div className="py-10 lg:py-12 flex items-center justify-center gap-4">
@@ -200,7 +197,7 @@ const HomePage: React.FC = () => {
             </div>
           </div> */}
           <div className="pt-4">
-            <p className="text-[#A1A1AA]/70">
+            <p className="text-secondary/40">
               Copyright &copy; 2024 Investic Analytics Studio. All rights
               reserved.
             </p>

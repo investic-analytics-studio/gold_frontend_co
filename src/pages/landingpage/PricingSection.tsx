@@ -73,7 +73,7 @@ const PricingSection: React.FC = () => {
               {isAnnual ? "/year" : "/month"}
             </span>
           </div>
-          <Button className="w-full text-[16px] bg-[#209CFF] hover:bg-blue-600 hover:text-[#FFFFFF] text-[#030816] h-[67px] rounded-[15px] transition-all duration-500">
+          <Button className="w-full text-[16px] bg-primary hover:bg-blue-600 hover:text-[#FFFFFF] text-[#030816] h-[67px] rounded-[15px] transition-all duration-500">
             Subscribe →
           </Button>
           <div className="mt-10">

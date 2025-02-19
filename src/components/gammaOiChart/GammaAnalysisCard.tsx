@@ -579,7 +579,7 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
               <DrawerTrigger asChild>
                 <div className="z-10 flex items-center justify-center">
                   <ShimmerButton className="shadow-2xl w-auto px-4">
-                    <span className="text-[#209CFF]">
+                    <span className="text-primary">
                       <ListFilter className="size-4" />
                     </span>
                   </ShimmerButton>
@@ -595,7 +595,7 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
                     {/* <Button
                       // onClick={handleResetAllFilters}
                       variant="outline"
-                      className="font-normal text-[#209CFF] border-none hover:bg-[#172036] hover:text-[#209CFF] group"
+                      className="font-normal text-primary border-none hover:bg-[#172036] hover:text-primary group"
                     >
                       <RotateCcw className="transition-transform duration-200 group-hover:-rotate-180" />
                       Default Filters
@@ -662,7 +662,7 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
               <PopoverTrigger asChild>
                 <div className="z-10 flex items-center justify-center">
                   <ShimmerButton className="shadow-2xl w-[90px] gap-2">
-                    <span className="text-[#209CFF]">
+                    <span className="text-primary">
                       <ListFilter className="size-4" />
                     </span>
                     <span className="whitespace-pre-wrap text-center text-sm font-normal leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-sm">
@@ -687,7 +687,7 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
                     {/* <div>
                       <Button
                         variant="outline"
-                        className="font-normal text-[#209CFF] border-none hover:bg-[#172036] hover:text-[#209CFF] group"
+                        className="font-normal text-primary border-none hover:bg-[#172036] hover:text-primary group"
                       >
                         <RotateCcw className="transition-transform duration-200 group-hover:-rotate-180" />
                         Default Filters
@@ -754,7 +754,7 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between w-full gap-4">
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-[#209CFF] animate-pulse" />
+                  <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
                   <div className="font-medium text-[16px] text-[#FAFAFA]">
                     Current Analysis
                   </div>
@@ -770,21 +770,21 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
                   <div className="h-4 w-[1px] bg-[#20293A]" />
                   <div className="flex items-center gap-1">
                     <span className="text-[#A1A1AA]">Futures:</span>
-                    <span className="font-normal text-[#209CFF]">
+                    <span className="font-normal text-primary">
                       ${displayedAnalysis?.price.toFixed(2)}
                     </span>
                   </div>
                   <div className="h-4 w-[1px] bg-[#20293A]" />
                   <div className="flex items-center gap-1">
                     <span className="text-[#A1A1AA]">Spot:</span>
-                    <span className="font-normal text-[#209CFF]">
+                    <span className="font-normal text-primary">
                       ${displayedAnalysis?.spot_price.toFixed(2)}
                     </span>
                   </div>
                   <div className="h-4 w-[1px] bg-[#20293A]" />
                   <div className="flex items-center gap-1">
                     <span className="text-[#A1A1AA]">Delta:</span>
-                    <span className="font-normal text-[#209CFF]">
+                    <span className="font-normal text-primary">
                       ${displayedAnalysis?.delta.toFixed(2)}
                     </span>
                     <span className="text-xs text-[#A1A1AA]">
@@ -816,7 +816,7 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
                   <Switch
                     checked={showSpotPrice}
                     onCheckedChange={setShowSpotPrice}
-                    className="data-[state=checked]:bg-[#209CFF]"
+                    className="data-[state=checked]:bg-primary"
                   />
                 </div>
               </div>
@@ -858,7 +858,7 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
                             ? "default"
                             : "destructive"
                         }
-                        className="text-[20px] font-semibold text-[#FAFAFA] py-0"
+                        className="text-[20px] bg-transparent font-semibold text-[#FAFAFA] py-0"
                       >
                         {displayedAnalysis.delta.toFixed(2)}
                       </Badge>
@@ -1070,7 +1070,7 @@ const GammaAnalysisCard: React.FC<GammaAnalysisCardProps> = ({
                     {filteredData[0] && (
                       <Badge
                         variant="outline"
-                        className="text-xs text-[#209CFF] font-normal border-none bg-[#209CFF]/10"
+                        className="text-xs text-primary font-normal border-none bg-primary/10"
                       >
                         Last updated:{" "}
                         {format(

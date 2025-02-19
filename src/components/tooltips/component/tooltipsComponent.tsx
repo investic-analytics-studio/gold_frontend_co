@@ -1,5 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
 import {
   Tooltip,
   TooltipContent,
@@ -126,7 +132,7 @@ const Tooltips: React.FC<TooltipsProps> = ({
             <Button
               variant="default"
               size="icon"
-              className="rounded-full text-[#209CFF]/50 hover:text-[#209CFF] relative"
+              className="rounded-full text-primary/50 hover:text-primary relative"
             >
               <InfoIcon className="h-4 w-4" />
               <span className="sr-only">Open tips</span>
@@ -135,16 +141,13 @@ const Tooltips: React.FC<TooltipsProps> = ({
           <DrawerContent className="z-50 w-full h-[80vh] bg-[#0A1020] border border-[#20293A] rounded-lg">
             <DrawerHeader>
               <DrawerTitle className="text-[#FAFAFA] flex items-center justify-between">
-                  {title}
+                {title}
               </DrawerTitle>
             </DrawerHeader>
             <div className="grid gap-4 px-4 pt-4 pb-4 font-normal overflow-y-scroll scrollbar-track-transparent custom-scrollbar">
               <div className="space-y-2">
-                
                 {content && (
-                  <p className="text-sm text-[#FFFFFF]/85 pb-2">
-                    {content}
-                  </p>
+                  <p className="text-sm text-[#FFFFFF]/85 pb-2">{content}</p>
                 )}
                 {image && (
                   <img
@@ -156,8 +159,8 @@ const Tooltips: React.FC<TooltipsProps> = ({
 
                 {contentTwo && (
                   <div className="flex items-center gap-2 pt-2">
-                    <div className="w-2 h-2 rounded-full bg-[#209CFF]"></div>
-                    <span className="text-sm text-[#209CFF]">{contentTwo}</span>
+                    <div className="w-2 h-2 rounded-full bg-primary"></div>
+                    <span className="text-sm text-primary">{contentTwo}</span>
                   </div>
                 )}
 
@@ -187,8 +190,8 @@ const Tooltips: React.FC<TooltipsProps> = ({
 
                 {descriptionTwo && (
                   <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-[#209CFF]"></div>
-                    <span className="text-sm text-[#209CFF]">
+                    <div className="w-2 h-2 rounded-full bg-primary"></div>
+                    <span className="text-sm text-primary">
                       {descriptionTwo}
                     </span>
                   </div>
@@ -205,8 +208,8 @@ const Tooltips: React.FC<TooltipsProps> = ({
 
                 {descriptionTwoOneHour && (
                   <div className="flex items-center gap-2">
-                    <div className="w-4 h-1 bg-[#209CFF]"></div>
-                    <span className="text-sm text-[#209CFF]">
+                    <div className="w-4 h-1 bg-primary"></div>
+                    <span className="text-sm text-primary">
                       {descriptionTwoOneHour}
                     </span>
                   </div>
@@ -354,8 +357,8 @@ const Tooltips: React.FC<TooltipsProps> = ({
                 {descriptionTipsGoldOneHour && (
                   <>
                     <div className="flex items-center gap-3 pb-4">
-                      <div className="w-[2px] h-6 bg-[#209CFF]"></div>
-                      <span className="text-sm text-[#209CFF]/85">
+                      <div className="w-[2px] h-6 bg-primary"></div>
+                      <span className="text-sm text-primary/85">
                         {descriptionTipsGoldOneHour}
                       </span>
                     </div>
@@ -364,9 +367,9 @@ const Tooltips: React.FC<TooltipsProps> = ({
 
                 {tips && (
                   <>
-                    <div className="flex items-center gap-2 bg-[#209CFF]/10 p-5 rounded-lg">
-                      <Lightbulb className="text-[#209CFF] mr-2 w-10" />
-                      <span className="text-sm text-[#209CFF]/85">{tips}</span>
+                    <div className="flex items-center gap-2 bg-primary/10 p-5 rounded-lg">
+                      <Lightbulb className="text-primary mr-2 w-10" />
+                      <span className="text-sm text-primary/85">{tips}</span>
                     </div>
                   </>
                 )}
@@ -376,7 +379,7 @@ const Tooltips: React.FC<TooltipsProps> = ({
                 {subTitleGammaAI && (
                   <>
                     <div className="flex items-center gap-2 pt-4">
-                      <div className="w-1 h-1 bg-[#209CFF]"></div>
+                      <div className="w-1 h-1 bg-primary"></div>
                       <span className="text-[14px] font-medium text-[#FFFFFF]">
                         {subTitleGammaAI[0]}
                       </span>
@@ -397,7 +400,7 @@ const Tooltips: React.FC<TooltipsProps> = ({
                 {subTitleGammaAI && (
                   <>
                     <div className="flex items-center gap-2">
-                      <div className="w-1 h-1 bg-[#209CFF]"></div>
+                      <div className="w-1 h-1 bg-primary"></div>
                       <span className="text-[14px] font-medium text-[#FFFFFF]">
                         {subTitleGammaAI[1]}
                       </span>
@@ -780,7 +783,7 @@ const Tooltips: React.FC<TooltipsProps> = ({
                 {subTitleOi && (
                   <>
                     <div className="flex items-center gap-2 pt-4">
-                      <div className="w-1 h-1 bg-[#209CFF]"></div>
+                      <div className="w-1 h-1 bg-primary"></div>
                       <span className="text-[14px] font-medium text-[#FFFFFF]">
                         {subTitleOi[0]}
                       </span>
@@ -822,8 +825,8 @@ const Tooltips: React.FC<TooltipsProps> = ({
                 {detailHowToOi && (
                   <>
                     <div className="flex items-center gap-3 pb-4">
-                      <div className="w-[4px] h-14 bg-[#209CFF]/40"></div>
-                      <span className="text-sm text-[#209CFF]/85">
+                      <div className="w-[4px] h-14 bg-primary/40"></div>
+                      <span className="text-sm text-primary/85">
                         {detailHowToOi[0]}
                       </span>
                     </div>
@@ -834,7 +837,7 @@ const Tooltips: React.FC<TooltipsProps> = ({
                   <>
                     <div className="border-t border-[#20293A]/50 pt-4"></div>
                     <div className="flex items-center gap-2">
-                      <div className="w-1 h-1 bg-[#209CFF]"></div>
+                      <div className="w-1 h-1 bg-primary"></div>
                       <span className="text-[14px] font-medium text-[#FFFFFF]">
                         {subTitleOi[1]}
                       </span>
@@ -1084,7 +1087,7 @@ const Tooltips: React.FC<TooltipsProps> = ({
                         <div className="text-sm text-[#FFFFFF]/70">
                           {bulletOi[13]}
                         </div>
-                        <div className="w-4 h-1 bg-[#209CFF]"></div>
+                        <div className="w-4 h-1 bg-primary"></div>
                       </div>
                       <div className="flex items-center gap-2">
                         <div className="text-sm text-[#FFFFFF]/70">
@@ -1182,12 +1185,12 @@ const Tooltips: React.FC<TooltipsProps> = ({
 
                 {tipsOi && (
                   <>
-                    <div className="flex items-center gap-2 bg-[#209CFF]/10 p-5 rounded-lg">
+                    <div className="flex items-center gap-2 bg-primary/10 p-5 rounded-lg">
                       <div className="w-[15%]">
-                        <Lightbulb className="text-[#209CFF] mr-2 w-10" />
+                        <Lightbulb className="text-primary mr-2 w-10" />
                       </div>
                       <div className="w-[85%]">
-                        <span className="text-sm text-[#209CFF]/85">
+                        <span className="text-sm text-primary/85">
                           {tipsOi}
                         </span>
                       </div>
@@ -1204,7 +1207,7 @@ const Tooltips: React.FC<TooltipsProps> = ({
             <Button
               variant="default"
               size="icon"
-              className="rounded-full text-[#209CFF]/50 hover:text-[#209CFF] relative"
+              className="rounded-full text-primary/50 hover:text-primary relative"
             >
               <InfoIcon className="h-4 w-4" />
               <span className="sr-only">Open tips</span>
@@ -1236,8 +1239,8 @@ const Tooltips: React.FC<TooltipsProps> = ({
 
                 {contentTwo && (
                   <div className="flex items-center gap-2 pt-2">
-                    <div className="w-2 h-2 rounded-full bg-[#209CFF]"></div>
-                    <span className="text-sm text-[#209CFF]">{contentTwo}</span>
+                    <div className="w-2 h-2 rounded-full bg-primary"></div>
+                    <span className="text-sm text-primary">{contentTwo}</span>
                   </div>
                 )}
 
@@ -1267,8 +1270,8 @@ const Tooltips: React.FC<TooltipsProps> = ({
 
                 {descriptionTwo && (
                   <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-[#209CFF]"></div>
-                    <span className="text-sm text-[#209CFF]">
+                    <div className="w-2 h-2 rounded-full bg-primary"></div>
+                    <span className="text-sm text-primary">
                       {descriptionTwo}
                     </span>
                   </div>
@@ -1285,8 +1288,8 @@ const Tooltips: React.FC<TooltipsProps> = ({
 
                 {descriptionTwoOneHour && (
                   <div className="flex items-center gap-2">
-                    <div className="w-4 h-1 bg-[#209CFF]"></div>
-                    <span className="text-sm text-[#209CFF]">
+                    <div className="w-4 h-1 bg-primary"></div>
+                    <span className="text-sm text-primary">
                       {descriptionTwoOneHour}
                     </span>
                   </div>
@@ -1434,8 +1437,8 @@ const Tooltips: React.FC<TooltipsProps> = ({
                 {descriptionTipsGoldOneHour && (
                   <>
                     <div className="flex items-center gap-3 pb-4">
-                      <div className="w-[2px] h-6 bg-[#209CFF]"></div>
-                      <span className="text-sm text-[#209CFF]/85">
+                      <div className="w-[2px] h-6 bg-primary"></div>
+                      <span className="text-sm text-primary/85">
                         {descriptionTipsGoldOneHour}
                       </span>
                     </div>
@@ -1444,9 +1447,9 @@ const Tooltips: React.FC<TooltipsProps> = ({
 
                 {tips && (
                   <>
-                    <div className="flex items-center gap-2 bg-[#209CFF]/10 p-5 rounded-lg">
-                      <Lightbulb className="text-[#209CFF] mr-2 w-10" />
-                      <span className="text-sm text-[#209CFF]/85">{tips}</span>
+                    <div className="flex items-center gap-2 bg-primary/10 p-5 rounded-lg">
+                      <Lightbulb className="text-primary mr-2 w-10" />
+                      <span className="text-sm text-primary/85">{tips}</span>
                     </div>
                   </>
                 )}
@@ -1456,7 +1459,7 @@ const Tooltips: React.FC<TooltipsProps> = ({
                 {subTitleGammaAI && (
                   <>
                     <div className="flex items-center gap-2 pt-4">
-                      <div className="w-1 h-1 bg-[#209CFF]"></div>
+                      <div className="w-1 h-1 bg-primary"></div>
                       <span className="text-[14px] font-medium text-[#FFFFFF]">
                         {subTitleGammaAI[0]}
                       </span>
@@ -1477,7 +1480,7 @@ const Tooltips: React.FC<TooltipsProps> = ({
                 {subTitleGammaAI && (
                   <>
                     <div className="flex items-center gap-2">
-                      <div className="w-1 h-1 bg-[#209CFF]"></div>
+                      <div className="w-1 h-1 bg-primary"></div>
                       <span className="text-[14px] font-medium text-[#FFFFFF]">
                         {subTitleGammaAI[1]}
                       </span>
@@ -1860,7 +1863,7 @@ const Tooltips: React.FC<TooltipsProps> = ({
                 {subTitleOi && (
                   <>
                     <div className="flex items-center gap-2 pt-4">
-                      <div className="w-1 h-1 bg-[#209CFF]"></div>
+                      <div className="w-1 h-1 bg-primary"></div>
                       <span className="text-[14px] font-medium text-[#FFFFFF]">
                         {subTitleOi[0]}
                       </span>
@@ -1902,8 +1905,8 @@ const Tooltips: React.FC<TooltipsProps> = ({
                 {detailHowToOi && (
                   <>
                     <div className="flex items-center gap-3 pb-4">
-                      <div className="w-[4px] h-14 bg-[#209CFF]/40"></div>
-                      <span className="text-sm text-[#209CFF]/85">
+                      <div className="w-[4px] h-14 bg-primary/40"></div>
+                      <span className="text-sm text-primary/85">
                         {detailHowToOi[0]}
                       </span>
                     </div>
@@ -1914,7 +1917,7 @@ const Tooltips: React.FC<TooltipsProps> = ({
                   <>
                     <div className="border-t border-[#20293A]/50 pt-4"></div>
                     <div className="flex items-center gap-2">
-                      <div className="w-1 h-1 bg-[#209CFF]"></div>
+                      <div className="w-1 h-1 bg-primary"></div>
                       <span className="text-[14px] font-medium text-[#FFFFFF]">
                         {subTitleOi[1]}
                       </span>
@@ -2164,7 +2167,7 @@ const Tooltips: React.FC<TooltipsProps> = ({
                         <div className="text-sm text-[#FFFFFF]/70">
                           {bulletOi[13]}
                         </div>
-                        <div className="w-4 h-1 bg-[#209CFF]"></div>
+                        <div className="w-4 h-1 bg-primary"></div>
                       </div>
                       <div className="flex items-center gap-2">
                         <div className="text-sm text-[#FFFFFF]/70">
@@ -2262,12 +2265,12 @@ const Tooltips: React.FC<TooltipsProps> = ({
 
                 {tipsOi && (
                   <>
-                    <div className="flex items-center gap-2 bg-[#209CFF]/10 p-5 rounded-lg">
+                    <div className="flex items-center gap-2 bg-primary/10 p-5 rounded-lg">
                       <div className="w-[15%]">
-                        <Lightbulb className="text-[#209CFF] mr-2 w-10" />
+                        <Lightbulb className="text-primary mr-2 w-10" />
                       </div>
                       <div className="w-[85%]">
-                        <span className="text-sm text-[#209CFF]/85">
+                        <span className="text-sm text-primary/85">
                           {tipsOi}
                         </span>
                       </div>

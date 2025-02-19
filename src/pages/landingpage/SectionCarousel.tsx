@@ -120,7 +120,7 @@ const ImageCarousel: React.FC = () => {
 
   return (
     <div className={`text-white p-8 ${isMobile ? "w-[100%] mt-10" : "w-full mt-20"}`}>
-      <h1 className={`${isMobile ? "text-[40px]" : "text-[46px]"} font-semibold text-[46px]`}>Our Features</h1>
+      <h1 className={`${isMobile ? "text-[40px]" : "text-[46px]"} font-semibold text-[46px] text-secondary`}>Our Features</h1>
       <p className={`${isMobile ? "text-[18px]" : "text-[20px]"} text-gray-400 mb-8 mt-2`}>
         Discover the ultimate gold analysis toolkit, giving you the power to track major players and stay ahead in the market.
       </p>
@@ -138,7 +138,7 @@ const ImageCarousel: React.FC = () => {
                 isMobile ? "w-[95%]" : "w-[45%]"
               }`}
             >
-              <Card className="bg-transparent border-[#20293A] h-[auto] rounded-[30px]">
+              <Card className="bg-transparent border-[#E0E3EB] h-[auto] rounded-[30px]">
                 <CardHeader>
                   <div className="relative w-full h-[auto]">
                     <img
@@ -149,7 +149,7 @@ const ImageCarousel: React.FC = () => {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <h1 className="text-white font-medium text-[24px]">
+                  <h1 className="text-secondary font-semibold text-[24px]">
                     {item.title}
                   </h1>
                   <p className="text-gray-400 mt-2 mb-2">{item.description}</p>
@@ -162,7 +162,7 @@ const ImageCarousel: React.FC = () => {
 
       <div className="flex justify-end space-x-4 mt-4">
         <Button
-          className="bg-[#040813] hover:bg-[#209CFF]/80 rounded-full border-[#209CFF] disabled:border-[#313131] disabled:opacity-70 group"
+          className="bg-[#FFFFFF] hover:bg-primary/80 rounded-full border-primary disabled:border-[#000000]/20 disabled:opacity-70 group"
           variant="outline"
           size="icon"
           onClick={prevSlide}
@@ -171,13 +171,13 @@ const ImageCarousel: React.FC = () => {
           <ChevronLeft
             className={`h-4 w-4 ${
               currentIndex === 0
-                ? "text-[#313131]"
-                : "text-[#209CFF] group-hover:text-[#FFFFFF]"
+                ? "text-[#000000]/20"
+                : "text-primary group-hover:text-[#FFFFFF]"
             }`}
           />
         </Button>
         <Button
-          className="bg-[#040813] hover:bg-[#209CFF]/80 rounded-full border-[#209CFF] disabled:border-[#313131] disabled:opacity-70 group"
+          className="bg-[#FFFFFF] hover:bg-primary/80 rounded-full border-primary disabled:border-[#000000]/20 disabled:opacity-70 group"
           variant="outline"
           size="icon"
           onClick={nextSlide}
@@ -186,8 +186,8 @@ const ImageCarousel: React.FC = () => {
           <ChevronRight
             className={`h-4 w-4 ${
               isLastCardVisible
-                ? "text-[#313131]"
-                : "text-[#209CFF] group-hover:text-[#FFFFFF]"
+                ? "text-[#000000]/20"
+                : "text-primary group-hover:text-[#FFFFFF]"
             }`}
           />
         </Button>
