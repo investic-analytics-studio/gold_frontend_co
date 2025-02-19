@@ -1,6 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createContext, useContext, useEffect, useState } from "react";
-import { getAccessToken, setAccessToken } from "@/utils/localStorage";
+import {
+  getAccessToken,
+  removeAccessToken,
+  setAccessToken,
+} from "@/utils/localStorage";
 import {
   // allUserAutoValidate,
   checkExistEmailApi,
@@ -16,6 +20,7 @@ interface AuthData {
   gold_status: boolean;
   name: string;
   email: string;
+  is_corporate: boolean;
 }
 
 type AuthContextType = {
@@ -51,7 +56,13 @@ export const AuthContext = createContext<AuthContextType>({
   authMode: "login",
   setAuthMode: () => {},
   authLoading: true,
-  authUserData: { uid: "", gold_status: false, name: "", email: "" },
+  authUserData: {
+    uid: "",
+    gold_status: false,
+    name: "",
+    email: "",
+    is_corporate: false,
+  },
   setAuthUserData: () => {},
   handleSubmit: () => {},
   handleGoogleLogin: async () => {},
@@ -73,6 +84,7 @@ export const AuthContextProvider = ({ children }: any) => {
     gold_status: false,
     name: "",
     email: "",
+    is_corporate: false,
   });
   const [isGoogleLogin, setIsGoogleLogin] = useState(false);
   const [authMode, setAuthMode] = useState<"login" | "register">("login");
@@ -156,6 +168,12 @@ export const AuthContextProvider = ({ children }: any) => {
 
           const userUidRes = await getUserUid();
           setAuthUserData(userUidRes.data);
+
+          if (!userUidRes.data.is_corporate) {
+            showToast("Error", "Credential invalid.", "destructive");
+            removeAccessToken();
+            return;
+          }
 
           // await validateEmailApi(userData.email);
           setIsLoginModalOpen(false);
