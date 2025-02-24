@@ -159,7 +159,7 @@ export const AuthContextProvider = ({ children }: any) => {
       isExistEmail = checkExistEmailRes.data;
 
       if (res.error === "credential invalid") {
-        showToast("Error", "Credential invalid.", "destructive");
+        showToast("Error", "Credential invalid 1.", "destructive");
       } else if (res.userCredential?.user) {
         if (isExistEmail) {
           // TODO: comment becuase old email some email not verified
@@ -170,7 +170,7 @@ export const AuthContextProvider = ({ children }: any) => {
           setAuthUserData(userUidRes.data);
 
           if (!userUidRes.data.is_corporate) {
-            showToast("Error", "Credential invalid.", "destructive");
+            showToast("Error", "Credential invalid 2.", "destructive");
             removeAccessToken();
             return;
           }
