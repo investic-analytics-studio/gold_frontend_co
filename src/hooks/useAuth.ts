@@ -73,7 +73,7 @@ export async function signIn(
     return {
       userCredential: null,
       accessToken: "",
-      error: "credential invalid",
+      error: "credential invalid 5",
     };
   }
 }
@@ -89,7 +89,7 @@ export async function GoogleLinkAccount(
       await linkWithCredential(user, credential);
       return { error: "" };
     } else {
-      return { error: "credential invalid" };
+      return { error: "credential invalid 3" };
     }
   } catch (error) {
     if (
@@ -100,7 +100,7 @@ export async function GoogleLinkAccount(
     ) {
       return { error: "" };
     } else {
-      return { error: "credential invalid" };
+      return { error: "credential invalid 4" };
     }
   }
 }
