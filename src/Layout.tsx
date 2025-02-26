@@ -120,7 +120,7 @@ const SidebarHeaderComponent = () => (
                     <div className="flex items-center justify-between w-full px-2 py-2">
                       <div className="flex items-center gap-2">
                         <img
-                          src="/logo-investic-light.svg"
+                          src="/assets/images/new-gold-logo-light.png"
                           alt="Logo"
                           className="h-6 w-6 flex-shrink-0"
                         />
@@ -717,7 +717,7 @@ export default function Layout() {
               <div className="flex h-14 items-center justify-between px-4">
                 <div className="flex-1 flex justify-start lg:hidden">
                   <img
-                    src="/logo-investic-light.svg"
+                    src="/assets/images/new-gold-logo-light.png"
                     alt="Logo"
                     className="h-6 w-6"
                   />
