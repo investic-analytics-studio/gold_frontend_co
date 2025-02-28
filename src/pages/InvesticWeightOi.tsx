@@ -1,6 +1,6 @@
 import OiDistributionChart from "@/components/gammaOiChart/OiDistributionChart";
 import GammaAnalysisCard from "@/components/gammaOiChart/GammaAnalysisCard";
-import { useGammaOi, useAvailableMonths } from "@/hooks/useGammaOi";
+import { useGammaOi, useAvailableMonths, getCurrentContract } from "@/hooks/useGammaOi";
 import { useGammaAnalysis } from "@/hooks/useGammaAnalysis";
 import {
   Breadcrumb,
@@ -22,7 +22,14 @@ const InvesticWeightOiPage: React.FC = () => {
   // Get available months separately
   const { data: availableMonths = [], isLoading: isMonthsLoading } =
     useAvailableMonths();
+  const { data: currentContracts, isLoading: isGetCurrentContractLoading }= getCurrentContract();
 
+  // Set initial month when availableMonths loads
+  useEffect(() => {
+    if (currentContracts && !isGetCurrentContractLoading) {
+      setSelectedMonth(currentContracts);
+    }
+  }, [isGetCurrentContractLoading, currentContracts])
   // Set initial month when availableMonths loads
   useEffect(() => {
     if (availableMonths.length > 0 && !selectedMonth) {
