@@ -69,7 +69,21 @@ export function useAvailableMonths() {
     refetchOnReconnect: false,
   });
 }
-
+export function getCurrentContract(){
+  return useQuery({
+    queryKey: ['oi-contract'],
+    queryFn: async () => {
+      const response = await axios.get<any>(
+        getApiUrl('gold-oi-current-contract')
+      );
+      return response.data
+    },
+    staleTime: Infinity,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+  });
+}
 export const useGammaOi = (
   selectedMonth: string, 
   timeframe: string = "60", 
