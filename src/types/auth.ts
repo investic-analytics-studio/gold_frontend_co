@@ -57,3 +57,8 @@ export interface CheckEmailReq {
 export interface AutoValidateReq {
   uid: string;
 }
+
+export interface LoginReq {
+  uid: string;
+  login_type: string;
+}

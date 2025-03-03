@@ -1,4 +1,8 @@
-import { getAccessToken, removeAccessToken } from "@/utils/localStorage";
+import {
+  getAccessToken,
+  removeAccessToken,
+  setExpireFlag,
+} from "@/utils/localStorage";
 import axios from "axios";
 
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
@@ -19,6 +23,7 @@ axios.interceptors.response.use(
   (err) => {
     if (err.response.status === 401) {
       removeAccessToken();
+      setExpireFlag();
       window.location.assign("/");
       return;
     }

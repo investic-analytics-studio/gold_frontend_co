@@ -9,11 +9,12 @@ import {
   // allUserAutoValidate,
   checkExistEmailApi,
   getUserUid,
+  loginBackend,
   registerApi,
 } from "@/api/auth";
 import { RegisterInput, RegisterReq } from "@/types/auth";
 import { toast } from "@/hooks/use-toast";
-import { signIn, signInWithGoogle, useTokenRefresh } from "@/hooks/useAuth";
+import { signIn, signInWithGoogle } from "@/hooks/useAuth";
 
 interface AuthData {
   uid: string;
@@ -108,8 +109,6 @@ export const AuthContextProvider = ({ children }: any) => {
     fetchUser();
   }, []);
 
-  useTokenRefresh();
-
   const handleChangeInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
@@ -162,9 +161,13 @@ export const AuthContextProvider = ({ children }: any) => {
         showToast("Error", "Credential invalid.", "destructive");
       } else if (res.userCredential?.user) {
         if (isExistEmail) {
+          const getJwtToken = await loginBackend({
+            uid: res.userCredential.user.uid,
+            login_type: "email-google",
+          });
           // TODO: comment becuase old email some email not verified
           // if (res.userCredential.user.emailVerified) {
-          setAccessToken(res?.accessToken ?? "");
+          setAccessToken(getJwtToken.data.token ?? "");
 
           const userUidRes = await getUserUid();
           setAuthUserData(userUidRes.data);
@@ -310,8 +313,13 @@ export const AuthContextProvider = ({ children }: any) => {
 
       if (res.userCredential?.user) {
         if (isExistEmail) {
+          const getJwtToken = await loginBackend({
+            uid: res?.userCredential?.user?.uid ?? "",
+            login_type: "email-google",
+          });
+
           // if (res.userCredential.user.emailVerified) {
-          setAccessToken(res?.accessToken ?? "");
+          setAccessToken(getJwtToken.data.token ?? "");
           setIsLoginModalOpen(false);
           setInput((prev) => ({ ...prev, ...initialUserRegisterInfo }));
 
