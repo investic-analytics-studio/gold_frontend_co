@@ -2,7 +2,11 @@ import LoginModal from "@/components/auth/LoginModal";
 import { Button } from "@/components/ui/button";
 import { Outlet } from "@tanstack/react-router";
 import { useAuthContext } from "./context/authContext";
-import { removeAccessToken } from "@/utils/localStorage";
+import {
+  getExpireFlag,
+  removeAccessToken,
+  removeExpireFlag,
+} from "@/utils/localStorage";
 import { signOut } from "@/hooks/useAuth";
 import { useRouter } from "@tanstack/react-router";
 import {
@@ -14,6 +18,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { LogOut } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useEffect } from "react";
 
 const LandingLayout = () => {
   const {
@@ -52,6 +57,17 @@ const LandingLayout = () => {
       });
     }
   };
+
+  useEffect(() => {
+    if (getExpireFlag()) {
+      toast({
+        title: "Session expired, please login again.",
+        description: "Please login again to continue using the app.",
+        variant: "destructive",
+      });
+      removeExpireFlag();
+    }
+  }, []);
 
   return (
     <div>

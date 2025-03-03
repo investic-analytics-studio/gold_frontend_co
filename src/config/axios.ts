@@ -1,5 +1,10 @@
-import { getAccessToken, removeAccessToken } from "@/utils/localStorage";
+import {
+  getAccessToken,
+  removeAccessToken,
+  setExpireFlag,
+} from "@/utils/localStorage";
 import axios from "axios";
+import { D } from "node_modules/@tanstack/react-query-devtools/build/modern/ReactQueryDevtools-Cn7cKi7o";
 
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 
@@ -19,6 +24,7 @@ axios.interceptors.response.use(
   (err) => {
     if (err.response.status === 401) {
       removeAccessToken();
+      setExpireFlag();
       window.location.assign("/");
       return;
     }
