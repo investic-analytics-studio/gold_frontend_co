@@ -4,7 +4,6 @@ import {
   setExpireFlag,
 } from "@/utils/localStorage";
 import axios from "axios";
-import { D } from "node_modules/@tanstack/react-query-devtools/build/modern/ReactQueryDevtools-Cn7cKi7o";
 
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 
